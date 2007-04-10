@@ -1,0 +1,14 @@
+#!/bin/sh
+# $Id$
+echo 'const char* version(void)'           > dnplib/version.cpp
+echo '{'                                  >> dnplib/version.cpp
+echo -n '    const char* s = "Version: '  >> dnplib/version.cpp
+svnversion -n                             >> dnplib/version.cpp
+echo -n '<br>Build Date: '                >> dnplib/version.cpp
+echo -n $(date)                           >> dnplib/version.cpp
+echo '";'                                 >> dnplib/version.cpp
+echo '    return s;'                      >> dnplib/version.cpp
+echo '}'                                  >> dnplib/version.cpp
+make
+# avoid checking in a release version function
+svn revert dnplib/version.cpp
