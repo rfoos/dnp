@@ -1,0 +1,15 @@
+
+$Id$
+
+Dependencies:
+1. C++ complier
+2. qt4-devel
+
+Fedora Core 6 example:
+
+yum install qt-devel
+cd dnp     # where dnp is the dir where the source exists
+qmake-qt4 -project "CONFIG += qtestlib" "QT += network debug"
+qmake-qt4
+make
+./dnp

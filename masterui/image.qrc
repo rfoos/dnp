@@ -1,0 +1,7 @@
+ <!DOCTYPE RCC><RCC version="1.0">
+ <qresource>
+     <file>../images/redledoff.png</file>
+     <file>../images/redledon.png</file>
+     <file>../images/TurnerTechIcon32x32.png</file>
+ </qresource>
+ </RCC>
