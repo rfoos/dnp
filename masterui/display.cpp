@@ -36,6 +36,7 @@ const QString DataDisplay::ptNames[EventInterface::NUM_POINT_TYPES] =
     "Counter Inputs",
     "Analog Outputs",
     "Binary Outputs",
+    "No Physical Point",
     "Generic Stat",
     "Application Abnormal",
     "Application Normal",

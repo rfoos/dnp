@@ -44,15 +44,16 @@ public:
 		       CI,       // Couter Inout
 		       AO,       // Analog Output
 		       BO,       // Binary Ouput
-		       ST,
-		       AP_AB_ST,
-		       AP_NM_ST,
-		       DL_AB_ST,
-		       DL_NM_ST,
-		       SA_AB_ST,
-		       SA_NM_ST,
-		       EP_AB_ST,
-		       EP_NM_ST,
+		       NONE,     // No physical point
+		       ST,       // generic stat
+		       AP_AB_ST, // app abnormal stat
+		       AP_NM_ST, // app normal stat
+		       DL_AB_ST, // datalink abnormal stat
+		       DL_NM_ST, // datalink normal stat
+		       SA_AB_ST, // secure auth abnormal stat
+		       SA_NM_ST, // secure auth normal stat
+		       EP_AB_ST, // end point abnormal stat
+		       EP_NM_ST, // end point normal stat
 		       NUM_POINT_TYPES 
   };     // Statistic
  
