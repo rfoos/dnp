@@ -71,7 +71,7 @@ Outstation::Outstation( OutstationConfig&             outstationConfig,
 	{ TransportStats::RX_FRAGMENT,"Rx Fragments"  ,Stats::NORMAL,  0, 0 },
 	{ TransportStats::RX_SEGMENT,"Rx Segments"    ,Stats::NORMAL,  0, 0 },
 	{ TransportStats::RX_UNAUTH_SEG,"Rx Unauth Seg",Stats::ABNORMAL,0, 0 },
-	{ TransportStats::RX_ROUGE_SEG,"Tx Rouge Seg"  ,Stats::ABNORMAL,0, 0 },
+	{ TransportStats::RX_ROUGE_SEG,"Rx Rouge Seg"  ,Stats::ABNORMAL,0, 0 },
 	{ TransportStats::RX_BAD_TH_SEQ_NUM,"Rx Bad Th SeqNum",
 	                                               Stats::ABNORMAL,0, 0 },
 	// Normal stats
