@@ -83,6 +83,7 @@ public:
 			  RX_CLASS_3_POLL,
 			  RX_READ,
 			  RX_WRITE,
+			  RX_SELECT,
 			  RX_OPERATE,
 			  RX_DIR_OP,
 			  RX_DIR_OP_NO_ACK,
@@ -119,8 +120,8 @@ private:
 
     void read();
     void write();
-    void control();
-    void controlNoResp();
+    void control( AppHeader::FunctionCode fn);
+    void controlNoResp( AppHeader::FunctionCode fn);
     void sendNullResponse();
     void sendFunctionUnknown();
     void sendObjectUnknown();

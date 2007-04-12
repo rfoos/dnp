@@ -94,6 +94,7 @@ Outstation::Outstation( OutstationConfig&             outstationConfig,
         { RX_CLASS_3_POLL,      "Rx Class 3 Poll",     Stats::NORMAL,  0, 0 },
         { RX_READ,              "Rx Read",             Stats::NORMAL,  0, 0 },
         { RX_WRITE,             "Rx Write",            Stats::NORMAL,  0, 0 },
+        { RX_SELECT,            "Rx Select",           Stats::NORMAL,  0, 0 },
         { RX_OPERATE,           "Rx Operate",          Stats::NORMAL,  0, 0 },
         { RX_DIR_OP,            "Rx Direct Operate",   Stats::NORMAL,  0, 0 },
         { RX_DIR_OP_NO_ACK,     "Rx Dir Op No Ack",    Stats::NORMAL,  0, 0 },
@@ -225,9 +226,19 @@ void Outstation::processRxdFragment()
 	    stats.increment(RX_WRITE);
 	    write();
 	}
+	else if (fn == AppHeader::SELECT)
+	{
+	    stats.increment(RX_SELECT);
+	    control( fn);
+	}
+	else if (fn == AppHeader::OPERATE)
+	{
+	    stats.increment(RX_OPERATE);
+	    control( fn);
+	}
 	else if (fn == AppHeader::AUTHENTICATION_REPLY)
 	{
-	    // is handled by secAuth
+	    // should have been handled by secAuth
 	    assert(0);
 	}
 	else
@@ -413,6 +424,24 @@ void Outstation::write()
 	sendParameterError();
     }
 }
+
+void Outstation::control(AppHeader::FunctionCode fn)
+{
+    initResponse( 1, 1, 0, 0);
+    // append a copy of the control request (which happens to be the
+    // remaining portion of the request)
+    appendBytes( txFragment, session.rxFragment);
+
+    transmit();
+
+    if (fn == AppHeader::SELECT)
+	stats.increment(TX_SELECT_RESP);
+    else if (fn == AppHeader::OPERATE)
+	stats.increment(TX_OPERATE_RESP);
+    else
+	assert(0);
+}
+
 
 void Outstation::sendNullResponse()
 {
