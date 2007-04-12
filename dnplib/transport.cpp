@@ -82,6 +82,9 @@ TransportFunction::TransportFunction( Datalink&               datalink,
 				      const StationInfoMap&   stationInfoMap)
   : dl(datalink), stnInfoMap(stationInfoMap)
 {
+    StationInfoMap::iterator iter;
+    for(iter=stnInfoMap.begin(); iter != stnInfoMap.end(); iter++)
+	iter->second.session_p->inProgress = false;
 }
 
 // returns the time that the first bit was sent
