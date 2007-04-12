@@ -50,6 +50,10 @@ public:
 			  EVENT_CONFIRM,
 			  NUM_STATES  };
 
+    void changeState(State state);
+
+    static const char* stateStrings[ NUM_STATES];
+
     Outstation( OutstationConfig&          outstationConfig,
 		Datalink::DatalinkConfig&  datalinkConfig,
 		EventInterface*            eventInterface_p,

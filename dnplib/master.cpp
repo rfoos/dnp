@@ -537,8 +537,7 @@ void Master::completedTransaction()
 {       
     timer_p->cancel(TimerInterface::RESPONSE);
     // we are no longer waiting for anything
-    if (stn_p->stats.get(Station::STATE) != Station::IDLE)
-	stn_p->stats.set(Station::STATE, Station::IDLE);
+    stn_p->changeState( Station::IDLE);
     stn_p->stats.logNormal("End Transaction --------------------------------");
 
     // now that we have serviced this outstation, in the round robin
@@ -566,7 +565,7 @@ DnpStat_t Master::control(ControlOutputRelayBlock& cb)
 
     stn_p->stats.increment(Station::TX_SELECT);
     transmit();
-    stn_p->stats.set(Station::STATE, Station::SELECT_RESP);
+    stn_p->changeState( Station::SELECT_RESP);
     stn_p->cb = cb; // remember the control to be operated
     timer_p->activate(TimerInterface::RESPONSE);
     return stn_p->stats.get(Station::STATE);
@@ -608,7 +607,7 @@ DnpStat_t Master::poll( PollType pollType)
     }
     stn_p->stats.increment(Station::TX_READ_REQUEST);
     transmit();
-    stn_p->stats.set(Station::STATE, Station::POLL_RESP);
+    stn_p->changeState( Station::POLL_RESP);
     timer_p->activate(TimerInterface::RESPONSE);
 
     return stn_p->stats.get(Station::STATE);
@@ -652,7 +651,7 @@ void Master::clearRestartBit()
     appendUINT8( stn_p->txFragment, 0);
      
     stn_p->stats.increment(Station::TX_WRITE_REQUEST);
-    stn_p->stats.set(Station::STATE, Station::CLEAR_RESTART_BIT_RESP);
+    stn_p->changeState( Station::CLEAR_RESTART_BIT_RESP);
     transmit();
 }
 
@@ -703,7 +702,7 @@ void Master::operate()
 
     stn_p->stats.increment(Station::TX_OPERATE);
     transmit();
-    stn_p->stats.set(Station::STATE, Station::OPERATE_RESP);
+    stn_p->changeState( Station::OPERATE_RESP);
 }
 
 void Master::transmit()

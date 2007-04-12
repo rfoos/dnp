@@ -31,19 +31,6 @@
 
 class QTextEdit;
 
-const QString OutstationWindow::stateStrings[Outstation::NUM_STATES] =
-  {"State: <b>Idle</b>",
-   "State: <b>Waiting for Event Confirm</b>" };
-
-const QString OutstationWindow::secAuthStateStrings[OutstationSecurity::NUM_OUTSTATION_STATES] =
-  {"Secure Authentication State: <b>Init</b>",
-   "Secure Authentication State: <b>Master Idle</b>",
-   "Secure Authentication State: <b>Idle</b>",
-   "Secure Authentication State: <b>Master Wait For Response</b>",
-   "Secure Authentication State: <b>Wait For Response</b>",
-   "Secure Authentication State: <b>Wait For Key Change</b>",
-  };
-
 const QString OutstationWindow::shortPtNames[EventInterface::NUM_POINT_TYPES] =
   {"Ai",
    "Bi",
@@ -102,6 +89,7 @@ OutstationWindow::OutstationWindow( Outstation::OutstationConfig&  oConfig,
     connect( ti.responseTimer, SIGNAL(timeout()),
 	     this,SLOT(responseTimeout()));
 
+    updateStateLabel();
 }
 
 void OutstationWindow::createStatDisplay()
@@ -188,7 +176,7 @@ void OutstationWindow::license()
 
 void OutstationWindow::createStatusBar()
 {
-    stateLabel = new QLabel(stateStrings[Station::IDLE]);
+    stateLabel = new QLabel();
     statusBar()->addWidget(stateLabel);
 }
 
@@ -277,18 +265,18 @@ void OutstationWindow::responseTimeout()
 
 void OutstationWindow::updateStateLabel()
 {
-    DnpStat_t state = o_p->getState();
+    QString s("State: <b>");
+    s.append(Outstation::stateStrings[ o_p->getState()]);
+    s.append("</b>");
 
     if (settings->secAuth->isChecked())
     {
-	DnpStat_t secAuthState = o_p->getSecAuthState();
-	QString s = stateStrings[state];
-	s.append(" | ");
-	s.append(secAuthStateStrings[secAuthState]);
-	stateLabel->setText(s);
+	s.append(" | Secure Authentication State: <b>");
+	s.append(SecureAuthentication::stateStrings[ o_p->getSecAuthState()]);
+	s.append("</b>");
     }
-    else
-	stateLabel->setText(stateStrings[state]);
+
+    stateLabel->setText(s);
 }
 
 void OutstationWindow::setDebugLevel(int state)

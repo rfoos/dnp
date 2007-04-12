@@ -31,6 +31,17 @@
 #include "station.hpp"
 #include "transport.hpp"
 
+const char* Station::stateStrings[ Station::NUM_STATES] =
+{
+    "Idle",
+    "Waiting for Poll Response",
+    "Waiting for Clear Restart Bit Respsonse",
+    "Waiting for Select Response",
+    "Waiting for Operate Response",
+    "Waiting for Write Time Repsonse",
+    "Waiting for Delay Measurement"
+};
+
 Station::Station( DnpAddr_t masterAddr, StationConfig& config,
 		  EventInterface* eventInterface_p) :
   addr(config.addr),
@@ -125,4 +136,16 @@ Station::Station( DnpAddr_t masterAddr, StationConfig& config,
 		   eventInterface_p,
 		   EventInterface::AP_AB_ST);
 
+}
+
+void Station::changeState(State state)
+{
+    State old = (State) stats.get(STATE);
+    if ( old != state)
+    {
+	stats.logNormal("State change: %s -> %s",
+			stateStrings[ old],
+			stateStrings[ state] );
+	stats.set( STATE, state);
+    }
 }

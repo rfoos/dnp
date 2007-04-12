@@ -68,6 +68,10 @@ public:
 			  DELAY_MEASUREMENT_RESP,
 			  NUM_STATES   };
 
+    void changeState(State state);
+
+    static const char* stateStrings[ NUM_STATES];
+
     enum StatIndex     {  RESPONSE_TIMEOUT  = TransportStats::NUM_STATS,
 			  STATE,
 			  CONSECUTIVE_TIMEOUT,

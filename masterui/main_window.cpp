@@ -42,25 +42,6 @@ void OutstationThread::run()
     exec();
 }
 
-const QString MainWindow::stateStrings[Station::NUM_STATES] =
-  {"State: <b>Idle</b>",
-   "State: <b>Waiting for Poll Response</b>",
-   "State: <b>Waiting for Clear Restart Bit Respsonse</b>",
-   "State: <b>Waiting for Select Response</b>",
-   "State: <b>Waiting for Operate Response</b>",
-   "State: <b>Waiting for Write Time Repsonse</b>",
-   "State: <b>Waiting for Delay Measurement</b>" };
-
-const QString MainWindow::secAuthStateStrings[MasterSecurity::NUM_MASTER_STATES] =
-  {"Secure Authentication State: <b>Init</b>",
-   "Secure Authentication State: <b>Idle</b>",
-   "Secure Authentication State: <b>Outstation Idle</b>",
-   "Secure Authentication State: <b>Wait For Response</b>",
-   "Secure Authentication State: <b>Oustation Wait For Response</b>",
-   "Secure Authentication State: <b>Wait For Key Status</b>",
-   "Secure Authentication State: <b>Wait For Key Confirmation</b>"
-  };
-
 const QString MainWindow::commsStrings[2] =
   {
    "Communications: <b><font color='red'>None</font></b>",
@@ -136,6 +117,7 @@ MainWindow::MainWindow() :
     connect( ti.responseTimer, SIGNAL(timeout()),
 	     this,SLOT(responseTimeout()));
 
+    updateStateLabel();
 }
 
 void MainWindow::createStatDisplay()
@@ -288,7 +270,7 @@ void MainWindow::license()
 
 void MainWindow::createStatusBar()
 {
-    stateLabel = new QLabel(stateStrings[Station::IDLE]);
+    stateLabel = new QLabel();
     commsLabel = new QLabel(commsStrings[0]);
     statusBar()->addWidget(stateLabel);
     // permanent makes it go onto the right
@@ -431,18 +413,18 @@ void MainWindow::responseTimeout()
 
 void MainWindow::updateStateLabel()
 {
-    DnpStat_t state = m_p->getState();
+    QString s("State: <b>");
+    s.append(Station::stateStrings[ m_p->getState()]);
+    s.append("</b>");
 
     if (settingsTab->secAuth->isChecked())
     {
-	DnpStat_t secAuthState = m_p->getSecAuthState();
-	QString s = stateStrings[state];
-	s.append(" | ");
-	s.append(secAuthStateStrings[secAuthState]);
-	stateLabel->setText(s);
+	s.append(" | Secure Authentication State: <b>");
+	s.append(SecureAuthentication::stateStrings[ m_p->getSecAuthState()]);
+	s.append("</b>");
     }
-    else
-	stateLabel->setText(stateStrings[state]);
+
+    stateLabel->setText(s);
 
     commsLabel->setText(commsStrings[m_p->getStat(stationConfig.addr,
 						  Station::COMMUNICATION)]);

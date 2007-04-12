@@ -95,8 +95,6 @@ private:
     DataDisplay*         statDisplay;
 
     QLabel*              stateLabel;
-    static const QString stateStrings[Outstation::NUM_STATES];
-    static const QString secAuthStateStrings[OutstationSecurity::NUM_OUTSTATION_STATES];
 
     QHash<QString, QString> pointNameHash;
     QString convertDnpIndexToName(DnpAddr_t id, DnpIndex_t dnpIndex,

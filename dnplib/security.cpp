@@ -35,6 +35,20 @@
 #include "wrap.h"
 #include "sha1.h"
 
+
+
+const char* SecureAuthentication::stateStrings[ NUM_STATES] =
+{
+    "Init",
+    "Idle",
+    "Idle",
+    "Wait For Response",
+    "Wait For Response",
+    "Wait For Key Status",
+    "Wait For Key Confirmation",
+    "Wait For Key Change"
+};
+
 void Key::initKey(Key_t& key, int len)
 {
     randGen(key, len);
@@ -526,6 +540,10 @@ void  SecureAuthentication::init()
 
 void SecureAuthentication::changeState( SecureAuthenicationState* newState_p)
 {
+    if (state_p != NULL)
+	stats.logNormal("Sec Auth state change: %s -> %s",
+			stateStrings[ state_p->id],
+			stateStrings[ newState_p->id]);
     state_p = newState_p;
     if (stats.get( STATE) != state_p->id)
 	stats.set( STATE, state_p->id);
@@ -996,7 +1014,7 @@ OutstationSecurity::OutstationSecurity(Outstation* app_p, bool aggressiveMode):
 
 	// Normal base stats
         { STATE,                "State",                 Stats::NORMAL,
-	  INIT, INIT },
+	  WAIT_FOR_KEY_CHANGE, WAIT_FOR_KEY_CHANGE },
         { RX_CRITICAL_ASDU,     "Rx Critical ASDU",     Stats::NORMAL, 0, 0 },
         { RESPONSE_TIMEOUT,     "Response Timeout",     Stats::NORMAL, 0, 0 },
         { CHALLENGE_TIMEOUT,    "Challenge Timeout",    Stats::NORMAL, 0, 0 },

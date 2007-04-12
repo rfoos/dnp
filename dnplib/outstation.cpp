@@ -34,6 +34,12 @@
 #include "security.hpp"
 #include "outstation.hpp"
 
+const char* Outstation::stateStrings[ Outstation::NUM_STATES] =
+{
+    "Idle",
+    "Waiting For Event Confirm"
+};
+
 Outstation::Outstation( OutstationConfig&             outstationConfig,
 			Datalink::DatalinkConfig&     datalinkConfig,
 			EventInterface*               eventInterface_p,
@@ -138,17 +144,29 @@ DnpStat_t Outstation::getStat( int index)
 
 DnpStat_t Outstation::getSecAuthStat( int index)
 {
-    return secAuth.stats.get( index);
+    return secAuth.stats.get( SecureAuthentication::STATE);
 }
 
 DnpStat_t Outstation::getState() const
 {
-    return (State) stats.get(STATE);
+    return (State) stats.get( STATE);
 }
 
 DnpStat_t Outstation::getSecAuthState() const
 {
     return secAuth.stats.get(SecureAuthentication::STATE);
+}
+
+void Outstation::changeState(State state)
+{
+    State old = (State) stats.get(STATE);
+    if ( old != state)
+    {
+	stats.logNormal("State change: %s -> %s",
+			stateStrings[ old],
+			stateStrings[ state] );
+	stats.set( STATE, state);
+    }
 }
 
 DnpStat_t Outstation::rxData(Bytes* buf, Uptime_t timeRxd)

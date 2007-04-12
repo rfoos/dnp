@@ -195,12 +195,17 @@ class SecureAuthentication
   			    BASE_NUM_STATS };
 
     // to be used for the state statistic
-    enum BaseStates     {   INIT                           = 0,
-			    MASTER_IDLE                    = 1,
-			    OUTSTATION_IDLE                = 2,
+    enum States         {   INIT                           = 0,
+		            MASTER_IDLE                    = 1,
+		            OUTSTATION_IDLE                = 2,
 			    MASTER_WAIT_FOR_RESPONSE       = 3,
 			    OUTSTATION_WAIT_FOR_RESPONSE   = 4,
-			    NUM_BASE_STATES };
+			    WAIT_FOR_KEY_STATUS            = 5, // master
+			    WAIT_FOR_KEY_CONFIRMATION      = 6, // master
+                            WAIT_FOR_KEY_CHANGE            = 7, // outstation
+			    NUM_STATES};
+
+    static const char* stateStrings[ NUM_STATES];
 
     SecureAuthentication( Application* parent_p, bool aggressiveMode = false,
 			  DnpStat_t maxErrorCount=2);
@@ -279,10 +284,6 @@ class SecureAuthentication
 class MasterSecurity : public SecureAuthentication
 {
   public:
-    // to be used for the state statistic
-    enum MasterStates  { WAIT_FOR_KEY_STATUS = NUM_BASE_STATES,
-			 WAIT_FOR_KEY_CONFIRMATION,
-			 NUM_MASTER_STATES};
 
     enum StatIndex     { TX_KEY_STATUS_REQUEST = BASE_NUM_STATS,
 			 TX_KEY_CHANGE_MSG,
@@ -321,9 +322,6 @@ private:
 class OutstationSecurity : public SecureAuthentication
 {
   public:
-    // to be used for the state statistic
-    enum OutstationStates { WAIT_FOR_KEY_CHANGE = NUM_BASE_STATES,
-			    NUM_OUTSTATION_STATES};
 
     enum StatIndex        { TX_KEY_STATUS = BASE_NUM_STATS,
 			    RX_KEY_STATUS_REQ,

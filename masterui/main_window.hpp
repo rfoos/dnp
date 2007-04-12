@@ -107,8 +107,7 @@ private:
     CosDisplay*         cosDisplay;
 
     QLabel*              stateLabel;
-    static const QString stateStrings[Station::NUM_STATES];
-    static const QString secAuthStateStrings[MasterSecurity::NUM_MASTER_STATES];
+
     QLabel*              commsLabel;
     static const QString commsStrings[2];
 
