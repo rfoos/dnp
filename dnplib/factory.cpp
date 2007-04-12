@@ -157,39 +157,73 @@ Factory::Factory(EventInterface* eventInterface_p) :
     objectMap[ key(  2,  3)] = new BinaryInputEventRelativeTime();
     objectMap[ key( 10,  2)] = new BinaryOutputStatus();
     objectMap[ key( 12,  1)] = new ControlOutputRelayBlock();
-//     objectMap[ key( 20,  1)] = Bit32BinaryCounter();                   
-//     objectMap[ key( 20,  2)] = Bit16BinaryCounter();
-//     objectMap[ key( 20,  3)] = Bit32DeltaCounter();
-//     objectMap[ key( 20,  4)] = Bit16DeltaCounter();
-//     objectMap[ key( 20,  5)] = Bit32BinaryCounterWithoutFlag();     
-//     objectMap[ key( 20,  6)] = Bit16BinaryCounterWithoutFlag();     
-//     objectMap[ key( 20,  7)] = Bit32DeltaCounterWithoutFlag();
-//     objectMap[ key( 20,  8)] = Bit16DeltaCounterWithoutFlag();
-//     objectMap[ key( 22,  1)] = Bit32CounterChangeEventWithoutTime();
-//     objectMap[ key( 22,  2)] = Bit16CounterChangeEventWithoutTime();
-//     objectMap[ key( 22,  3)] = Bit32DeltaCounterChangeEventWithoutTime();
-//     objectMap[ key( 22,  4)] = Bit16DeltaCounterChangeEventWithoutTime();
-//     objectMap[ key( 30,  1)] = Bit32AnalogInput();
-//     objectMap[ key( 30,  2)] = Bit16AnalogInput();                        
+    objectMap[ key( 20,  1)] = new Bit32BinaryCounter();
+    objectMap[ key( 20,  2)] = new Bit16BinaryCounter();
+    objectMap[ key( 20,  3)] = new Bit32DeltaCounter();
+    objectMap[ key( 20,  4)] = new Bit16DeltaCounter();
+    objectMap[ key( 20,  5)] = new Bit32BinaryCounterNoFlag();
+    objectMap[ key( 20,  6)] = new Bit16BinaryCounterNoFlag();
+    objectMap[ key( 20,  7)] = new Bit32DeltaCounterNoFlag();
+    objectMap[ key( 20,  8)] = new Bit16DeltaCounterNoFlag();
+    objectMap[ key( 22,  1)] = new Bit32CounterEventNoTime();
+    objectMap[ key( 22,  2)] = new Bit16CounterEventNoTime();
+    objectMap[ key( 22,  3)] = new Bit32DeltaCounterEventNoTime();
+    objectMap[ key( 22,  4)] = new Bit16DeltaCounterEventNoTime();
+    objectMap[ key( 30,  1)] = new Bit32AnalogInput();
+    objectMap[ key( 30,  2)] = new Bit16AnalogInput();
     objectMap[ key( 30,  3)] = new Bit32AnalogInputNoFlag();       
     objectMap[ key( 30,  4)] = new Bit16AnalogInputNoFlag();
     objectMap[ key( 32,  1)] = new Bit32AnalogEventNoTime();
     objectMap[ key( 32,  2)] = new Bit16AnalogEventNoTime();
-//     objectMap[ key( 40,  2)] = Bit16AnalogOutputStatus();
-//     objectMap[ key( 41,  2)] = Bit16AnalogOutputBlock();
-//     objectMap[ key( 50,  1)] = TimeAndDate();
+    objectMap[ key( 40,  2)] = new Bit16AnalogOutputStatus();
+    objectMap[ key( 41,  2)] = new Bit16AnalogOutput();
+    objectMap[ key( 50,  1)] = new TimeAndDate();
     objectMap[ key( 51,  1)] = new TimeAndDateCTO();
     objectMap[ key( 51,  2)] = new UnsyncronizedTimeAndDateCTO();
-//     objectMap[ key( 52,  1)] = TimeDelayCoarse();
-//     objectMap[ key( 52,  2)] = TimeDelayFine();
-//     objectMap[ key( 80,  1)] = InternalIndications();
-    objectMap[ key(  120,  1)] = new Challenge();
-    objectMap[ key(  120,  2)] = new Reply();
-    objectMap[ key(  120,  3)] = new AggressiveModeRequest();
-    objectMap[ key(  120,  4)] = new SessionKeyStatusReq();
-    objectMap[ key(  120,  5)] = new SessionKeyStatus();
-    objectMap[ key(  120,  6)] = new SessionKeyChange();
-    objectMap[ key(  120,  7)] = new AuthenticationError();
+    objectMap[ key( 52,  1)] = new TimeDelayCoarse();
+    objectMap[ key( 52,  2)] = new TimeDelayFine();
+    objectMap[ key(120,  1)] = new Challenge();
+    objectMap[ key(120,  2)] = new Reply();
+    objectMap[ key(120,  3)] = new AggressiveModeRequest();
+    objectMap[ key(120,  4)] = new SessionKeyStatusReq();
+    objectMap[ key(120,  5)] = new SessionKeyStatus();
+    objectMap[ key(120,  6)] = new SessionKeyChange();
+    objectMap[ key(120,  7)] = new AuthenticationError();
+
+    selfTest();
+}
+
+// this method could be expanded to include tests for the variable
+// sized and other more complex objects
+void Factory::selfTest()
+{
+    DnpObjectMap::iterator iter;
+
+    // the simple encode and decode test only works for objects that
+    // have implemented these methods.
+
+    ObjectKey lastObjectToTest =  key(52,2);
+
+    for(iter = objectMap.begin(); iter->first != lastObjectToTest; iter++)
+    {
+	assert (iter != objectMap.end());
+
+	Bytes data;
+	DnpObject* o = iter->second;
+
+	try
+	{
+	    o->encode( data);
+	    o->decode( data);
+	}
+	catch (int e)
+	{
+	    printf ("Testing grp=%d var=%d\n", ((iter->first & 0xff00) >> 8),
+		    iter->first & 0xff);
+	    printf ("Exception line# %d\n", e);
+	    assert(0);
+	}
+    }
 }
 
 Factory::ObjectKey Factory::key(uint8_t group, uint8_t variation)

@@ -106,6 +106,9 @@ public:
 
 private:
 
+    // called by the contructor to check parts of the object and factory code
+    void selfTest();
+
     static ObjectKey key(uint8_t group, uint8_t variation);
     static DnpObjectMap objectMap;
 

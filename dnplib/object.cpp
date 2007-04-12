@@ -171,11 +171,43 @@ void ControlOutputRelayBlock::decode(Bytes& data) throw(int)
 
 // Analog Inputs ///////////////////////////////////////////////
 
+Bit32AnalogInput::Bit32AnalogInput(int32_t v, uint8_t flag,DnpIndex_t index)
+  :  DnpObject( v, flag, index, EventInterface::AI)
+{
+}
+
+void Bit32AnalogInput::encode(Bytes& data) const
+{
+    appendUINT8(data, flag);
+    appendINT32(data, value);
+}
+
+void Bit32AnalogInput::decode(Bytes& data) throw(int)
+{
+    flag  = removeUINT8(data);
+    value = removeINT32(data);
+}
+
+Bit16AnalogInput::Bit16AnalogInput(int16_t v, uint8_t flag,DnpIndex_t index)
+  :  DnpObject( v, flag, index, EventInterface::AI)
+{
+}
+
+void Bit16AnalogInput::encode(Bytes& data) const
+{
+    appendUINT8(data, flag);
+    appendINT16(data, value);
+}
+
+void Bit16AnalogInput::decode(Bytes& data) throw(int)
+{
+    flag  = removeUINT8(data);
+    value = removeINT16(data);
+}
 
 Bit32AnalogInputNoFlag::Bit32AnalogInputNoFlag(int32_t v, DnpIndex_t index)
-  :  DnpObject( v, 0, index, EventInterface::AI)
+  :  DnpObject( v, ONLINE, index, EventInterface::AI)
 {
-    flag = 0x01;
 }
 
 void Bit32AnalogInputNoFlag::encode(Bytes& data) const
@@ -185,14 +217,13 @@ void Bit32AnalogInputNoFlag::encode(Bytes& data) const
 
 void Bit32AnalogInputNoFlag::decode(Bytes& data) throw(int)
 {
-    flag  = 0x01;
+    flag  = ONLINE;
     value = removeINT32(data);
 }
 
 Bit16AnalogInputNoFlag::Bit16AnalogInputNoFlag(int16_t v, DnpIndex_t index)
-  :  DnpObject( v, 0, index, EventInterface::AI)
+  :  DnpObject( v, ONLINE, index, EventInterface::AI)
 {
-    flag = 0x01;
 }
 
 void Bit16AnalogInputNoFlag::encode(Bytes& data) const
@@ -202,64 +233,96 @@ void Bit16AnalogInputNoFlag::encode(Bytes& data) const
 
 void Bit16AnalogInputNoFlag::decode(Bytes& data) throw(int)
 {
-    flag  = 0x01;
+    flag  = ONLINE;
     value = removeINT16(data);
 }
 
+// Counter Inputs //////////////////////////////////////////////
 
-Bit32AnalogEventNoTime::Bit32AnalogEventNoTime(int32_t v, DnpIndex_t index)
-  :  DnpObject( v, 0, index, EventInterface::AI)
+Bit32BinaryCounter::Bit32BinaryCounter(uint32_t v,
+				       uint8_t flag, DnpIndex_t index) :
+  Bit32AnalogInput( (int32_t)v, flag, index)
 {
-    flag = 0x01;
+    pointType = EventInterface::CI;
 }
 
-void Bit32AnalogEventNoTime::encode(Bytes& data) const
+Bit16BinaryCounter::Bit16BinaryCounter(uint16_t v,
+				       uint8_t flag, DnpIndex_t index) :
+  Bit16AnalogInput( (int16_t)v, flag, index)
 {
-    appendUINT8(data, flag);
-    appendINT32(data, value);
+    pointType = EventInterface::CI;
 }
 
-void Bit32AnalogEventNoTime::decode(Bytes& data) throw(int)
+Bit32BinaryCounterNoFlag::Bit32BinaryCounterNoFlag(uint32_t v,DnpIndex_t index)
+  : Bit32AnalogInputNoFlag( (int32_t)v, index)
 {
-    flag  = removeUINT8(data);
-    value = removeINT32(data);
+    pointType = EventInterface::CI;
 }
 
-Bit16AnalogEventNoTime::Bit16AnalogEventNoTime(int16_t v, DnpIndex_t index)
-  :  DnpObject( v, 0, index, EventInterface::AI)
+Bit16BinaryCounterNoFlag::Bit16BinaryCounterNoFlag(uint16_t v,DnpIndex_t index)
+  : Bit16AnalogInputNoFlag( (int16_t)v, index)
 {
-    flag = 0x01;
+    pointType = EventInterface::CI;
 }
 
-void Bit16AnalogEventNoTime::encode(Bytes& data) const
-{
-    appendUINT8(data, flag);
-    appendINT16(data, value);
-}
-
-void Bit16AnalogEventNoTime::decode(Bytes& data) throw(int)
-{
-    flag  = removeUINT8(data);
-    value = removeINT16(data);
-}
+// Analog Outputs /////////////////////////////////////////////
 
 
-TimeAndDateCTO::TimeAndDateCTO(DnpTime_t time)
-  :  DnpObject( 0, 0, 0, EventInterface::ST, time)
+Bit16AnalogOutput::Bit16AnalogOutput(uint16_t requestedValue,
+				     DnpIndex_t index,
+				     Status st) :
+  DnpObject( 0, 0, index, EventInterface::AO),
+  request( requestedValue),
+  status(st)
 {
 }
 
-void TimeAndDateCTO::encode(Bytes& data) const
+void Bit16AnalogOutput::encode(Bytes& data) const
+{
+    appendUINT16 (data, request);
+    appendUINT8  (data, status);
+}
+
+void Bit16AnalogOutput::decode(Bytes& data) throw(int)
+{
+    request = removeUINT16(data);
+    status  = (Status) removeUINT8(data);
+}
+
+// Other Objects //////////////////////////////////////////////
+
+TimeAndDate::TimeAndDate(DnpTime_t time)
+  :  DnpObject( 0, 0, 0, EventInterface::NONE, time)
+{
+}
+
+void TimeAndDate::encode(Bytes& data) const
 {
     appendUINT48(data, timestamp);
 }
 
-void TimeAndDateCTO::decode(Bytes& data) throw(int)
+void TimeAndDate::decode(Bytes& data) throw(int)
 {
     timestamp = removeUINT48(data);
 }
 
+TimeDelayCoarse::TimeDelayCoarse(uint16_t delay)
+  :  DnpObject( delay, 0, 0, EventInterface::NONE)
+{
+}
 
+void TimeDelayCoarse::encode(Bytes& data) const
+{
+    appendUINT16(data, value);
+}
+
+void TimeDelayCoarse::decode(Bytes& data) throw(int)
+{
+    value = removeUINT16(data);
+}
+
+
+// security objects /////////////////////////////////////////
 
 
 Challenge::Challenge(uint32_t challengeSeqNum, UserNumber_t num, 

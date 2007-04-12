@@ -35,6 +35,9 @@ class DnpObject
   public:
     static const DnpIndex_t NO_INDEX          = 0xffffffff;
 
+    // flag octect bits common to many DNP objects
+    static const uint8_t ONLINE               = 0x01;
+
     DnpObject(int32_t val=0,
 	      uint8_t flags=0,
 	      DnpIndex_t indx=0,
@@ -70,7 +73,7 @@ class DnpObject
 class BinaryInputWithStatus : public DnpObject
 {
   public:
-    BinaryInputWithStatus(uint8_t flag=0x01, DnpIndex_t index=0);
+    BinaryInputWithStatus(uint8_t flag=ONLINE, DnpIndex_t index=0);
     void encode(Bytes& data) const;
     void decode(Bytes& data) throw(int);
 };
@@ -81,7 +84,7 @@ typedef BinaryInputWithStatus BinaryInputEventNoTime;
 class BinaryInputEvent : public DnpObject
 {
   public:
-    BinaryInputEvent(uint8_t flag=0x01, DnpIndex_t index=0, DnpTime_t time=0);
+    BinaryInputEvent(uint8_t flag=ONLINE, DnpIndex_t index=0,DnpTime_t time=0);
     void encode(Bytes& data) const;
     void decode(Bytes& data) throw(int);
 };
@@ -89,7 +92,7 @@ class BinaryInputEvent : public DnpObject
 class BinaryInputEventRelativeTime : public DnpObject
 {
   public:
-    BinaryInputEventRelativeTime(uint8_t flag=0x01, DnpIndex_t index=0,
+    BinaryInputEventRelativeTime(uint8_t flag=ONLINE, DnpIndex_t index=0,
 				 DnpTime_t time=0);
     void encode(Bytes& data) const;
     void decode(Bytes& data) throw(int);
@@ -101,7 +104,7 @@ class BinaryInputEventRelativeTime : public DnpObject
 class BinaryOutputStatus : public BinaryInputWithStatus
 {
   public:
-    BinaryOutputStatus(uint8_t flag=0x01, DnpIndex_t index=0);
+    BinaryOutputStatus(uint8_t flag=ONLINE, DnpIndex_t index=0);
 };
 
 // queue, clear, tripClose flags are not used and are always 0
@@ -144,6 +147,21 @@ class ControlOutputRelayBlock : public DnpObject
 
 // Analog Inputs ///////////////////////////////////////////////
 
+class Bit32AnalogInput : public DnpObject
+{
+  public:
+    Bit32AnalogInput(int32_t v=0, uint8_t flag=ONLINE, DnpIndex_t index=0);
+    void encode(Bytes& data) const;
+    void decode(Bytes& data) throw(int);
+};
+
+class Bit16AnalogInput : public DnpObject
+{
+  public:
+    Bit16AnalogInput(int16_t v=0, uint8_t flag=ONLINE, DnpIndex_t index=0);
+    void encode(Bytes& data) const;
+    void decode(Bytes& data) throw(int);
+};
 
 class Bit32AnalogInputNoFlag : public DnpObject
 {
@@ -161,31 +179,116 @@ class Bit16AnalogInputNoFlag : public DnpObject
     void decode(Bytes& data) throw(int);
 };
 
-class Bit32AnalogEventNoTime : public DnpObject
+typedef Bit32AnalogInput Bit32AnalogEventNoTime;
+typedef Bit16AnalogInput Bit16AnalogEventNoTime;
+
+
+// Counter Inputs //////////////////////////////////////////////
+
+
+// equivalent except for the type
+// and that the value is a uint32 rather than an int32
+class Bit32BinaryCounter : public Bit32AnalogInput
 {
   public:
-    Bit32AnalogEventNoTime(int32_t v=0, DnpIndex_t index=0);
+    Bit32BinaryCounter(uint32_t v=0,uint8_t flag=ONLINE, DnpIndex_t index=0);
+};
+
+// equivalent except for the type
+// and that the value is a uint16 rather than an int16
+class Bit16BinaryCounter : public Bit16AnalogInput
+{
+  public:
+    Bit16BinaryCounter(uint16_t v=0,uint8_t flag=ONLINE, DnpIndex_t index=0);
+};
+
+typedef Bit32BinaryCounter Bit32DeltaCounter;
+typedef Bit16BinaryCounter Bit16DeltaCounter;
+
+// equivalent except for the type
+// and that the value is a uint32 rather than an int32
+class Bit32BinaryCounterNoFlag : public Bit32AnalogInputNoFlag
+{
+  public:
+    Bit32BinaryCounterNoFlag(uint32_t v=0, DnpIndex_t index=0);
+};
+
+// equivalent except for the type
+// and that the value is a uint16 rather than an int16
+class Bit16BinaryCounterNoFlag : public Bit16AnalogInputNoFlag
+{
+  public:
+    Bit16BinaryCounterNoFlag(uint16_t v=0, DnpIndex_t index=0);
+};
+
+typedef Bit32BinaryCounterNoFlag Bit32DeltaCounterNoFlag;
+typedef Bit16BinaryCounterNoFlag Bit16DeltaCounterNoFlag;
+
+typedef Bit32BinaryCounter Bit32CounterEventNoTime;
+typedef Bit16BinaryCounter Bit16CounterEventNoTime;
+
+typedef Bit32BinaryCounter Bit32DeltaCounterEventNoTime;
+typedef Bit16BinaryCounter Bit16DeltaCounterEventNoTime;
+
+
+// Analog Outputs /////////////////////////////////////////////
+
+typedef Bit16AnalogInput Bit16AnalogOutputStatus;
+
+class Bit16AnalogOutput : public DnpObject
+{
+  public:
+    enum Status    { ACCEPTED       = 0,
+		     ARM_TIMEOUT    = 1,
+		     NO_SELECT      = 2,
+		     FORMAT_ERROR   = 3,
+		     NOT_SUPPORTED  = 4,
+		     ALREADY_ACTIVE = 5,
+		     HARDWARE_ERROR = 6,
+		     LOCAL          = 7,
+		     TOO_MANY_OPS   = 8,
+		     NOT_AUTHORIZED = 9,
+		     UNDEFINED      = 127 };
+
+    Bit16AnalogOutput(uint16_t requestedValue=0, DnpIndex_t index=0,
+		      Status st=ACCEPTED);
+    void encode(Bytes& data) const;
+    void decode(Bytes& data) throw(int);
+    uint16_t  request;
+    Status    status;
+};
+
+
+
+// Other Objects //////////////////////////////////////////////
+
+
+
+class TimeAndDate : public DnpObject
+{
+  public:
+    TimeAndDate(DnpTime_t time=0);
     void encode(Bytes& data) const;
     void decode(Bytes& data) throw(int);
 };
 
-class Bit16AnalogEventNoTime : public DnpObject
-{
-  public:
-    Bit16AnalogEventNoTime(int16_t v=0, DnpIndex_t index=0);
-    void encode(Bytes& data) const;
-    void decode(Bytes& data) throw(int);
-};
-
-class TimeAndDateCTO : public DnpObject
-{
-  public:
-    TimeAndDateCTO(DnpTime_t time=0);
-    void encode(Bytes& data) const;
-    void decode(Bytes& data) throw(int);
-};
-
+typedef TimeAndDate TimeAndDateCTO;
 typedef TimeAndDateCTO UnsyncronizedTimeAndDateCTO;
+
+class TimeDelayCoarse : public DnpObject
+{
+  public:
+    TimeDelayCoarse(uint16_t delay=0);
+    void encode(Bytes& data) const;
+    void decode(Bytes& data) throw(int);
+};
+
+typedef TimeDelayCoarse TimeDelayFine;
+
+
+
+// security objects /////////////////////////////////////////
+
 
 
 class Challenge : public DnpObject
