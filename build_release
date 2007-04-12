@@ -1,6 +1,6 @@
 #!/bin/sh
 # $Id$
-svnupdate
+svn update
 echo 'const char* version(void)'           > dnplib/tmp_version.cpp
 echo '{'                                  >> dnplib/tmp_version.cpp
 echo -n '    const char* s = "Version: '  >> dnplib/tmp_version.cpp
