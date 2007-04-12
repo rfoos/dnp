@@ -1,14 +1,17 @@
 #!/bin/sh
 # $Id$
-echo 'const char* version(void)'           > dnplib/version.cpp
-echo '{'                                  >> dnplib/version.cpp
-echo -n '    const char* s = "Version: '  >> dnplib/version.cpp
-svnversion -n                             >> dnplib/version.cpp
-echo -n '<br>Build Date: '                >> dnplib/version.cpp
-echo -n $(date)                           >> dnplib/version.cpp
-echo '";'                                 >> dnplib/version.cpp
-echo '    return s;'                      >> dnplib/version.cpp
-echo '}'                                  >> dnplib/version.cpp
+echo 'const char* version(void)'           > dnplib/tmp_version.cpp
+echo '{'                                  >> dnplib/tmp_version.cpp
+echo -n '    const char* s = "Version: '  >> dnplib/tmp_version.cpp
+svnversion -n                             >> dnplib/tmp_version.cpp
+echo -n '<br>Build Date: '                >> dnplib/tmp_version.cpp
+echo -n $(date)                           >> dnplib/tmp_version.cpp
+echo '";'                                 >> dnplib/tmp_version.cpp
+echo '    return s;'                      >> dnplib/tmp_version.cpp
+echo '}'                                  >> dnplib/tmp_version.cpp
+# needed the tmp_version so that svnversion modified flag will not pick
+# up the change to the version.cpp and thus undesirably show the M flag
+mv dnplib/tmp_version.cpp dnplib/version.cpp
 make
 # avoid checking in a release version function
 svn revert dnplib/version.cpp
