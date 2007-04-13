@@ -144,7 +144,7 @@ DnpStat_t Outstation::getStat( int index)
 
 DnpStat_t Outstation::getSecAuthStat( int index)
 {
-    return secAuth.stats.get( SecureAuthentication::STATE);
+    return secAuth.stats.get( index);
 }
 
 DnpStat_t Outstation::getState() const
