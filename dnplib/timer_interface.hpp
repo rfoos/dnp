@@ -43,7 +43,7 @@ class TimerInterface
   public:
     enum TimerId   { RESPONSE,      // used by normal protocol and security
 		     KEY_CHANGE,    // used by master security
-		     CHALLENGE,     // used by master security
+		     CHALLENGE,     // used by master and outstation security
 		     SESSION_KEY,   // used by outstation security
 		     NUM_TIMERS };
 

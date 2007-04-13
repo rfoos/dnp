@@ -92,10 +92,12 @@ void OutstationSettings::setSecAuth(bool on)
     if (on)
     {
 	timers_p->sessionKeyTimer->setEnabled(true);
+	timers_p->challengeTimer->setEnabled(true);
     }
     else
     {
 	timers_p->sessionKeyTimer->setEnabled(false);
+	timers_p->challengeTimer->setEnabled(false);
     }
 
 

@@ -359,9 +359,9 @@ ConfigurationFrame::ConfigurationFrame()
       {"station/ip",               "127.0.0.1"},
       {"station/port",             "20001"},
       {"timers/response_ms",       "5000"},
-      {"timers/keyChange_ms",      "120000"},
-      {"timers/challenge_ms",      "240000"},
-      {"timers/sessionKey_ms",     "480000"} };
+      {"timers/keyChange_ms",      "1800000"},
+      {"timers/challenge_ms",      "1200000"},
+      {"timers/sessionKey_ms",     "900000"} };
 
     int numItems = sizeof(pair) / 80;
 

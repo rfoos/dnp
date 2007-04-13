@@ -139,6 +139,14 @@ void TimerWidget::stop()
     timers[TimerInterface::RESPONSE] = responseTimer;
     timersLayout->addWidget(responseTimer);
 
+    challengeTimer = new TimerWidget("Challenge");
+    challengeTimer->timer->setInterval(
+			      qsettings.value("timers/challenge_ms").toInt());
+
+    timers[TimerInterface::CHALLENGE] = keyChangeTimer;
+    timersLayout->addWidget(challengeTimer);
+    challengeTimer->setEnabled(false);
+
     if (master)
     {
 	keyChangeTimer = new TimerWidget("Key Change");
@@ -149,13 +157,6 @@ void TimerWidget::stop()
 	timersLayout->addWidget(keyChangeTimer);
 	keyChangeTimer->setEnabled(false);
 
-	challengeTimer = new TimerWidget("Challenge");
-	challengeTimer->timer->setInterval(
-			  qsettings.value("timers/challenge_ms").toInt());
-
-	timers[TimerInterface::CHALLENGE] = keyChangeTimer;
-	timersLayout->addWidget(challengeTimer);
-	challengeTimer->setEnabled(false);
     }
     else
     {
