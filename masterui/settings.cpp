@@ -356,7 +356,7 @@ ConfigurationFrame::ConfigurationFrame()
     { {"master/address",           "1"},
       {"master/integrityInterval", "10"},
       {"station/address",          "2"},
-      {"station/ip",               "192.168.2.164"},
+      {"station/ip",               "127.0.0.1"},
       {"station/port",             "20001"},
       {"timers/response_ms",       "5000"},
       {"timers/keyChange_ms",      "120000"},
