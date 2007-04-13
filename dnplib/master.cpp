@@ -138,7 +138,7 @@ DnpStat_t Master::timeout(TimerInterface::TimerId t)
 	{
 	    DnpStat_t state;
 	    state = stn_p->secAuth.stats.get( SecureAuthentication::STATE);
-	    if ((state != SecureAuthentication::MASTER_IDLE) ||
+	    if ((state != SecureAuthentication::MASTER_IDLE) &&
 		(state != SecureAuthentication::INIT))
 	    {
 		// we must be waiting for something so the response
@@ -146,8 +146,9 @@ DnpStat_t Master::timeout(TimerInterface::TimerId t)
 		stn_p->secAuth.responseTimeout();
 	    }
 	}
+
 	// were we waiting for anything?
-	else if (stn_p->stats.get(Station::STATE) != Station::IDLE)
+	if (stn_p->stats.get(Station::STATE) != Station::IDLE)
 	{
 	    stn_p->stats.increment( Station::RESPONSE_TIMEOUT);
 	    stn_p->stats.increment( Station::CONSECUTIVE_TIMEOUT);
@@ -478,7 +479,10 @@ void Master::processRxdFragment()
 		sendConfirm( ah.getSeqNum());
 	}
 
-	if ( fin)    
+	if ((fin) &&
+	    ((getSecAuthState() == SecureAuthentication::MASTER_IDLE) ||
+	     (getSecAuthState() == SecureAuthentication::INIT)) &&
+	    (fn != 131))
 	    completedTransaction();
     }
 }
@@ -562,7 +566,7 @@ DnpStat_t Master::control(ControlOutputRelayBlock& cb)
     oh.encode( stn_p->txFragment);
     appendUINT16( stn_p->txFragment, cb.index);
     cb.encode( stn_p->txFragment);
-
+    stn_p->lastControlFrag = stn_p->txFragment;
     stn_p->stats.increment(Station::TX_SELECT);
     transmit();
     stn_p->changeState( Station::SELECT_RESP);
@@ -617,12 +621,9 @@ void Master::initRequest(  AppHeader::FunctionCode fn)
 { 
     stn_p->txFragment.clear();
 
-    //  this master will never implement retries and
-    //  therefor this seqNum will be incremented for
-    //  every transmission to this station
-    //  see TBs 9804-001, 9804-002, and 2000-002
-    //  except for confirms
-    if (fn != AppHeader::CONFIRM)
+    if ((fn != AppHeader::CONFIRM) &&
+	( fn != AppHeader::AUTHENTICATION_REQUEST) &&
+	( fn != AppHeader::AUTHENTICATION_REPLY) )
 	AppSeqNum::increment( stn_p->lastTxSeqNum);
 
     // master requests will always be a single fragment and
@@ -686,9 +687,9 @@ void Master::appendEventPoll()
 bool Master::verifyControlResp()
 {
     // remove the app header from the tx fragment
-    removeUINT16(stn_p->txFragment);
+    removeUINT16(stn_p->lastControlFrag);
     // the rx fragment header has already been destreamed
-    return (stn_p->txFragment == stn_p->session.rxFragment);
+    return (stn_p->lastControlFrag == stn_p->session.rxFragment);
 }
 
 void Master::operate()
@@ -699,6 +700,8 @@ void Master::operate()
     oh.encode( stn_p->txFragment);
     appendUINT16( stn_p->txFragment, stn_p->cb.index);
     stn_p->cb.encode( stn_p->txFragment);
+
+    stn_p->lastControlFrag = stn_p->txFragment;
 
     stn_p->stats.increment(Station::TX_OPERATE);
     transmit();

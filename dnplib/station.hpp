@@ -130,6 +130,8 @@ public:
     int                 rxingMultiFragmentUnsolicitedResponse;
     Uptime_t            timeRxd; // time the last fragment was received
     Bytes               txFragment;
+    Bytes               lastControlFrag; // needed because sec auth can
+                                         // overwrite the last control request
     Uptime_t            timeSent;
     Uptime_t            uptime;
     ControlOutputRelayBlock cb;

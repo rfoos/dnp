@@ -275,12 +275,14 @@ bool WaitForResponse::rxResponse()
 {
     bool returnValue = false;
 
-    sa_p->app_p->timer_p->cancel(TimerInterface::RESPONSE);
+    // don't cancel the response timer incase the app layer was waiting
+    // sa_p->app_p->timer_p->cancel(TimerInterface::RESPONSE);
 
     if ( sa_p->checkResponse())
     {
 	sa_p->stats.increment( SecureAuthentication::RX_VALID_AUTH_RESP);
 	sa_p->stats.reset( SecureAuthentication::SESSION_ERROR);
+	sa_p->nextRxdAsduCritical = false;
 	returnValue= true;
     }
     else
@@ -560,9 +562,17 @@ bool SecureAuthentication::checkResponse()
     bool auth = true;
 
     if (lastRxdResponse.seqNum != lastTxdChallenge.seqNum)
+    {
 	auth = false;
+	stats.logAbnormal(0, "Challenge=%d Response=%d seq nums don't match",
+			  lastTxdChallenge.seqNum, lastRxdResponse.seqNum);
+    }
     else if (lastRxdResponse.userNum != lastTxdChallenge.userNum)
+    {
 	auth = false;
+	stats.logAbnormal(0, "Challenge=%d Response=%d user nums don't match",
+			  lastTxdChallenge.userNum, lastRxdResponse.userNum );
+    }
     else
     {
 	Bytes hmac;
@@ -571,19 +581,30 @@ bool SecureAuthentication::checkResponse()
 	else
 	    calculateHmac( hmac, lastTxdChallengeAsdu);
 	if (lastRxdResponse.hmacValue != hmac)
+	{
 	    auth = false;
+	    stats.logAbnormal(0,"hmacs don't match:");
+	    stats.logAbnormal(0,"Last: %s", hex_repr(lastRxdResponse.hmacValue,
+						     app_p->strbuf,
+						     sizeof(app_p->strbuf)));
+	    stats.logAbnormal(0,"This: %s", hex_repr(hmac,
+						     app_p->strbuf,
+						     sizeof(app_p->strbuf)));
+	}
     }
 
     return auth;
 }
 
+// this mehtod needs to be refactored
 bool SecureAuthentication::rxAsdu( Bytes& asdu)
 {
     AppHeader::FunctionCode fn = AppHeader::getFn(asdu);
 
-    if (fn == AppHeader::AUTHENTICATION_REPLY)
+    if ( (fn == AppHeader::AUTHENTICATION_REPLY) ||
+    ((fn == AppHeader::RESPONSE) && (state_p->id == MASTER_WAIT_FOR_RESPONSE)))
     {
-	bool parseOk;
+	bool parseOk = true;
 	DnpObject* obj_p = NULL;
 
 	// strip off header
@@ -607,12 +628,16 @@ bool SecureAuthentication::rxAsdu( Bytes& asdu)
 	{
 	    if (asdu.size() > 0)
 	    {
+		// only the one object should be present
 		stats.logAbnormal(0, "Format not expected");
 		parseOk = false;
 	    }
 	}
 	else
+	{
+	    stats.logAbnormal(0, "Reply object not found");
 	    parseOk = false;
+	}
 
 	if (parseOk)
 	{
@@ -630,7 +655,9 @@ bool SecureAuthentication::rxAsdu( Bytes& asdu)
 	    return true;
 	}
 	else
+	{
 	    return false;
+	}
 
     }
     else if (fn == AppHeader::AUTHENTICATION_ERROR_NO_ACK)
@@ -639,8 +666,54 @@ bool SecureAuthentication::rxAsdu( Bytes& asdu)
 	state_p->errorMsg();
 	return false;
     }
-    else if (fn == AppHeader::AUTHENTICATION_CHALLENGE)
+    else if (fn == AppHeader::AUTHENTICATION_REQUEST)
+    {
+	// normal app layer knows nothing of this function code
+	bool parseOk = true;
+	DnpObject* obj_p = NULL;
+
+	// strip off header
+	app_p->ah.decode( asdu);
+
+	try
+	{
+	    app_p->oh.decode( asdu, stats );
+	    stats.logNormal(app_p->oh.str(app_p->strbuf,
+					  sizeof(app_p->strbuf)));
+	    obj_p = app_p->of.decode(app_p->oh, asdu, app_p->addr, stats);
+	}
+	catch (int e)
+	{
+	    stats.logAbnormal(0, "Caught exception line# %d", e);
+	    parseOk = false;
+	}
+
+	// must be
+	if ((app_p->oh.grp == 120) && (app_p->oh.var == 1))
+	{
+	    // only the one object should be present
+	    if (asdu.size() > 0)
+	    {
+		stats.logAbnormal(0, "Format not expected");
+		parseOk = false;
+	    }
+	}
+	else
+	{
+	    stats.logAbnormal(0, "Challenge object not found");
+	    parseOk = false;
+	}
+
+	if (parseOk)
+	{
+	    rxChallenge((Challenge*) obj_p);
+	}
+	return false;
+    }
+    else if ((fn == AppHeader::AUTHENTICATION_CHALLENGE) ||
+	     (fn == AppHeader::UNSOLICITED_AUTHENTICATION_CHALLENGE))
     {	
+	// the challenge object may be embedded with regular objects
 	return true;
     }
     else if (( critical[fn]) || nextRxdAsduCritical)
@@ -882,18 +955,25 @@ void MasterSecurity::txKeyChangeReq()
 
 void MasterSecurity::txChallengeMsg( Challenge::ChallengeReason reason)
 {
-    ObjectHeader* oh_p = &app_p->oh;
+    Master* m_p = (Master*) app_p;
+    Bytes& frag = ((Master*)app_p)->stn_p->txFragment;
     Challenge     obj( challengeSeqNum.get(), app_p->userNum, Challenge::SHA_1,
 		       reason);
 
-    ((Master*)app_p)->initRequest( AppHeader::AUTHENTICATION_REQUEST);
+    m_p->initRequest( AppHeader::AUTHENTICATION_REQUEST);
 
     // consists of one single object
-    *oh_p = ObjectHeader(120, 1, ObjectHeader::ONE_OCTET_COUNT_OF_OBJECTS, 1);
-    stats.logNormal( oh_p->str( app_p->strbuf, sizeof(app_p->strbuf)));
-    oh_p->encode(((Master*)app_p)->stn_p->txFragment);
-     
-    obj.encode(((Master*)app_p)->stn_p->txFragment);
+    ObjectHeader oh(120, 1, 0x5b, 1);
+    stats.logNormal( oh.str( app_p->strbuf, sizeof(app_p->strbuf)));
+    oh.encode( frag);
+
+    Bytes objEncode;
+    obj.encode(objEncode);
+    appendUINT16( frag, objEncode.size());
+    moveBytes(objEncode, frag, objEncode.size());
+
+    lastTxdChallenge = obj;
+    lastTxdChallengeAsdu = frag;
 
     stats.increment( TX_CHALLENGE_MSG);
     app_p->transmit();
@@ -916,7 +996,7 @@ void MasterSecurity::txResponseMsg()
 
     ObjectHeader oh(  120, 2, 0x5b, 1);
     Reply        obj( lastRxdChallenge.seqNum,
-		      m_p->userNum,
+		      lastRxdChallenge.userNum,
 		      hmac);
 
     m_p->initRequest( AppHeader::AUTHENTICATION_REPLY);
@@ -1093,6 +1173,7 @@ void OutstationSecurity::txChallengeMsg( Challenge::ChallengeReason reason)
     Challenge    obj( challengeSeqNum.get(), app_p->userNum, Challenge::SHA_1,
 		      reason);
 
+
     o_p->initResponse( 1,1,0,0,0, AppHeader::AUTHENTICATION_CHALLENGE);
 
     o_p->appendVariableSizedObject( oh, obj);
@@ -1108,6 +1189,24 @@ void OutstationSecurity::txChallengeMsg( Challenge::ChallengeReason reason)
 
 void OutstationSecurity::txResponseMsg()
 {
+    Outstation* o_p = (Outstation*) app_p;
+    Bytes hmac;
+
+    if ( lastRxdChallenge.challengeReason == Challenge::CRITICAL)
+	calculateHmac( hmac, lastRxdChallengeAsdu, o_p->txFragment);
+    else
+	calculateHmac( hmac, lastRxdChallengeAsdu);
+
+    ObjectHeader oh(  120, 2, 0x5b, 1);
+    Reply        obj( lastRxdChallenge.seqNum,
+		      lastRxdChallenge.userNum,
+		      hmac);
+
+    o_p->initResponse( 1,1,0,0,0, AppHeader::RESPONSE);
+
+    o_p->appendVariableSizedObject( oh, obj);
+    stats.increment( SecureAuthentication::TX_AUTH_RESPONSE);
+    app_p->transmit();
 }
 
 void OutstationSecurity::txError( AuthenticationError::ErrorReason)

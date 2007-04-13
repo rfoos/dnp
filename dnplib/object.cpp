@@ -365,6 +365,7 @@ void Reply::decode(Bytes& data, uint32_t objectSize) throw(int)
 {
     seqNum = removeUINT24(data);
     userNum = removeUINT8(data);
+    hmacValue.resize(0); // init hmac
     moveBytes(data, hmacValue, objectSize - 4);
 }
 
@@ -373,7 +374,6 @@ void Reply::encode(Bytes& data) const
     appendUINT24(data, seqNum);
     appendUINT8(data, userNum);
     appendBytes(data, hmacValue);
-     
 }
 
 unsigned int Reply::size() const
