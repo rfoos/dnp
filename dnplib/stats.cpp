@@ -110,7 +110,8 @@ void Stats::logChangeInStatValue(int index)
 	 (EventInterface::PointType_t) ((int)pointType+ x[index].normal),
 			  x[index].value);
 
-    if (x[index].normal)
+    // always log secure authentication mesages for prototype
+    if ((x[index].normal) && (pointType != EventInterface::SA_AB_ST))
 	logNormal     ("%s = %d", x[index].name, x[index].value);
     else
 	logAbnormal(0, "%s = %d", x[index].name, x[index].value);
