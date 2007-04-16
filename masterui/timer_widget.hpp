@@ -43,6 +43,7 @@ public:
 
     void start();
     void stop();
+    bool isActive();
 
     QTimer* timer;
 signals:
@@ -78,6 +79,7 @@ public:
     // implementation of TimerInterface
     void activate( TimerId timerId);
     void cancel( TimerId timerId);
+    bool isActive( TimerId timerId);
 
     // simply to update gui
     void timedout( TimerId timerId);

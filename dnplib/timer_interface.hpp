@@ -49,6 +49,7 @@ class TimerInterface
 
     virtual void activate( TimerId timerId)=0;
     virtual void cancel( TimerId timerId)=0;
+    virtual bool isActive( TimerId timerId)=0;
 
     virtual ~TimerInterface();
 };

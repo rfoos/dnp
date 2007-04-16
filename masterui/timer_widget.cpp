@@ -61,6 +61,11 @@ TimerWidget::TimerWidget( QString name, TimerInterface::TimerId timerId ) :
     connect( manual, SIGNAL(stateChanged(int)), this, SLOT( manualMode(int)));
 }
 
+bool TimerWidget::isActive()
+{
+    return active;
+}
+
 void TimerWidget::setLedOn(bool on)
 {
     if (on)
@@ -185,3 +190,7 @@ void TimersGroup::cancel( TimerId timerId)
     timers[timerId]->stop();
 }
 
+bool TimersGroup::isActive( TimerId timerId)
+{
+    return timers[timerId]->isActive();
+}
