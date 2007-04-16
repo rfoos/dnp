@@ -45,7 +45,7 @@ void TestSecurity::testMaster()
     Master* m_p;
     Outstation* o_p;
     DummyDb db;
-    int debugLevel = 0;
+    int debugLevel = -1;
     DummyTx masterTx(&debugLevel, 'M', 'S');
     DummyTx outstationTx(&debugLevel, 'O', 'S');
     DummyTimer masterTimer;
