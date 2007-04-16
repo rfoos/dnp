@@ -151,7 +151,9 @@ Factory::Factory(EventInterface* eventInterface_p) :
   db_p(eventInterface_p),
   cto(0)
 {
-    objectMap[ key(  1,  2)] = new BinaryInputWithStatus();//used to decode 1,1
+    // 1,2 is used when decoding 1,1 and 3,1
+    // this is because the object is less than one byte
+    objectMap[ key(  1,  2)] = new BinaryInputWithStatus();
     objectMap[ key(  2,  1)] = new BinaryInputEventNoTime();
     objectMap[ key(  2,  2)] = new BinaryInputEvent();
     objectMap[ key(  2,  3)] = new BinaryInputEventRelativeTime();
@@ -340,8 +342,6 @@ void Factory::createObjects(uint8_t grp, uint8_t var, Bytes& data,
 	    else
 		flag = 0x01;
 
-	    // might as well convert this into having a status now
-	    // rather than later
 	    bi = BinaryInputWithStatus( flag);
 	    db_p->changePoint( addr, i,
 			       bi.pointType,
@@ -356,6 +356,43 @@ void Factory::createObjects(uint8_t grp, uint8_t var, Bytes& data,
 	    else
 		bitMask = bitMask << 1;
 	}
+    }
+    // Double bit Binary Input is a special case because it is packed 
+    else if (grp == 3 && var == 1)
+    {
+ 	uint8_t bitMask = 0x03;
+	uint8_t shift   = 0x00;
+	uint8_t flag;
+ 	for (i=startIndex; i<stopIndex+1; i++)
+	{
+	    BinaryInputWithStatus bi;
+	    if ( ((data[0] & bitMask) >> shift) == 0x02)
+		flag = 0x81;
+	    else
+		flag = 0x01;
+
+	    bi = BinaryInputWithStatus( flag);
+	    db_p->changePoint( addr, i,
+			       bi.pointType,
+			       bi.value,
+			       bi.timestamp);
+
+	    if ((bitMask == 0xC0) || (i == stopIndex))
+		data.pop_front();
+
+	    if (bitMask == 0xC0)
+	    {
+		bitMask = 0x03;
+		shift = 0;
+	    }
+	    else
+	    {
+		bitMask = bitMask << 2;
+		shift += 2;
+	    }
+
+	}
+
     }
     else
     {
