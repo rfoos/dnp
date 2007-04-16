@@ -3,7 +3,7 @@
 svn update
 echo 'const char* version(void)'           > dnplib/tmp_version.cpp
 echo '{'                                  >> dnplib/tmp_version.cpp
-echo -n '    const char* s = "Version: '  >> dnplib/tmp_version.cpp
+echo -n '    const char* s = "Release: 0.0.1<br>SVN Version: '>> dnplib/tmp_version.cpp
 svnversion -n                             >> dnplib/tmp_version.cpp
 echo -n '<br>Build Date: '                >> dnplib/tmp_version.cpp
 echo -n $(date)                           >> dnplib/tmp_version.cpp
