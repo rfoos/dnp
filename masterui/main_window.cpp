@@ -54,6 +54,7 @@ const QString MainWindow::shortPtNames[EventInterface::NUM_POINT_TYPES] =
    "Ci",
    "Ao",
    "Bo",
+   "None",
    "St",
    "AP_St",
    "AP_St",
