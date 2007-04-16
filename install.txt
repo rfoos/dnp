@@ -3,12 +3,14 @@ $Id$
 
 To build the dnp executable, install the required dependencies as
 specified in the OS specific sections then in the dnp source directory
-enter:
+enter*:
 
-qmake-qt4 -project "CONFIG += qtestlib debug" "QT += network"
-qmake-qt4
+qmake -project "CONFIG += qtestlib" "QT += network"
+qmake
 make
 
+*Note: qmake executables may be called qmake-qt4 if you have more than
+ one version of qt installed.
 
 OS specific set up and dependencies:
 
@@ -31,6 +33,9 @@ Dependencies:
 - qt4-devel
 - qt4-qttestlib
 
+
+Notes:
+
 Must do this before running make:
 
 export QMAKESPEC=freebsd-g++
@@ -43,3 +48,17 @@ Dependencies:
 
 Qt4 open source edition.
 http://www.trolltech.com/developer/downloads/qt/windows
+
+Notes:
+
+The include path in the dnp.pro file may not be correctly
+automatically generated. If it is not already there, you may need to add:
+INCLUDEPATH += . crypto dnplib masterui outstationui unittests
+
+To build the exe as a single statically linked file:
+
+qmake -project "CONFIG += qtestlib static" "QT += network"
+
+and 
+
+http://wiki.qtcentre.org/index.php?title=Building_static_Qt_on_Windows
