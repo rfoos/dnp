@@ -1,0 +1,32 @@
+
+$Id:$
+
+General
+-------
+
+Release 0.0.1 is a pre-alpha release to prototype the proposed DNP
+Secure Authentication specification.
+
+One of the design goals for this release is that the code should be as
+OS independent as possible. Thus Qt4 was chosen as the GUI toolkit
+and IP networking was chosen for the communications method. The core
+DNP protocol code does not rely on Qt4 or have other OS dependencies.
+
+DNP Support
+-----------
+
+UDP is the only networking currently supported and serial ports are
+not yet supported. The DNP Master code is not fully subset level 1
+compliant, yet supports subset level 1 objects and should be able to
+communicate with a subset level 1 outstation. The DNP Outstation code
+can simulate some very basic outstation responses.
+
+Secure Authentication
+---------------------
+
+The basic features of secure authentication are demonstrated in this
+working prototype. Aggressive mode and some timer related
+functionality is not yet complete.
+
+
+
