@@ -1,15 +1,45 @@
 
 $Id$
 
-Dependencies:
-1. C++ complier
-2. qt4-devel
+To build the dnp executable, install the required dependencies as
+specified in the OS specific sections then in the dnp source directory
+enter:
 
-Fedora Core 6 example:
-
-yum install qt-devel
-cd dnp     # where dnp is the dir where the source exists
 qmake-qt4 -project "CONFIG += qtestlib debug" "QT += network"
 qmake-qt4
 make
-./dnp
+
+
+OS specific set up and dependencies:
+
+Fedora Core 6
+-------------
+
+Dependencies:
+
+- qt4-devel
+
+Eg:
+
+yum install qt-devel
+
+Free BSD
+--------
+
+Dependencies:
+
+- qt4-devel
+- qt4-qttestlib
+
+Must do this before running make:
+
+export QMAKESPEC=freebsd-g++
+
+
+Windows
+-------
+
+Dependencies:
+
+Qt4 open source edition.
+http://www.trolltech.com/developer/downloads/qt/windows
