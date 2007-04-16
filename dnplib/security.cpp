@@ -235,7 +235,10 @@ void Idle::rxChallengeMsg()
     sa_p->txResponseMsg();
 }
 
-
+void  Idle::rxKeyStatusReq()
+{
+    ((OutstationSecurity*) sa_p)->txKeyStatus();
+}
 
   // WaitForResponse //////////////////////////////
 
@@ -394,6 +397,7 @@ void  WaitForKeyConfirmation::rxKeyStatusNotOk()
 void  WaitForKeyConfirmation::rxKeyStatusOk()
 {
     sa_p->nextRxdAsduCritical = true;
+    sa_p->app_p->timer_p->activate(TimerInterface::CHALLENGE);
     sa_p->app_p->timer_p->activate(TimerInterface::KEY_CHANGE);
     sa_p->stats.reset( MasterSecurity::KEY_CHANGE_COUNTER);
     sa_p->changeState( &sa_p->idle);
@@ -461,6 +465,10 @@ void  WaitForKeyChange::rxKeyChange()
 			  SessionKeyStatus::OK);
  	p->nextRxdAsduCritical = 1;
 	p->changeState( &p->idle);
+
+	sa_p->app_p->timer_p->activate(TimerInterface::CHALLENGE);
+	sa_p->app_p->timer_p->activate(TimerInterface::SESSION_KEY);
+
     }
     else
     {

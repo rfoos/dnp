@@ -117,6 +117,7 @@ class Idle : public SecureAuthenicationState
     void maxInvalidRespOrLinkFail();
     void keyChangeTimeout();   // for master only
     void rxChallengeMsg();
+    void rxKeyStatusReq();     // outstation only
 
 
 };
@@ -335,7 +336,6 @@ class OutstationSecurity : public SecureAuthentication
     OutstationSecurity( Outstation* app_p, bool aggressiveMode = false);
 
     void rxKeyStatusReq(SessionKeyStatusReq* p);
-
     void txKeyStatus();
     void txChallengeMsg( Challenge::ChallengeReason reason);
     void txResponseMsg();

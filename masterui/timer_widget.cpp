@@ -30,7 +30,8 @@
 #include <assert.h>
 #include "timer_widget.hpp"
 
-TimerWidget::TimerWidget( QString name )
+TimerWidget::TimerWidget( QString name, TimerInterface::TimerId timerId ) :
+  id( timerId)
 {
     onPixmap = QPixmap(":images/redledon.png");
     offPixmap = QPixmap(":images/redledoff.png");
@@ -97,9 +98,9 @@ void TimerWidget::manualMode(int state)
 
 void TimerWidget::qTimerTimeout()
 {
-    setLedOn(false);
-    expire->setEnabled(false);
-    emit timeout();
+    setLedOn( false);
+    expire->setEnabled( false);
+    emit timeout( id);
 }
 
 void TimerWidget::start()
@@ -131,7 +132,7 @@ void TimerWidget::stop()
     QVBoxLayout* timersLayout = new QVBoxLayout(this);
 
     QSettings qsettings("TurnerTech", "DnpMasterStation");
-    responseTimer = new TimerWidget("Response");
+    responseTimer = new TimerWidget("Response", TimerInterface::RESPONSE);
     responseTimer->timer->setInterval(
 		        qsettings.value("timers/response_ms").toInt());
 
@@ -139,17 +140,18 @@ void TimerWidget::stop()
     timers[TimerInterface::RESPONSE] = responseTimer;
     timersLayout->addWidget(responseTimer);
 
-    challengeTimer = new TimerWidget("Challenge");
+    challengeTimer = new TimerWidget("Challenge", TimerInterface::CHALLENGE);
     challengeTimer->timer->setInterval(
 			      qsettings.value("timers/challenge_ms").toInt());
 
-    timers[TimerInterface::CHALLENGE] = keyChangeTimer;
+    timers[TimerInterface::CHALLENGE] = challengeTimer;
     timersLayout->addWidget(challengeTimer);
     challengeTimer->setEnabled(false);
 
     if (master)
     {
-	keyChangeTimer = new TimerWidget("Key Change");
+	keyChangeTimer = new TimerWidget("Key Change",
+					 TimerInterface::KEY_CHANGE);
 	keyChangeTimer->timer->setInterval(
 		         qsettings.value("timers/keyChange_ms").toInt());
 	
@@ -160,7 +162,8 @@ void TimerWidget::stop()
     }
     else
     {
-	sessionKeyTimer = new TimerWidget("Session Key");
+	sessionKeyTimer = new TimerWidget("Session Key",
+					  TimerInterface::SESSION_KEY);
 	sessionKeyTimer->timer->setInterval(
 			  qsettings.value("timers/sessionKey_ms").toInt());
 

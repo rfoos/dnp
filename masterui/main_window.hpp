@@ -73,7 +73,7 @@ private slots:
     void license();
     void rxData(Bytes*, unsigned long timeRxd=0);
     void setDebugLevel(int);
-    void responseTimeout();
+    void timeoutSlot( TimerInterface::TimerId timerId);
     void updateStateLabel();
 
     // opens an outstation main window in a separate thread

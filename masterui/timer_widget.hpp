@@ -39,14 +39,14 @@ class TimerWidget : public QWidget
 {
     Q_OBJECT
 public:
-    TimerWidget( QString name);
+    TimerWidget( QString name, TimerInterface::TimerId timerId );
 
     void start();
     void stop();
 
     QTimer* timer;
 signals:
-    void timeout(); 
+    void timeout( TimerInterface::TimerId id); 
 
 private slots:
     void qTimerTimeout();
@@ -54,6 +54,8 @@ private slots:
 
 private:
     void setLedOn(bool on);
+
+    TimerInterface::TimerId id;
 
     bool active;
 

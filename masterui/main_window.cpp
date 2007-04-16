@@ -114,8 +114,12 @@ MainWindow::MainWindow() :
     connect( settingsTab->verbose, SIGNAL(stateChanged(int)),
 	     this, SLOT(setDebugLevel(int)));
 
-    connect( ti.responseTimer, SIGNAL(timeout()),
-	     this,SLOT(responseTimeout()));
+    connect( ti.responseTimer, SIGNAL(timeout( TimerInterface::TimerId)),
+	     this,SLOT( timeoutSlot( TimerInterface::TimerId)));
+    connect( ti.challengeTimer, SIGNAL(timeout( TimerInterface::TimerId)),
+	     this,SLOT( timeoutSlot( TimerInterface::TimerId)));
+    connect( ti.keyChangeTimer, SIGNAL(timeout( TimerInterface::TimerId)),
+	     this,SLOT( timeoutSlot( TimerInterface::TimerId)));
 
     updateStateLabel();
 }
@@ -401,9 +405,9 @@ void MainWindow::rxData( Bytes* buf, unsigned long timeRxd)
     updateStateLabel();
 }
 
-void MainWindow::responseTimeout()
+void MainWindow::timeoutSlot(TimerInterface::TimerId id)
 {
-    DnpStat_t state = m_p->timeout(TimerInterface::RESPONSE);
+    DnpStat_t state = m_p->timeout( id);
     if (state == Station::IDLE)
     {
 	settingsTab->allowRequests();

@@ -86,8 +86,12 @@ OutstationWindow::OutstationWindow( Outstation::OutstationConfig&  oConfig,
     connect( settings->verbose, SIGNAL(stateChanged(int)),
 	     this, SLOT(setDebugLevel(int)));
 
-    connect( ti.responseTimer, SIGNAL(timeout()),
-	     this,SLOT(responseTimeout()));
+    connect( ti.responseTimer, SIGNAL(timeout( TimerInterface::TimerId)),
+	     this,SLOT( timeoutSlot( TimerInterface::TimerId)));
+    connect( ti.challengeTimer, SIGNAL(timeout( TimerInterface::TimerId)),
+	     this,SLOT( timeoutSlot( TimerInterface::TimerId)));
+    connect( ti.sessionKeyTimer, SIGNAL(timeout( TimerInterface::TimerId)),
+	     this,SLOT( timeoutSlot( TimerInterface::TimerId)));
 
     updateStateLabel();
 }
@@ -257,9 +261,9 @@ void OutstationWindow::rxData( Bytes* buf, unsigned long timeRxd)
     updateStateLabel();
 }
 
-void OutstationWindow::responseTimeout()
+void OutstationWindow::timeoutSlot( TimerInterface::TimerId id)
 {
-    o_p->timeout(TimerInterface::RESPONSE);
+    o_p->timeout( id);
     updateStateLabel();
 }
 

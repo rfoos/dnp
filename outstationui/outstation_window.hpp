@@ -68,7 +68,7 @@ private slots:
     void license();
     void rxData(Bytes*, unsigned long timeRxd=0);
     void setDebugLevel(int);
-    void responseTimeout();
+    void timeoutSlot( TimerInterface::TimerId id);
     void updateStateLabel();
 
 private:
