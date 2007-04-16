@@ -110,11 +110,14 @@ DnpStat_t Master::rxData(Bytes* buf, Uptime_t timeRxd)
 	Lpdu::UserData& segment = dl.rxData( *buf);
 	if (segment.data.size() > 0)
 	{
-	    DnpAddr_t addr;
 	    // this data has completed a segment
-	    // reset the timer so that large multi segment responses
-	    // will have a chance to get through
-	    timer_p->activate(TimerInterface::RESPONSE);
+	    DnpAddr_t addr;
+
+	    if (timer_p->isActive(TimerInterface::RESPONSE))
+		// reset the timer so that large multi segment responses
+		// will have a chance to get through
+		timer_p->activate(TimerInterface::RESPONSE);
+
 	    addr = tf_p->rxSegment( segment);
 	    if (addr != TransportFunction::FRAGMENT_NOT_FOUND)
 	    {
@@ -516,17 +519,17 @@ DnpStat_t Master::startNewTransaction()
     {
 	clearRestartBit();
     }
-    else if ( ii & InternalIndications::NEED_TIME)
-    {
-        if (stn_p->stats.get(Station::DELAY_MEASUREMENT) == 0)
-	{
-	    // delayMeasurement();
-	}
-	else
-	{
-	    //writeTimeAndDate();
-	}
-    }
+//     else if ( ii & InternalIndications::NEED_TIME)
+//     {
+//         if (stn_p->stats.get(Station::DELAY_MEASUREMENT) == 0)
+// 	{
+// 	    // delayMeasurement();
+// 	}
+// 	else
+// 	{
+// 	    //writeTimeAndDate();
+// 	}
+//     }
     else
     {
 	poll(AUTO);
