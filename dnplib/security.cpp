@@ -96,7 +96,8 @@ SecureAuthenicationState::~SecureAuthenicationState()
 
 void SecureAuthenicationState::challengeTimeout()
 {
-    assert(0);
+    //    assert(0);
+    sa_p->stats.logNormal( "Challenge Timer expiration action not implemented yet");
 }
 
 void SecureAuthenicationState::responseTimeout()
