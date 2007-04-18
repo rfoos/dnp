@@ -45,17 +45,17 @@ public:
 
     // returns true if it is a Change Of State (COS)
     virtual bool updateData( QString                      name,
-			     EventInterface::PointType_t  pointType,
-			     int                          value,
-			     DnpTime_t                    timestamp=0);
+                             EventInterface::PointType_t  pointType,
+                             int                          value,
+                             DnpTime_t                    timestamp=0);
 
     virtual void createDataModel();
 protected:
 
     virtual void addRow(     QString                      name,
-			     EventInterface::PointType_t  pointType,
-			     int                          value,
-			     DnpTime_t                    timestamp=0);
+                             EventInterface::PointType_t  pointType,
+                             int                          value,
+                             DnpTime_t                    timestamp=0);
 
     void addParent( EventInterface::PointType_t pointType);
 
@@ -81,16 +81,16 @@ public:
     // it is the callers responsibility not to call this method if it
     // it not an event
     bool updateData( QString name,
-		     EventInterface::PointType_t pointType,
-		     int value,
-		     DnpTime_t timestamp=0);
+                     EventInterface::PointType_t pointType,
+                     int value,
+                     DnpTime_t timestamp=0);
 
 private:
 
     void addRow( QString name,
-		 EventInterface::PointType_t,
-		 int value,
-		 DnpTime_t timestamp=0);
+                 EventInterface::PointType_t,
+                 int value,
+                 DnpTime_t timestamp=0);
 
 
     QDateTime  dateTime;

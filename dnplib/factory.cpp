@@ -32,11 +32,11 @@
 #include "factory.hpp"
 
 ObjectHeader::ObjectHeader(uint8_t group,
-			   uint8_t variation,
-			   uint8_t qualifier,
-			   uint32_t countOfObjects,
-			   uint32_t startIndex,
-			   uint32_t stopIndex ) :
+                           uint8_t variation,
+                           uint8_t qualifier,
+                           uint32_t countOfObjects,
+                           uint32_t startIndex,
+                           uint32_t stopIndex ) :
   grp(group), var(variation), qual(qualifier), count(countOfObjects),
   start(startIndex), stop(stopIndex)
 {
@@ -57,37 +57,37 @@ void ObjectHeader::encode( Bytes& data) const
     data.push_back( qual);
     if (rangeSpecifier == ONE_OCTET_START_STOP_INDEXES)
     {
-	// range size is two bytes
-	data.push_back( start);
-	data.push_back( stop);
+        // range size is two bytes
+        data.push_back( start);
+        data.push_back( stop);
     }
     else if (rangeSpecifier == TWO_OCTET_START_STOP_INDEXES)
     {
-	// range size is four bytes
-	appendUINT16(data, start);
-	appendUINT16(data, stop);
+        // range size is four bytes
+        appendUINT16(data, start);
+        appendUINT16(data, stop);
     }
     else if (rangeSpecifier == ONE_OCTET_COUNT_OF_OBJECTS)
     {
-	// range size is one byte
-	data.push_back(  count);
+        // range size is one byte
+        data.push_back(  count);
     }
     else if (rangeSpecifier == TWO_OCTET_COUNT_OF_OBJECTS)
     {
-	// range size is two bytes
-	appendUINT16(data, count);
+        // range size is two bytes
+        appendUINT16(data, count);
     }
     else if (rangeSpecifier == ONE_OCTET_COUNT_OF_OBJECTS_VARIABLE_FORMAT)
     {
-	data.push_back( count);
+        data.push_back( count);
     }
     else if (rangeSpecifier == NO_RANGE_FIELD)
     {
     }
     else
     {
-	Stats::log(0, 0, "Unsupported Qualifier code 0x%x", qual);
-	assert(0);
+        Stats::log(0, 0, "Unsupported Qualifier code 0x%x", qual);
+        assert(0);
     }
 }
 
@@ -103,45 +103,45 @@ void ObjectHeader::decode( Bytes& data, Stats& stats) throw(int)
 
     if (rangeSpecifier == ONE_OCTET_START_STOP_INDEXES)
     {
-	// range size is two bytes
-	start = data[0]; data.pop_front();
-	stop = data[0]; data.pop_front();
+        // range size is two bytes
+        start = data[0]; data.pop_front();
+        stop = data[0]; data.pop_front();
     }
     else if (rangeSpecifier == TWO_OCTET_START_STOP_INDEXES)
     {
-	// range size is four bytes
-	start = data[0] + (data[1] << 8);
-	data.pop_front();
-	data.pop_front();
+        // range size is four bytes
+        start = data[0] + (data[1] << 8);
+        data.pop_front();
+        data.pop_front();
 
-	stop = data[0] + (data[1] << 8);
-	data.pop_front();
-	data.pop_front();
+        stop = data[0] + (data[1] << 8);
+        data.pop_front();
+        data.pop_front();
     }
     else if (rangeSpecifier == NO_RANGE_FIELD)
     {
-	// range size is zero bytes
+        // range size is zero bytes
     }
     else if (rangeSpecifier == ONE_OCTET_COUNT_OF_OBJECTS)
     {
-	// range size is one byte
-	count = data[0]; data.pop_front();
+        // range size is one byte
+        count = data[0]; data.pop_front();
     }
     else if (rangeSpecifier == TWO_OCTET_COUNT_OF_OBJECTS)
     {
-	// range size is two bytes
-	count = data[0] + (data[1] << 8);
-	data.pop_front();
-	data.pop_front();
+        // range size is two bytes
+        count = data[0] + (data[1] << 8);
+        data.pop_front();
+        data.pop_front();
     }
     else if (rangeSpecifier == ONE_OCTET_COUNT_OF_OBJECTS_VARIABLE_FORMAT)
     {
-	count = data[0]; data.pop_front();
+        count = data[0]; data.pop_front();
     }
     else
     {
-	stats.logAbnormal(0, "Unsupported Qualifier code 0x%x", qual);
-	throw(__LINE__);
+        stats.logAbnormal(0, "Unsupported Qualifier code 0x%x", qual);
+        throw(__LINE__);
     }
 }
 
@@ -208,23 +208,23 @@ void Factory::selfTest()
 
     for(iter = objectMap.begin(); iter->first != lastObjectToTest; iter++)
     {
-	assert (iter != objectMap.end());
+        assert (iter != objectMap.end());
 
-	Bytes data;
-	DnpObject* o = iter->second;
+        Bytes data;
+        DnpObject* o = iter->second;
 
-	try
-	{
-	    o->encode( data);
-	    o->decode( data);
-	}
-	catch (int e)
-	{
-	    printf ("Testing grp=%d var=%d\n", ((iter->first & 0xff00) >> 8),
-		    iter->first & 0xff);
-	    printf ("Exception line# %d\n", e);
-	    assert(0);
-	}
+        try
+        {
+            o->encode( data);
+            o->decode( data);
+        }
+        catch (int e)
+        {
+            printf ("Testing grp=%d var=%d\n", ((iter->first & 0xff00) >> 8),
+                    iter->first & 0xff);
+            printf ("Exception line# %d\n", e);
+            assert(0);
+        }
     }
 }
 
@@ -235,95 +235,95 @@ Factory::ObjectKey Factory::key(uint8_t group, uint8_t variation)
 
 
 DnpObject* Factory::decode(const ObjectHeader& oh, Bytes& data,
-			     DnpAddr_t addr,
-			     Stats& stats) throw(int)
+                             DnpAddr_t addr,
+                             Stats& stats) throw(int)
 {
     uint32_t num;
 
     if (oh.rangeSpecifier == ObjectHeader::TWO_OCTET_START_STOP_INDEXES ||
-	oh.rangeSpecifier == ObjectHeader::ONE_OCTET_START_STOP_INDEXES    )
+        oh.rangeSpecifier == ObjectHeader::ONE_OCTET_START_STOP_INDEXES    )
     {
-	if (oh.indexSize == ObjectHeader::PACKED_WITHOUT_A_PREFIX)
-	{
-	    num = oh.stop - oh.start + 1;
-	    stats.logNormal( "Decoding: %d object(s)", num);
-	    createObjects(oh.grp, oh.var, data, oh.start, oh.stop,addr,stats);
-	}
-	else
-	{
-	    stats.logAbnormal(0, "Rx Unsupported Qualifier %d", oh.qual);
-	    throw(__LINE__);
-	}
+        if (oh.indexSize == ObjectHeader::PACKED_WITHOUT_A_PREFIX)
+        {
+            num = oh.stop - oh.start + 1;
+            stats.logNormal( "Decoding: %d object(s)", num);
+            createObjects(oh.grp, oh.var, data, oh.start, oh.stop,addr,stats);
+        }
+        else
+        {
+            stats.logAbnormal(0, "Rx Unsupported Qualifier %d", oh.qual);
+            throw(__LINE__);
+        }
     }
     else if (oh.rangeSpecifier == ObjectHeader::TWO_OCTET_COUNT_OF_OBJECTS ||
-	     oh.rangeSpecifier == ObjectHeader::ONE_OCTET_COUNT_OF_OBJECTS )
+             oh.rangeSpecifier == ObjectHeader::ONE_OCTET_COUNT_OF_OBJECTS )
     {
-	uint32_t index;
-	stats.logNormal("Decoding: %d object(s)", oh.count);
-	for (unsigned int i=0; i<oh.count; i++)
-	{
-	    if (oh.indexSize == 2)
-	    {
-		index = removeUINT16(data);
-	    }
-	    else if (oh.indexSize == 1)
-	    {
-		index = removeUINT8(data);
-	    }
-	    else if (oh.indexSize == 0)
-		index = DnpObject::NO_INDEX;
-	    else
-	    {
-		// something has gone wrong
-		stats.logAbnormal(0,
-				  "Rx Unsupported Index Size %d",oh.indexSize);
-		throw(__LINE__);
-	    }
+        uint32_t index;
+        stats.logNormal("Decoding: %d object(s)", oh.count);
+        for (unsigned int i=0; i<oh.count; i++)
+        {
+            if (oh.indexSize == 2)
+            {
+                index = removeUINT16(data);
+            }
+            else if (oh.indexSize == 1)
+            {
+                index = removeUINT8(data);
+            }
+            else if (oh.indexSize == 0)
+                index = DnpObject::NO_INDEX;
+            else
+            {
+                // something has gone wrong
+                stats.logAbnormal(0,
+                                  "Rx Unsupported Index Size %d",oh.indexSize);
+                throw(__LINE__);
+            }
 
-	    createObjects(oh.grp, oh.var, data, index, index, addr, stats);
-	}
+            createObjects(oh.grp, oh.var, data, index, index, addr, stats);
+        }
     }
     else if (oh.rangeSpecifier ==
-	ObjectHeader::ONE_OCTET_COUNT_OF_OBJECTS_VARIABLE_FORMAT )
+        ObjectHeader::ONE_OCTET_COUNT_OF_OBJECTS_VARIABLE_FORMAT )
     {
-	uint32_t objectSize;
-	for (unsigned int i=0; i<oh.count; i++)
-	{
-	    // index size here is really used for the size of the object size
-	    if (oh.indexSize == ObjectHeader::ONE_OCTET_SIZE)
-		objectSize = removeUINT8(data);
-	    else if (oh.indexSize == ObjectHeader::TWO_OCTET_SIZE)
-		objectSize = removeUINT16(data);
-	    else if (oh.indexSize == ObjectHeader::FOUR_OCTET_SIZE)
-		objectSize = removeUINT32(data);
-	    else
-	    {
-		stats.logAbnormal(0,"Unsupported Qualifier code 0x%x",oh.qual);
-		throw(__LINE__);
-	    }
+        uint32_t objectSize;
+        for (unsigned int i=0; i<oh.count; i++)
+        {
+            // index size here is really used for the size of the object size
+            if (oh.indexSize == ObjectHeader::ONE_OCTET_SIZE)
+                objectSize = removeUINT8(data);
+            else if (oh.indexSize == ObjectHeader::TWO_OCTET_SIZE)
+                objectSize = removeUINT16(data);
+            else if (oh.indexSize == ObjectHeader::FOUR_OCTET_SIZE)
+                objectSize = removeUINT32(data);
+            else
+            {
+                stats.logAbnormal(0,"Unsupported Qualifier code 0x%x",oh.qual);
+                throw(__LINE__);
+            }
 
-	    stats.logNormal( "Decoding: 1 object of size %d", objectSize);
-	    createObjects(oh.grp, oh.var, data,
-			  DnpObject::NO_INDEX,
-			  DnpObject::NO_INDEX,
-			  addr,
-			  stats,
-			  objectSize );
-	}
+            stats.logNormal( "Decoding: 1 object of size %d", objectSize);
+            createObjects(oh.grp, oh.var, data,
+                          DnpObject::NO_INDEX,
+                          DnpObject::NO_INDEX,
+                          addr,
+                          stats,
+                          objectSize );
+        }
     }
     else
-    {	
-	stats.logAbnormal(0, "Rx Unsupported Qualifier %d", oh.qual);
-	throw(__LINE__);
+    {   
+        stats.logAbnormal(0, "Rx Unsupported Qualifier %d", oh.qual);
+        throw(__LINE__);
     }
 
     return lastObjectParsed;
 }
 
 void Factory::createObjects(uint8_t grp, uint8_t var, Bytes& data,
-			    uint32_t startIndex, uint32_t stopIndex,
-			    DnpAddr_t addr, Stats& stats,
-			    uint32_t objectSize) throw(int)
+                            uint32_t startIndex, uint32_t stopIndex,
+                            DnpAddr_t addr, Stats& stats,
+                            uint32_t objectSize) throw(int)
 {
     uint32_t  i;
     DnpObject* obj_p = NULL; // we should never return NULL
@@ -332,108 +332,108 @@ void Factory::createObjects(uint8_t grp, uint8_t var, Bytes& data,
     // Binary Input is a special case because it is packed 
     if (grp == 1 && var == 1)
     {
- 	uint8_t bitMask = 0x01;
-	uint8_t flag;
- 	for (i=startIndex; i<stopIndex+1; i++)
-	{
-	    BinaryInputWithStatus bi;
-	    if (data[0] & bitMask)
-		flag = 0x81;
-	    else
-		flag = 0x01;
+        uint8_t bitMask = 0x01;
+        uint8_t flag;
+        for (i=startIndex; i<stopIndex+1; i++)
+        {
+            BinaryInputWithStatus bi;
+            if (data[0] & bitMask)
+                flag = 0x81;
+            else
+                flag = 0x01;
 
-	    bi = BinaryInputWithStatus( flag);
-	    db_p->changePoint( addr, i,
-			       bi.pointType,
-			       bi.value,
-			       bi.timestamp);
+            bi = BinaryInputWithStatus( flag);
+            db_p->changePoint( addr, i,
+                               bi.pointType,
+                               bi.value,
+                               bi.timestamp);
 
-	    if ((bitMask == 0x80) || (i == stopIndex))
-		data.pop_front();
+            if ((bitMask == 0x80) || (i == stopIndex))
+                data.pop_front();
 
-	    if (bitMask == 0x80)
-		bitMask = 0x01;
-	    else
-		bitMask = bitMask << 1;
-	}
+            if (bitMask == 0x80)
+                bitMask = 0x01;
+            else
+                bitMask = bitMask << 1;
+        }
     }
     // Double bit Binary Input is a special case because it is packed 
     else if (grp == 3 && var == 1)
     {
- 	uint8_t bitMask = 0x03;
-	uint8_t shift   = 0x00;
-	uint8_t flag;
- 	for (i=startIndex; i<stopIndex+1; i++)
-	{
-	    BinaryInputWithStatus bi;
-	    if ( ((data[0] & bitMask) >> shift) == 0x02)
-		flag = 0x81;
-	    else
-		flag = 0x01;
+        uint8_t bitMask = 0x03;
+        uint8_t shift   = 0x00;
+        uint8_t flag;
+        for (i=startIndex; i<stopIndex+1; i++)
+        {
+            BinaryInputWithStatus bi;
+            if ( ((data[0] & bitMask) >> shift) == 0x02)
+                flag = 0x81;
+            else
+                flag = 0x01;
 
-	    bi = BinaryInputWithStatus( flag);
-	    db_p->changePoint( addr, i,
-			       bi.pointType,
-			       bi.value,
-			       bi.timestamp);
+            bi = BinaryInputWithStatus( flag);
+            db_p->changePoint( addr, i,
+                               bi.pointType,
+                               bi.value,
+                               bi.timestamp);
 
-	    if ((bitMask == 0xC0) || (i == stopIndex))
-		data.pop_front();
+            if ((bitMask == 0xC0) || (i == stopIndex))
+                data.pop_front();
 
-	    if (bitMask == 0xC0)
-	    {
-		bitMask = 0x03;
-		shift = 0;
-	    }
-	    else
-	    {
-		bitMask = bitMask << 2;
-		shift += 2;
-	    }
+            if (bitMask == 0xC0)
+            {
+                bitMask = 0x03;
+                shift = 0;
+            }
+            else
+            {
+                bitMask = bitMask << 2;
+                shift += 2;
+            }
 
-	}
+        }
 
     }
     else
     {
-	if (objectMap.count( key( grp, var)) == 0)
-	{
-	    stats.logAbnormal(0,"Rx Unsupported Object grp=%d var=%d",grp,var);
-	    throw(__LINE__);
-	}
+        if (objectMap.count( key( grp, var)) == 0)
+        {
+            stats.logAbnormal(0,"Rx Unsupported Object grp=%d var=%d",grp,var);
+            throw(__LINE__);
+        }
 
-	obj_p = objectMap[ key( grp, var)];
+        obj_p = objectMap[ key( grp, var)];
 
-	if (startIndex == DnpObject::NO_INDEX)
-	{
-	    if (objectSize > 0)
-	    {
-		// this is a variable sized object and the object size
-		// was specified in the header
-		obj_p->decode(data, objectSize);
-	    }
-	    else
-	    {
-		obj_p->decode(data);    // init instance
-	    }
-	}
-	else
-	{
-	    for (i=startIndex; i<stopIndex+1; i++)
-	    {
-		obj_p->decode(data);    // init instance
+        if (startIndex == DnpObject::NO_INDEX)
+        {
+            if (objectSize > 0)
+            {
+                // this is a variable sized object and the object size
+                // was specified in the header
+                obj_p->decode(data, objectSize);
+            }
+            else
+            {
+                obj_p->decode(data);    // init instance
+            }
+        }
+        else
+        {
+            for (i=startIndex; i<stopIndex+1; i++)
+            {
+                obj_p->decode(data);    // init instance
 
-		if ((grp == 2) and (var == 2))
-		    // handle another special case
-		    // we need to add the CTO to get a dnp time
-		    obj_p->timestamp += cto;
-		
-		db_p->changePoint(addr, i,
-				  obj_p->pointType,
-				  obj_p->value,
-				  obj_p->timestamp);
-	    }
-	}
+                if ((grp == 2) and (var == 2))
+                    // handle another special case
+                    // we need to add the CTO to get a dnp time
+                    obj_p->timestamp += cto;
+                
+                db_p->changePoint(addr, i,
+                                  obj_p->pointType,
+                                  obj_p->value,
+                                  obj_p->timestamp);
+            }
+        }
     }
 
     lastObjectParsed = obj_p;

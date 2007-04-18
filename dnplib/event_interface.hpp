@@ -40,28 +40,28 @@ class EventInterface
 public:
 
     enum PointType_t { AI = 0,   // Analog Input
-		       BI,       // Binary Input
-		       CI,       // Couter Inout
-		       AO,       // Analog Output
-		       BO,       // Binary Ouput
-		       NONE,     // No physical point
-		       ST,       // generic stat
-		       AP_AB_ST, // app abnormal stat
-		       AP_NM_ST, // app normal stat
-		       DL_AB_ST, // datalink abnormal stat
-		       DL_NM_ST, // datalink normal stat
-		       SA_AB_ST, // secure auth abnormal stat
-		       SA_NM_ST, // secure auth normal stat
-		       EP_AB_ST, // end point abnormal stat
-		       EP_NM_ST, // end point normal stat
-		       NUM_POINT_TYPES 
+                       BI,       // Binary Input
+                       CI,       // Couter Inout
+                       AO,       // Analog Output
+                       BO,       // Binary Ouput
+                       NONE,     // No physical point
+                       ST,       // generic stat
+                       AP_AB_ST, // app abnormal stat
+                       AP_NM_ST, // app normal stat
+                       DL_AB_ST, // datalink abnormal stat
+                       DL_NM_ST, // datalink normal stat
+                       SA_AB_ST, // secure auth abnormal stat
+                       SA_NM_ST, // secure auth normal stat
+                       EP_AB_ST, // end point abnormal stat
+                       EP_NM_ST, // end point normal stat
+                       NUM_POINT_TYPES 
   };     // Statistic
  
     virtual void changePoint(    DnpAddr_t      addr,
-			         DnpIndex_t     index,
-			         PointType_t    pointType,
-			         int            value,
-			         DnpTime_t      timestamp=0 )=0;
+                                 DnpIndex_t     index,
+                                 PointType_t    pointType,
+                                 int            value,
+                                 DnpTime_t      timestamp=0 )=0;
 
     // use this method if you want the name of a unique dnp point
     // to be something other than the default
@@ -70,9 +70,9 @@ public:
     // value is optional, if the point is new it will be initialize
     // to the value provided
     virtual void registerName(   DnpAddr_t      addr,
-				 DnpIndex_t     index,
-				 PointType_t    pointType,
-				 char*          name,
+                                 DnpIndex_t     index,
+                                 PointType_t    pointType,
+                                 char*          name,
                                  int            initValue=0  )=0;
 
     virtual ~EventInterface();

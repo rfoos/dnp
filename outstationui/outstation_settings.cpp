@@ -29,7 +29,7 @@
 #include "outstation_settings.hpp"
 
 OutstationSettings::OutstationSettings( Outstation* o_p,
-					TimersGroup* t_p, QWidget* parent) :
+                                        TimersGroup* t_p, QWidget* parent) :
   QFrame(parent),
   outstation_p(o_p),
   timers_p(t_p)
@@ -91,13 +91,13 @@ void OutstationSettings::setSecAuth(bool on)
 {
     if (on)
     {
-	timers_p->sessionKeyTimer->setEnabled(true);
-	timers_p->challengeTimer->setEnabled(true);
+        timers_p->sessionKeyTimer->setEnabled(true);
+        timers_p->challengeTimer->setEnabled(true);
     }
     else
     {
-	timers_p->sessionKeyTimer->setEnabled(false);
-	timers_p->challengeTimer->setEnabled(false);
+        timers_p->sessionKeyTimer->setEnabled(false);
+        timers_p->challengeTimer->setEnabled(false);
     }
 
 

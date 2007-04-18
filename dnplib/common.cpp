@@ -73,8 +73,8 @@ char* hex_repr( const Bytes& ab, char* buf, unsigned int buf_len)
     unsigned int i,j;
     // two chars for hex digit and one for space + one for null 
     if ((ab.size()*3+1) < buf_len)
-	// only print at max buf_len chars
-	buf_len = ab.size()*3 + 1;
+        // only print at max buf_len chars
+        buf_len = ab.size()*3 + 1;
     for (i=0, j=0; i<ab.size(); i++, j++)
     {
         buf[j]= dnpHex[ (ab[i]>>4) & 0x0f];
@@ -96,18 +96,18 @@ void randGen(Bytes& data, int len)
     // Note, this does not meet the random number generation standard
     // specified in FIPS186-2 
     // for(i=0; i<len; i++)
-    // 	   data.push_back(rand() & 0xff);
+    //     data.push_back(rand() & 0xff);
 
     // create a seed value
     unsigned char seed[16];
     for(i=0; i<sizeof(seed); i++)
-	seed[i] = (rand() & 0xff);
+        seed[i] = (rand() & 0xff);
 
     unsigned int randLen; // must be a multiple of 40 and at least len
     if (len % 40 == 0)
-	randLen = len;
+        randLen = len;
     else
-	randLen = len + (40 - (len % 40));
+        randLen = len + (40 - (len % 40));
 
     unsigned char randData[randLen];
 
@@ -174,7 +174,7 @@ uint64_t removeUINT48(Bytes& data) throw(int)
     uint64_t val;
 
     if(data.size() < 6)
-	throw(__LINE__);
+        throw(__LINE__);
 
     val = ((uint64_t) data[5]) << 40;
     val |= ((uint64_t) data[4]) << 32;
@@ -197,7 +197,7 @@ uint32_t removeUINT32(Bytes& data) throw(int)
     uint32_t val;
 
     if(data.size() < 4)
-	throw(__LINE__);
+        throw(__LINE__);
 
     val = data[3] << 24;
     val |= data[2] << 16;
@@ -216,7 +216,7 @@ uint32_t removeUINT24(Bytes& data) throw(int)
     uint32_t val;
 
     if(data.size() < 3)
-	throw(__LINE__);
+        throw(__LINE__);
 
     val = data[2] << 16;
     val |= data[1] << 8;
@@ -233,7 +233,7 @@ uint16_t removeUINT16(Bytes& data) throw(int)
     uint16_t val;
 
     if(data.size() < 2)
-	throw(__LINE__);
+        throw(__LINE__);
 
     val = data[1] << 8;
     val |= data[0];
@@ -248,7 +248,7 @@ uint8_t removeUINT8(Bytes& data) throw(int)
     uint8_t val;
 
     if(data.size() < 1)
-	throw(__LINE__);
+        throw(__LINE__);
 
     val = data[0];
     data.pop_front();
@@ -271,7 +271,7 @@ int16_t removeINT16(Bytes& data) throw(int)
 void moveBytes(Bytes& data, Bytes& val, unsigned int len) throw(int)
 {
     if(data.size() < len)
-	throw(__LINE__);
+        throw(__LINE__);
     val.insert(val.end(), data.begin(), data.begin() + len);
 
     data.erase(data.begin(), data.begin() + len);

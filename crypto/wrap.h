@@ -48,7 +48,7 @@ extern "C" {
  * @return 0      on success.
  */
 int aes_wrap(const unsigned char* key, int n, const unsigned char* in,
-	     unsigned char* out);
+             unsigned char* out);
 
 
 /**
@@ -64,7 +64,7 @@ int aes_wrap(const unsigned char* key, int n, const unsigned char* in,
  * @return -1     on IV mismatch.
  */
 int aes_unwrap(const unsigned char* key, int n, const unsigned char* in, 
-	       unsigned char* out);
+               unsigned char* out);
 
 
 
@@ -82,7 +82,7 @@ int aes_unwrap(const unsigned char* key, int n, const unsigned char* in,
  */
 
 void gen_rand(unsigned char *seed, size_t seed_len, unsigned char *x, 
-	      size_t xlen);
+              size_t xlen);
 
 #ifdef __cplusplus
 }

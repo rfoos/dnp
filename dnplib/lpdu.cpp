@@ -191,13 +191,13 @@ void Lpdu::getUserData( UserData &u) const
     {
         if (ab.end()-i >= 18)
         {
-	    // don't incl the 2 crc bytes
-	    u.data.insert(u.data.end(), i, i+16);
+            // don't incl the 2 crc bytes
+            u.data.insert(u.data.end(), i, i+16);
         }
         else
         {
-	    // don't incl the last 2 crc bytes
-	    u.data.insert(u.data.end(), i, ab.end()-2);
+            // don't incl the last 2 crc bytes
+            u.data.insert(u.data.end(), i, ab.end()-2);
         }
     }
     // fill in the src and dest
@@ -222,8 +222,8 @@ char* Lpdu::str(char* buf, int len) const
     int dest = getDest();
     int src = getSrc();
     snprintf(buf, len,
-	  "%s [Dir:%d,Prm:%d,Fcv:%d] Len=%d, Dest=%d, Src=%d\n",
-	     fcStr, dir, prm, fcv, lenField, dest, src);
+          "%s [Dir:%d,Prm:%d,Fcv:%d] Len=%d, Dest=%d, Src=%d\n",
+             fcStr, dir, prm, fcv, lenField, dest, src);
     return buf;
 }
 
@@ -245,9 +245,9 @@ bool Lpdu::buildFromBytes(Bytes& data)
             /*  we've already detected the first octet, 0x05 */
             if (*i == 0x64)
             {
-		ab.push_back(*i);
-		i++;
-		data.pop_front();
+                ab.push_back(*i);
+                i++;
+                data.pop_front();
                 stats_p->increment( RX_START_OCTETS);
             }
             else
@@ -263,14 +263,14 @@ bool Lpdu::buildFromBytes(Bytes& data)
             {
                 if (*i == 0x05)
                 {
-		    ab.push_back(*i);
-		    data.pop_front();
+                    ab.push_back(*i);
+                    data.pop_front();
                 }
                 else
                 {
                     stats_p->increment( LOST_BYTES);
-	        }
-		/* no matter what this byte was we are done with it */
+                }
+                /* no matter what this byte was we are done with it */
                 i = data.end();
                 break;  
             }
@@ -279,44 +279,44 @@ bool Lpdu::buildFromBytes(Bytes& data)
                 /* search for the start octects - always 0x0564 */
                 while (i != data.end())
                 {
-	            if (*i == 0x05)
+                    if (*i == 0x05)
                     {
                         if (data.end()-i == 1)
                         {
-	                    /* the start octets could be split accross reads */
-			    ab.push_back(*i);
-			    i = data.end();
+                            /* the start octets could be split accross reads */
+                            ab.push_back(*i);
+                            i = data.end();
                         }
                         else if (*(i+1) == 0x64)
                         {
-	                    /* found the start octets */
-			    ab.push_back(*i);
-			    i++;
-			    ab.push_back(*i);
-			    i++;
-			    data.pop_front();
-			    data.pop_front();
+                            /* found the start octets */
+                            ab.push_back(*i);
+                            i++;
+                            ab.push_back(*i);
+                            i++;
+                            data.pop_front();
+                            data.pop_front();
                             stats_p->increment( RX_START_OCTETS);
                             break;
-	                }
+                        }
                         else
-	                {
-			    /* only the 0x05 found */
+                        {
+                            /* only the 0x05 found */
                             stats_p->increment( LOST_BYTES);
                             /* keep trying with the remaining slice */
-			    i++;
-			    data.pop_front();
+                            i++;
+                            data.pop_front();
                         }
                     } /* end if 0x05 */
                     else
-	            {
+                    {
                         stats_p->increment( LOST_BYTES);
                         /* keep trying with the remaining slice */
-			i++;
-			data.pop_front();
-	            }
+                        i++;
+                        data.pop_front();
+                    }
 
-	        } /* end while i!=data.end() (the search for start octects*/
+                } /* end while i!=data.end() (the search for start octects*/
   
             } /* end else data size == 1 */
 
@@ -325,7 +325,7 @@ bool Lpdu::buildFromBytes(Bytes& data)
         {
             if ((ab.size() > 1) &&
                 (ab.size() < HEADER_SIZE) &&
-	        (data.size() > 0) )
+                (data.size() > 0) )
             {
                 /* start octets found and data still left in buf but we still
                  * have not fully read in the header yet ...
@@ -338,28 +338,28 @@ bool Lpdu::buildFromBytes(Bytes& data)
                     bytesToAdd = bytesToCompleteHeader;
                 }
 
-		j = i+bytesToAdd;
-		ab.insert(ab.end(), i, j);
-		data.erase(i, j);
-		i = j;
+                j = i+bytesToAdd;
+                ab.insert(ab.end(), i, j);
+                data.erase(i, j);
+                i = j;
 
                 if (ab.size() == HEADER_SIZE)
-	        {
+                {
                     int headerOk = checkDatalinkHeader();
                     if (headerOk)
-	            {
+                    {
                         if (expectedLen == ab.size())
-	                {
+                        {
                             /* do not process reaming buf, save it for later */
-	                    lpduComplete = true;  
-			    break;
-	                }
-	            }
+                            lpduComplete = true;  
+                            break;
+                        }
+                    }
                     else
-	            {
+                    {
                         reset(); /* corrupt message - start over */
                     }
-	        } /* end if (len == HEADER_SIZE) */
+                } /* end if (len == HEADER_SIZE) */
             } /* end if haven't read in full header */
 
             if ((ab.size() >= HEADER_SIZE) && ( data.size() > 0 ))
@@ -369,13 +369,13 @@ bool Lpdu::buildFromBytes(Bytes& data)
                 int bytesToCompleteLpdu = expectedLen - ab.size();
                 int bytesToAdd = data.end()-i;
                 if (bytesToAdd > bytesToCompleteLpdu)
-	        {
+                {
                     bytesToAdd = bytesToCompleteLpdu;
-	        }
+                }
 
-		j = i + bytesToAdd;
-		ab.insert(ab.end(), i, j);
-		i = data.erase(i, j);
+                j = i + bytesToAdd;
+                ab.insert(ab.end(), i, j);
+                i = data.erase(i, j);
 
                 /* check the CRCs if the end of the complete frame */
                 if (ab.size() == expectedLen)
@@ -383,7 +383,7 @@ bool Lpdu::buildFromBytes(Bytes& data)
                     int remainderBytes =(ab.size() - HEADER_SIZE) % 18;
 
                     /* check CRCs on all 16 byte data chunks of the message */
-	            for (j=ab.begin()+HEADER_SIZE; j<ab.end()-18; j+=18)
+                    for (j=ab.begin()+HEADER_SIZE; j<ab.end()-18; j+=18)
                     { 
                         if (checkCrc( j, 18) == 0)
                         {
@@ -393,29 +393,29 @@ bool Lpdu::buildFromBytes(Bytes& data)
                         }
                     }
 
-	            /* check the CRC on the last variable block of bytes */
+                    /* check the CRC on the last variable block of bytes */
                     if (remainderBytes > 0)
-	            {
+                    {
                         /* because of the way we calculated expected length 
                          * remainder bytes will never be
                          * less than 3 (1 data 2 crc) */
-			assert(remainderBytes >= 3);
-			if(!checkCrc(ab.end()-remainderBytes,remainderBytes))
+                        assert(remainderBytes >= 3);
+                        if(!checkCrc(ab.end()-remainderBytes,remainderBytes))
                         { 
                             stats_p->increment( CRC_ERRORS);
                             reset();
                             break;
-	                }
-	            }
+                        }
+                    }
           
                     lpduComplete = true;
                     break; /* do not process anymore data, save it for later */
 
-	        } /* end if end of complete frame */
+                } /* end if end of complete frame */
 
             } /* end if header has been read */
 
-	} /* end else lpdu ab.size() > 0 */
+        } /* end else lpdu ab.size() > 0 */
 
     } /* closes while *buf_len > 0 */
 
@@ -423,9 +423,9 @@ bool Lpdu::buildFromBytes(Bytes& data)
 } 
 
 void Lpdu::build(uint8_t dir, uint8_t prm,
-		 uint8_t fcb, uint8_t fcvDfc,
-		 uint8_t fc,
-		 DnpAddr_t dest, DnpAddr_t src )
+                 uint8_t fcb, uint8_t fcvDfc,
+                 uint8_t fc,
+                 DnpAddr_t dest, DnpAddr_t src )
 {
     Bytes data;
     build(dir, prm, fcb, fcvDfc, fc, dest, src, data);
@@ -434,10 +434,10 @@ void Lpdu::build(uint8_t dir, uint8_t prm,
 // constructs the entire Lpdu from the inputs provided
 // and adds in the length field and all CRCs */
 void Lpdu::build(uint8_t dir, uint8_t prm,
-		 uint8_t fcb, uint8_t fcvDfc,
-		 uint8_t fc,
-		 DnpAddr_t dest, DnpAddr_t src,
-		 const Bytes& data)
+                 uint8_t fcb, uint8_t fcvDfc,
+                 uint8_t fc,
+                 DnpAddr_t dest, DnpAddr_t src,
+                 const Bytes& data)
 {      
     /* contruct the Data Link Control Field (DLC) */
     uint8_t dlc = (dir<<7) | (prm<<6) | (fcb<<5) | (fcvDfc<<4) | (fc);
@@ -463,17 +463,17 @@ void Lpdu::build(uint8_t dir, uint8_t prm,
     /* add in blocks of 16 bytes from the application Layer and add the CRC */
     for (i=data.begin(); i<data.end()-remainderBytes; i+=16)
     {
-	ab.insert(ab.end(), i, i+16);
-	crc = calculateCrc( i, 16);
-	appendUINT16( ab, crc);
+        ab.insert(ab.end(), i, i+16);
+        crc = calculateCrc( i, 16);
+        appendUINT16( ab, crc);
     }
 
     /* adding the remaining bytes from the application layer and the CRC */
     if (remainderBytes > 0) /* only add the app data if there is any */
     {
-	ab.insert(ab.end(), i, i+remainderBytes);
-	crc = calculateCrc( i, remainderBytes);
-	appendUINT16( ab, crc);
+        ab.insert(ab.end(), i, i+remainderBytes);
+        crc = calculateCrc( i, remainderBytes);
+        appendUINT16( ab, crc);
     }
 }
 
@@ -528,7 +528,7 @@ int Lpdu::checkCrc( Bytes::const_iterator j, int len)
     if (crc1 == crc2)
         return 1;
     else
-	return 0;
+        return 0;
 }
 
 unsigned int Lpdu::calculateCrc( Bytes::const_iterator j, int len)

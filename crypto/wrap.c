@@ -60,11 +60,11 @@ void print_bytes(unsigned char * buf, int size)
     int i;
     for (i=0; i<size; i++)
     {
-	printf("%02X ", buf[i]);
-	if (i%16 == 7)
-	    printf("- ");
-	if (i%16 == 15)
-	    printf("\n");
+        printf("%02X ", buf[i]);
+        if (i%16 == 7)
+            printf("- ");
+        if (i%16 == 15)
+            printf("\n");
     }
     printf("\n");
 }
@@ -78,28 +78,28 @@ int read_key(const char* file_name, unsigned char* key, int key_len)
 
     if((fd = open(file_name, O_RDONLY)) < 0)
     {
-	printf("Could not open file %s For reading: %d\n", 
-	       file_name, errno);
-	perror(NULL);
-	exit(1);
+        printf("Could not open file %s For reading: %d\n", 
+               file_name, errno);
+        perror(NULL);
+        exit(1);
     }
 
     if((ret = read(fd, inbuf, MAXLINE)) < 0)
     {
-	printf("Could not read from file %s: %d\n",
-	       file_name, errno);
-	perror(NULL);
-	close(fd);
-	exit(1);
+        printf("Could not read from file %s: %d\n",
+               file_name, errno);
+        perror(NULL);
+        close(fd);
+        exit(1);
     }
         
     close(fd);
 
     if (ret != key_len)
     {
-	printf("From %s: Expected %d bytes, read %d bytes\n", 
-	       file_name, key_len, ret);
-	return -2;
+        printf("From %s: Expected %d bytes, read %d bytes\n", 
+               file_name, key_len, ret);
+        return -2;
     }
 
     memcpy(key, inbuf, key_len);
@@ -119,7 +119,7 @@ int read_key(const char* file_name, unsigned char* key, int key_len)
  * @return 0      on success.
  */
 int aes_wrap(const unsigned char* key, int n, const unsigned char* in,
-	     unsigned char* out)
+             unsigned char* out)
 {
     unsigned char *a, *r;
     unsigned char b[16];
@@ -140,17 +140,17 @@ int aes_wrap(const unsigned char* key, int n, const unsigned char* in,
     /* Calculate Intermediate Values */
     for(j=0; j<6; j++)
     {
-	r = out + 8; /* first register */
-	for(i = 1; i <= n; i++)
-	{
-	    memcpy(b, a, 8); /* B = AES(K, A | R[i]) */
-	    memcpy(b + 8, r, 8);
-	    aes_encrypt(&context, b, b);
-	    memcpy(a, b, 8); /* A = MSB64(B) ^ t where t = (n*j) + i */
-	    a[7] ^= (n * j) + i;
-	    memcpy(r, b + 8, 8); /* R[i] = LSB64(B) */
-	    r += 8; /* next register */
-	}
+        r = out + 8; /* first register */
+        for(i = 1; i <= n; i++)
+        {
+            memcpy(b, a, 8); /* B = AES(K, A | R[i]) */
+            memcpy(b + 8, r, 8);
+            aes_encrypt(&context, b, b);
+            memcpy(a, b, 8); /* A = MSB64(B) ^ t where t = (n*j) + i */
+            a[7] ^= (n * j) + i;
+            memcpy(r, b + 8, 8); /* R[i] = LSB64(B) */
+            r += 8; /* next register */
+        }
     }
 
     return 0;
@@ -171,7 +171,7 @@ int aes_wrap(const unsigned char* key, int n, const unsigned char* in,
  * @return -1     on IV mismatch.
  */
 int aes_unwrap(const unsigned char* key, int n, const unsigned char* in, 
-	       unsigned char* out)
+               unsigned char* out)
 {
     unsigned char *r;
     unsigned char a[8], b[16];
@@ -190,25 +190,25 @@ int aes_unwrap(const unsigned char* key, int n, const unsigned char* in,
     /* Compute intermediate values */
     for (j = 5; j >= 0; j--)
     {
-	for (i = n; i > 0; i--)
-	{
-	    /* B = AES-1((A ^ t) | Ri), where t = (n * j) + i */
-	    a[7] ^= (n * j) + i;
-	    memcpy(b, a, 8);
-	    memcpy(b + 8, r + 8 * (i-1), 8);
-	    aes_decrypt(&context, b, b);
+        for (i = n; i > 0; i--)
+        {
+            /* B = AES-1((A ^ t) | Ri), where t = (n * j) + i */
+            a[7] ^= (n * j) + i;
+            memcpy(b, a, 8);
+            memcpy(b + 8, r + 8 * (i-1), 8);
+            aes_decrypt(&context, b, b);
 
-	    /* A = MSB64(B) */
-	    memcpy(a, b, 8);
+            /* A = MSB64(B) */
+            memcpy(a, b, 8);
 
-	    /* Ri = LSB64(B) */
-	    memcpy(r + 8 * (i-1), b + 8, 8);
-	}
+            /* Ri = LSB64(B) */
+            memcpy(r + 8 * (i-1), b + 8, 8);
+        }
     }
 
     /* verify IV: */
     if(memcmp(a, DNP_IV, sizeof(DNP_IV) - 1) != 0)
-	return -1;
+        return -1;
 
     return 0;
 }
@@ -217,15 +217,15 @@ int aes_key_wrap_test()
 {
     int ret;
     unsigned char k[16] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 
-			   0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F };
+                           0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F };
     unsigned char d[16] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
-			   0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF };
+                           0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF };
     unsigned char o[sizeof(d) + 8];
     unsigned char p[sizeof(d)];
     
     if((ret = aes_wrap(k, sizeof(d) / 8, d, o)) < 0)
     {
-	printf("aes_wrap error: %d\n", ret);
+        printf("aes_wrap error: %d\n", ret);
     }
 
     printf("key:\n");
@@ -237,7 +237,7 @@ int aes_key_wrap_test()
 
     if((ret = aes_unwrap(k, (sizeof(o) / 8) - 1, o, p)) < 0)
     {
-	printf("aes_unwrap error: %d\n", ret);
+        printf("aes_unwrap error: %d\n", ret);
     }
 
     printf("key:\n");
@@ -254,11 +254,11 @@ int aes_key_wrap_test()
 
 #ifndef HTONL
 #define HTONL(A) \
-{						\
-    A = (((A & 0xff000000) >> 24)		\
-	 | ((A & 0x00ff0000) >> 8)		\
-	 | ((A & 0x0000ff00) << 8)		\
-	 | ((A & 0x000000ff) << 24));		\
+{                                               \
+    A = (((A & 0xff000000) >> 24)               \
+         | ((A & 0x00ff0000) >> 8)              \
+         | ((A & 0x0000ff00) << 8)              \
+         | ((A & 0x000000ff) << 24));           \
 }
 #endif
 
@@ -275,7 +275,7 @@ int aes_key_wrap_test()
  *   Jouni Malinen <jkmaline@cc.hut.fi>   Dist. under GPL or BSD license
  */
 void gen_rand(unsigned char *seed, size_t seed_len, unsigned char *x, 
-	      size_t xlen)
+              size_t xlen)
 {
     unsigned char xkey[64] = {0};
     int i, j, m, k;
@@ -285,7 +285,7 @@ void gen_rand(unsigned char *seed, size_t seed_len, unsigned char *x,
     sha1_context ctx;
 
     if (seed_len > sizeof(xkey))
-	seed_len = sizeof(xkey);
+        seed_len = sizeof(xkey);
     /* 1. set XKEY */
     memcpy(xkey, seed, seed_len);
 
@@ -296,36 +296,36 @@ void gen_rand(unsigned char *seed, size_t seed_len, unsigned char *x,
     m = xlen / 40;
     for(j = 0; j < m; j++)
     {
-	/* 3.1 XSEEDj is not used. */
-	/* 3.2 for i = 0 to 1 do */
-	for(i=0;i<2;i++)
-	{
-	    /* XVAL = XKEY + XSEEDj */
+        /* 3.1 XSEEDj is not used. */
+        /* 3.2 for i = 0 to 1 do */
+        for(i=0;i<2;i++)
+        {
+            /* XVAL = XKEY + XSEEDj */
 
-	    /* wi = G(t, XVAL) */
-	    sha1_starts(&ctx);
-	    sha1_process(&ctx, xkey);
+            /* wi = G(t, XVAL) */
+            sha1_starts(&ctx);
+            sha1_process(&ctx, xkey);
 
-	    HTONL(ctx.state[0]);
-	    HTONL(ctx.state[1]);
-	    HTONL(ctx.state[2]);
-	    HTONL(ctx.state[3]);
-	    HTONL(ctx.state[4]);
+            HTONL(ctx.state[0]);
+            HTONL(ctx.state[1]);
+            HTONL(ctx.state[2]);
+            HTONL(ctx.state[3]);
+            HTONL(ctx.state[4]);
 
-	    memcpy(xpos, ctx.state, 20);
+            memcpy(xpos, ctx.state, 20);
 
-	    /* XKEY = (1 + XKEY + wi) */
-	    carry = 1;
-	    for (k=19; k>= 0; k--)
-	    {
-		carry += xkey[k] + xpos[k];
-		xkey[k] = carry & 0xff;
-		carry >>= 8;
-	    }
+            /* XKEY = (1 + XKEY + wi) */
+            carry = 1;
+            for (k=19; k>= 0; k--)
+            {
+                carry += xkey[k] + xpos[k];
+                xkey[k] = carry & 0xff;
+                carry >>= 8;
+            }
 
-	    xpos += 20;
-	}
-	
+            xpos += 20;
+        }
+        
     }
 }
 
@@ -365,8 +365,8 @@ int main2()
     ret = read_key(SESSION_KEY_FILE, session_key, SHA1_HMAC_SIZE);
     if (ret < 0)
     {
-	printf("read_key() returned %d, exiting", ret);
-	exit(1);
+        printf("read_key() returned %d, exiting", ret);
+        exit(1);
     }
 
     printf("Read Session Key successfully:\n");
@@ -377,8 +377,8 @@ int main2()
     ret = read_key(UPDATE_KEY_FILE, update_key, AES_128_SIZE);
     if (ret < 0)
     {
-	printf("read_key() returned %d, exiting", ret);
-	exit(1);
+        printf("read_key() returned %d, exiting", ret);
+        exit(1);
     }
 
     printf("Read Update Key successfully:\n");
@@ -400,19 +400,19 @@ int main2()
     /**** Read in the random data ****/
     if((fd = open(TESTFILE,O_RDONLY)) < 0)
     {
-	printf("Could not open file " TESTFILE " For reading: %d", 
-	       errno);
-	perror(NULL);
-	exit(1);
+        printf("Could not open file " TESTFILE " For reading: %d", 
+               errno);
+        perror(NULL);
+        exit(1);
     }
 
     if((ret = read(fd, inbuf, MAXLINE)) < 0)
     {
-	printf("Could not read from file " TESTFILE ": %d", 
-	       errno);
-	perror(NULL);
-	close(fd);
-	exit(1);
+        printf("Could not read from file " TESTFILE ": %d", 
+               errno);
+        perror(NULL);
+        close(fd);
+        exit(1);
     }
     
     close(fd);
@@ -429,7 +429,7 @@ int main2()
     printf("Data used for HMAC:\n");
     print_bytes(data_to_hash, hash_data_len);
     sha1_hmac(update_key, sizeof(update_key), data_to_hash, 
-	      hash_data_len, hmac_buf);
+              hash_data_len, hmac_buf);
 
     printf("HMAC-SHA1:\n");
     print_bytes(hmac_buf, 20);
@@ -438,7 +438,7 @@ int main2()
 
     /*  Create the HMAC-256  */
     sha2_hmac(update_key, sizeof(update_key), data_to_hash, 
-	      hash_data_len, hmac2_buf);
+              hash_data_len, hmac2_buf);
     printf("\nHMAC-SHA2:\n");
     print_bytes(hmac2_buf, 32);
 

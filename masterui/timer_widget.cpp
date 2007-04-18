@@ -70,13 +70,13 @@ void TimerWidget::setLedOn(bool on)
 {
     if (on)
     {
-	active = true;
-	activeLed->setPixmap(onPixmap);
+        active = true;
+        activeLed->setPixmap(onPixmap);
     }
     else
     {
-	active = false;
-	activeLed->setPixmap(offPixmap);
+        active = false;
+        activeLed->setPixmap(offPixmap);
     }
 
 }
@@ -85,19 +85,19 @@ void TimerWidget::manualMode(int state)
 {
     if (active)
     {
-	if (state == Qt::Checked)
-	{
-	    timer->stop();
-	    if (active)
-		expire->setEnabled(true);
-	}
-	else if (state == Qt::Unchecked)
-	{
-	    expire->setEnabled(false);
-	    timer->start();
-	}
-	else
-	    assert(0);
+        if (state == Qt::Checked)
+        {
+            timer->stop();
+            if (active)
+                expire->setEnabled(true);
+        }
+        else if (state == Qt::Unchecked)
+        {
+            expire->setEnabled(false);
+            timer->start();
+        }
+        else
+            assert(0);
     }
 }
 
@@ -113,11 +113,11 @@ void TimerWidget::start()
     setLedOn(true);
     if (manual->isChecked())
     {
-	expire->setEnabled(true);
+        expire->setEnabled(true);
     }
     else
     {
-	timer->start();
+        timer->start();
     }
 }
 
@@ -139,7 +139,7 @@ void TimerWidget::stop()
     QSettings qsettings("TurnerTech", "DnpMasterStation");
     responseTimer = new TimerWidget("Response", TimerInterface::RESPONSE);
     responseTimer->timer->setInterval(
-		        qsettings.value("timers/response_ms").toInt());
+                        qsettings.value("timers/response_ms").toInt());
 
 
     timers[TimerInterface::RESPONSE] = responseTimer;
@@ -147,7 +147,7 @@ void TimerWidget::stop()
 
     challengeTimer = new TimerWidget("Challenge", TimerInterface::CHALLENGE);
     challengeTimer->timer->setInterval(
-			      qsettings.value("timers/challenge_ms").toInt());
+                              qsettings.value("timers/challenge_ms").toInt());
 
     timers[TimerInterface::CHALLENGE] = challengeTimer;
     timersLayout->addWidget(challengeTimer);
@@ -155,26 +155,26 @@ void TimerWidget::stop()
 
     if (master)
     {
-	keyChangeTimer = new TimerWidget("Key Change",
-					 TimerInterface::KEY_CHANGE);
-	keyChangeTimer->timer->setInterval(
-		         qsettings.value("timers/keyChange_ms").toInt());
-	
-	timers[TimerInterface::KEY_CHANGE] = keyChangeTimer;
-	timersLayout->addWidget(keyChangeTimer);
-	keyChangeTimer->setEnabled(false);
+        keyChangeTimer = new TimerWidget("Key Change",
+                                         TimerInterface::KEY_CHANGE);
+        keyChangeTimer->timer->setInterval(
+                         qsettings.value("timers/keyChange_ms").toInt());
+        
+        timers[TimerInterface::KEY_CHANGE] = keyChangeTimer;
+        timersLayout->addWidget(keyChangeTimer);
+        keyChangeTimer->setEnabled(false);
 
     }
     else
     {
-	sessionKeyTimer = new TimerWidget("Session Key",
-					  TimerInterface::SESSION_KEY);
-	sessionKeyTimer->timer->setInterval(
-			  qsettings.value("timers/sessionKey_ms").toInt());
+        sessionKeyTimer = new TimerWidget("Session Key",
+                                          TimerInterface::SESSION_KEY);
+        sessionKeyTimer->timer->setInterval(
+                          qsettings.value("timers/sessionKey_ms").toInt());
 
-	timers[TimerInterface::SESSION_KEY] = sessionKeyTimer;
-	timersLayout->addWidget(sessionKeyTimer);
-	sessionKeyTimer->setEnabled(false);
+        timers[TimerInterface::SESSION_KEY] = sessionKeyTimer;
+        timersLayout->addWidget(sessionKeyTimer);
+        sessionKeyTimer->setEnabled(false);
     }
 
 

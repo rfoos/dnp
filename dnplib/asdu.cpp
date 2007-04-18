@@ -38,30 +38,30 @@ void AppSeqNum::increment( AppSeqNum_t& seqNum)
 void AppSeqNum::decrement( AppSeqNum_t& seqNum)
 {
     if (seqNum == 0)
-	seqNum = 0x0f;
+        seqNum = 0x0f;
     else
-	seqNum--;
+        seqNum--;
 }
 
 AppHeader::AppHeader( bool fir, bool fin,
-		      bool con, bool uns, AppSeqNum_t seq,
-		      FunctionCode fc, uint16_t iin)
+                      bool con, bool uns, AppSeqNum_t seq,
+                      FunctionCode fc, uint16_t iin)
 {
     if (fc & 0x80)
     {
-	// must be a repsonse
-	a[0] = ((fin<<6) | (fir<<7) | (con<<5) | (uns<<4) | (seq));
-	a[1] = fc;
-	a[2] = iin & 0xff;
-	a[3] = (iin >> 8) & 0xff;
-	len = 4;
+        // must be a repsonse
+        a[0] = ((fin<<6) | (fir<<7) | (con<<5) | (uns<<4) | (seq));
+        a[1] = fc;
+        a[2] = iin & 0xff;
+        a[3] = (iin >> 8) & 0xff;
+        len = 4;
     }
     else
     {
-	// must be a request
-	a[0] = ((fin<<6) | (fir<<7) | (con<<5) | (uns<<4) | (seq));
-	a[1] = fc;
-	len = 2;
+        // must be a request
+        a[0] = ((fin<<6) | (fir<<7) | (con<<5) | (uns<<4) | (seq));
+        a[1] = fc;
+        len = 2;
     }
 }
 
@@ -74,7 +74,7 @@ void AppHeader::encode( Bytes& fragment)
     fragment.resize(len);
 
     for (i=0; i<len; i++)
-	fragment[i] = a[i];
+        fragment[i] = a[i];
 }
 
 void AppHeader::decode( Bytes& fragment)
@@ -84,8 +84,8 @@ void AppHeader::decode( Bytes& fragment)
     // for a response the app header is 4 bytes and for a request 2 bytes
     if (fragment[1] & 0x80)
     {
-	assert(fragment.size() >= 4);
-	len = 4; //  this is a response
+        assert(fragment.size() >= 4);
+        len = 4; //  this is a response
         a[0] = fragment[0];
         a[1] = fragment[1];
         a[2] = fragment[2];
@@ -93,7 +93,7 @@ void AppHeader::decode( Bytes& fragment)
     }
     else
     {
-	len = 2;  /* this is a request */
+        len = 2;  /* this is a request */
         a[0] = fragment[0];
         a[1] = fragment[1];
     }
@@ -105,9 +105,9 @@ void AppHeader::decode( Bytes& fragment)
 void AppHeader::setConfirm( bool con)
 {
     if (con)
-	a[0] &= 0xdf;
+        a[0] &= 0xdf;
     else 
-	a[0] |= 0x20;
+        a[0] |= 0x20;
 }
 
 bool AppHeader::getFirst()
@@ -165,19 +165,19 @@ char* AppHeader::str( char* buf, int len)
     FunctionCode fn = getFn();
     if (fn & 0x80)
     {
-	snprintf( buf, len,
+        snprintf( buf, len,
                  "Ap: Rsp [Fn:%d,FIR=%d,FIN=%d,CON=%d,UNS=%d,SEQ=%d,II=%04x]",
-		  fn, getFirst(), getFinal(),
-		  getConfirm(), getUnsolicited(),
-		  getSeqNum(), getIIN());
+                  fn, getFirst(), getFinal(),
+                  getConfirm(), getUnsolicited(),
+                  getSeqNum(), getIIN());
     }
     else
     {
-	snprintf( buf, len,
-		  "Ap: Req [Fn:%d,FIR=%d,FIN=%d,CON=%d,UNS=%d,SEQ=%d]",
-		  fn, getFirst(), getFinal(),
-		  getConfirm(), getUnsolicited(),
-		  getSeqNum() );
+        snprintf( buf, len,
+                  "Ap: Req [Fn:%d,FIR=%d,FIN=%d,CON=%d,UNS=%d,SEQ=%d]",
+                  fn, getFirst(), getFinal(),
+                  getConfirm(), getUnsolicited(),
+                  getSeqNum() );
     }
     return buf;
 }

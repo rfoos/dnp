@@ -39,10 +39,10 @@ class DnpObject
     static const uint8_t ONLINE               = 0x01;
 
     DnpObject(int32_t val=0,
-	      uint8_t flags=0,
-	      DnpIndex_t indx=0,
-	      EventInterface::PointType_t pt = EventInterface::ST,
-	      DnpTime_t time=0);
+              uint8_t flags=0,
+              DnpIndex_t indx=0,
+              EventInterface::PointType_t pt = EventInterface::ST,
+              DnpTime_t time=0);
 
     // the following methods are not pure virtuals because it
     // is not required that every single object use them
@@ -93,7 +93,7 @@ class BinaryInputEventRelativeTime : public DnpObject
 {
   public:
     BinaryInputEventRelativeTime(uint8_t flag=ONLINE, DnpIndex_t index=0,
-				 DnpTime_t time=0);
+                                 DnpTime_t time=0);
     void encode(Bytes& data) const;
     void decode(Bytes& data) throw(int);
 };
@@ -113,29 +113,29 @@ class ControlOutputRelayBlock : public DnpObject
 {
   public:
     enum Code      { NUL       = 0,
-		     PULSE_ON  = 1,
-		     PULSE_OFF = 2,
-		     LATCH_ON  = 3,
-		     LATCH_OFF = 4,
-		     TRIP      = 0x40,
-		     CLOSE     = 0x80 };
+                     PULSE_ON  = 1,
+                     PULSE_OFF = 2,
+                     LATCH_ON  = 3,
+                     LATCH_OFF = 4,
+                     TRIP      = 0x40,
+                     CLOSE     = 0x80 };
 
 
     enum Status    { ACCEPTED       = 0,
-		     ARM_TIMEOUT    = 1,
-		     NO_SELECT      = 2,
-		     FORMAT_ERROR   = 3,
-		     NOT_SUPPORTED  = 4,
-		     ALREADY_ACTIVE = 5,
-		     HARDWARE_ERROR = 6,
-		     LOCAL          = 7,
-		     TOO_MANY_OPS   = 8,
-		     NOT_AUTHORIZED = 9,
-		     UNDEFINED      = 127 };
+                     ARM_TIMEOUT    = 1,
+                     NO_SELECT      = 2,
+                     FORMAT_ERROR   = 3,
+                     NOT_SUPPORTED  = 4,
+                     ALREADY_ACTIVE = 5,
+                     HARDWARE_ERROR = 6,
+                     LOCAL          = 7,
+                     TOO_MANY_OPS   = 8,
+                     NOT_AUTHORIZED = 9,
+                     UNDEFINED      = 127 };
 
     ControlOutputRelayBlock(Code code=TRIP, DnpIndex_t index=0,
-			    uint32_t on=1000, uint32_t off=1000,
-			    Status st=ACCEPTED);
+                            uint32_t on=1000, uint32_t off=1000,
+                            Status st=ACCEPTED);
     void encode(Bytes& data) const;
     void decode(Bytes& data) throw(int);
     Code      outputCode;
@@ -239,19 +239,19 @@ class Bit16AnalogOutput : public DnpObject
 {
   public:
     enum Status    { ACCEPTED       = 0,
-		     ARM_TIMEOUT    = 1,
-		     NO_SELECT      = 2,
-		     FORMAT_ERROR   = 3,
-		     NOT_SUPPORTED  = 4,
-		     ALREADY_ACTIVE = 5,
-		     HARDWARE_ERROR = 6,
-		     LOCAL          = 7,
-		     TOO_MANY_OPS   = 8,
-		     NOT_AUTHORIZED = 9,
-		     UNDEFINED      = 127 };
+                     ARM_TIMEOUT    = 1,
+                     NO_SELECT      = 2,
+                     FORMAT_ERROR   = 3,
+                     NOT_SUPPORTED  = 4,
+                     ALREADY_ACTIVE = 5,
+                     HARDWARE_ERROR = 6,
+                     LOCAL          = 7,
+                     TOO_MANY_OPS   = 8,
+                     NOT_AUTHORIZED = 9,
+                     UNDEFINED      = 127 };
 
     Bit16AnalogOutput(uint16_t requestedValue=0, DnpIndex_t index=0,
-		      Status st=ACCEPTED);
+                      Status st=ACCEPTED);
     void encode(Bytes& data) const;
     void decode(Bytes& data) throw(int);
     uint16_t  request;
@@ -299,14 +299,14 @@ class Challenge : public DnpObject
                               SHA_1    = 2 };
 
     enum ChallengeReason    { INIT     = 1,
-			      CRITICAL = 2,
-			      PERIODIC = 3 };
+                              CRITICAL = 2,
+                              PERIODIC = 3 };
 
     static const int MIN_CHALLENGE_SIZE = 4;
 
     Challenge() {};
     Challenge(uint32_t challengeSeqNum, UserNumber_t num, 
-	      HMACAlgorithm algorithm, ChallengeReason reason);
+              HMACAlgorithm algorithm, ChallengeReason reason);
 
     void decode(Bytes& data, uint32_t objectSize) throw(int);
     void encode(Bytes& data) const;
@@ -355,18 +355,18 @@ class SessionKeyStatus : public DnpObject
 {
   public:
     enum KeyStatus        { OK        = 1,
-		   	    NOT_INIT  = 2,
-			    LINK_FAIL = 3,
-			    AUTH_FAIL = 4 };
+                            NOT_INIT  = 2,
+                            LINK_FAIL = 3,
+                            AUTH_FAIL = 4 };
 
     enum KeyWrapAlgorithm { AES_128   = 1,
-		       	    AES_256   = 2 };
+                            AES_256   = 2 };
 
     SessionKeyStatus() {};
     SessionKeyStatus( uint32_t seqNum, UserNumber_t num, 
-		      KeyWrapAlgorithm algorithm,
-		      KeyStatus status,
-		      Bytes& data);
+                      KeyWrapAlgorithm algorithm,
+                      KeyStatus status,
+                      Bytes& data);
 
     void decode(Bytes& data, uint32_t objectSize) throw(int);
     void encode(Bytes& data) const;
@@ -405,17 +405,17 @@ class AuthenticationError : public DnpObject
 
     // all these errors are considered abnormal for stats purposes
     enum ErrorReason    {   NOT_USED              = 0,
-			    AUTHENTICATION_FAILED = 1,
-			    UNEXPECTED_RESPONSE   = 2,
-			    NO_RESPONSE           = 3,
-			    AGGRESSIVE_MODE_NOT_PERMITTED = 4,
-			    HMAC_ALGORITHM_NOT_PERMITTED = 5,
-			    KEY_WRAP_ALGORITHM_NOT_PERMITTED = 6,
-			    NUM_ERROR_REASONS = 7};
+                            AUTHENTICATION_FAILED = 1,
+                            UNEXPECTED_RESPONSE   = 2,
+                            NO_RESPONSE           = 3,
+                            AGGRESSIVE_MODE_NOT_PERMITTED = 4,
+                            HMAC_ALGORITHM_NOT_PERMITTED = 5,
+                            KEY_WRAP_ALGORITHM_NOT_PERMITTED = 6,
+                            NUM_ERROR_REASONS = 7};
 
     AuthenticationError() {};
     AuthenticationError(uint32_t sequenceNum, UserNumber_t num,
-			ErrorReason errReason, Bytes& text);
+                        ErrorReason errReason, Bytes& text);
 
     void decode(Bytes& data, uint32_t objectSize) throw(int);
     void encode(Bytes& data) const;

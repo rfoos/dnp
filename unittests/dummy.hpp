@@ -37,16 +37,16 @@ class DummyDb : public EventInterface
 public:
     DummyDb();
     virtual void changePoint(   DnpAddr_t      addr,
-				DnpIndex_t     index,
-				PointType_t    pointType,
-				int            value,
-				DnpTime_t      timestamp=0);
+                                DnpIndex_t     index,
+                                PointType_t    pointType,
+                                int            value,
+                                DnpTime_t      timestamp=0);
 
     virtual void registerName(  DnpAddr_t      addr,
-				DnpIndex_t     index,
-				PointType_t    pointType,
-				char*          name,
-				int            initialValue=0);
+                                DnpIndex_t     index,
+                                PointType_t    pointType,
+                                char*          name,
+                                int            initialValue=0);
     int numInits;
     int numChanges;
 };

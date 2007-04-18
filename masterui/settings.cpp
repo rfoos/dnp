@@ -29,7 +29,7 @@
 #include "settings.hpp"
 
 Settings::Settings( Master* m_p, TimersGroup* t_p, QWidget* parent,
-		    DnpAddr_t addr) :
+                    DnpAddr_t addr) :
   QFrame(parent),
   master_p(m_p),
   timers_p(t_p),
@@ -98,7 +98,7 @@ void Settings::createOperationGroup()
 
 void Settings::createControlGroup()
 {
-			      
+                              
 
     controlGroup = new QGroupBox(this);
     controlGroup->setAttribute(Qt::WA_ContentsPropagated);
@@ -191,40 +191,40 @@ void Settings::allowRequests(bool allow)
 
     if (allow)
     {
-	// printf("****** Allowing Requests **********\n");
-	if (singleShot->isChecked() == false)
-	{
-	    // this is continuous mode
-	    if (!delayTimer->isActive() && pollButton->isChecked()) 
-		delayTimer->start();
-	}
-	else
-	{
-	    // ensure aftert switch from continuous it is right button type
-	    pollButton->setChecked(false);
-	    pollButton->setCheckable(false);
-	}
-	    
-	if (requestsAllowed == allow)
-	    return; // no need to do more - buttons should be in proper state
+        // printf("****** Allowing Requests **********\n");
+        if (singleShot->isChecked() == false)
+        {
+            // this is continuous mode
+            if (!delayTimer->isActive() && pollButton->isChecked()) 
+                delayTimer->start();
+        }
+        else
+        {
+            // ensure aftert switch from continuous it is right button type
+            pollButton->setChecked(false);
+            pollButton->setCheckable(false);
+        }
+            
+        if (requestsAllowed == allow)
+            return; // no need to do more - buttons should be in proper state
 
-	pollButton->setEnabled(true);
-	operationGroup->setEnabled(true);
-	controlGroup->setEnabled(true);
+        pollButton->setEnabled(true);
+        operationGroup->setEnabled(true);
+        controlGroup->setEnabled(true);
     }
     else
     {
-	if (singleShot->isChecked())
-	    // allow the user to disable continuous by checking single shot
-	    operationGroup->setEnabled(false);
-	else
-	    if (!(pollButton->isChecked()))
-		pollButton->setEnabled(false);
+        if (singleShot->isChecked())
+            // allow the user to disable continuous by checking single shot
+            operationGroup->setEnabled(false);
+        else
+            if (!(pollButton->isChecked()))
+                pollButton->setEnabled(false);
 
-	if (requestsAllowed == allow)
-	    return; // no need to do more - buttons should be in proper state
+        if (requestsAllowed == allow)
+            return; // no need to do more - buttons should be in proper state
 
-	controlGroup->setEnabled(false);
+        controlGroup->setEnabled(false);
     }
 
     requestsAllowed = allow;
@@ -235,19 +235,19 @@ void Settings::mode(bool singleShotMode)
     disconnect(pollButton, 0, 0, 0);
     if (singleShotMode == true)
     {
-	delayTimer->stop();
-	// if we are in the middle of a poll ensure the button is disabled
-	if (requestsAllowed == false)
-	    pollButton->setEnabled(false);
-	connect( pollButton,SIGNAL( pressed()),this,SLOT(singleShotRequest()));
-	delayEdit->setEnabled(false);
+        delayTimer->stop();
+        // if we are in the middle of a poll ensure the button is disabled
+        if (requestsAllowed == false)
+            pollButton->setEnabled(false);
+        connect( pollButton,SIGNAL( pressed()),this,SLOT(singleShotRequest()));
+        delayEdit->setEnabled(false);
     }
     else
     {
-	pollButton->setCheckable(true);
- 	connect( pollButton, SIGNAL( toggled(bool)),
-		 this, SLOT(continuousRequest(bool)));
-	delayEdit->setEnabled(true);
+        pollButton->setCheckable(true);
+        connect( pollButton, SIGNAL( toggled(bool)),
+                 this, SLOT(continuousRequest(bool)));
+        delayEdit->setEnabled(true);
     }
 }
 
@@ -262,13 +262,13 @@ void Settings::continuousRequest(bool on)
 {
     if (on)
     {
-	// get the first one started
-	delayTimerTimeout();
+        // get the first one started
+        delayTimerTimeout();
     }
     else
     {
-	// ensure the current continuous poll is completed before reenabling
-	// continuous
+        // ensure the current continuous poll is completed before reenabling
+        // continuous
        allowRequests(false);
     }
 }
@@ -284,13 +284,13 @@ void Settings::setSecAuth(bool on)
 {
     if (on)
     {
-	timers_p->keyChangeTimer->setEnabled(true);
-	timers_p->challengeTimer->setEnabled(true);
+        timers_p->keyChangeTimer->setEnabled(true);
+        timers_p->challengeTimer->setEnabled(true);
     }
     else
     {
-	timers_p->keyChangeTimer->setEnabled(false);
-	timers_p->challengeTimer->setEnabled(false);
+        timers_p->keyChangeTimer->setEnabled(false);
+        timers_p->challengeTimer->setEnabled(false);
     }
     master_p->enableSecureAuthentication( outstationAddr, on);
     emit masterStateChange();
@@ -301,23 +301,23 @@ void Settings::delayTimerTimeout()
     // printf("Delay Timer Timeout\n");
     if (singleShot->isChecked() == false)
     {
-	allowRequests(false);
-	master_p->startNewTransaction();
-	emit masterStateChange();
+        allowRequests(false);
+        master_p->startNewTransaction();
+        emit masterStateChange();
     }
 }
 
 bool ConfigItem::warningHasBeenDisplayed = false;
 
 ConfigItem::ConfigItem(ConfigurationFrame* cf,
-			 QString name, QString defaultValue) :
+                         QString name, QString defaultValue) :
     parent(cf)
 {
     QSettings qsettings;
 
     // write the default value to the file if it does not already exist
     if (!qsettings.contains(name))
-	qsettings.setValue(name, defaultValue );
+        qsettings.setValue(name, defaultValue );
 
     itemEdit = new QLineEdit(qsettings.value(name).toString());
     itemLabel = new QLabel(name);
@@ -335,17 +335,17 @@ void ConfigItem::setItem()
 
     if ( itemEdit->text() != qsettings.value(itemLabel->text()).toString())
     {
-	qsettings.setValue(itemLabel->text(), itemEdit->text() );
-	// to indicate that it has changed since last restart
-	itemLabel->setText(QString("<font color='red'>%1</font>").arg(
-			   itemLabel->text()));
-	if ( warningHasBeenDisplayed == false)
-	{
-	    QMessageBox::warning(parent, tr("Configuration Change Warning"),
-				 tr("DNP Master Station must be restarted\n"
-			      "before configuration changes take effect."));
-	    warningHasBeenDisplayed = true;
-	}
+        qsettings.setValue(itemLabel->text(), itemEdit->text() );
+        // to indicate that it has changed since last restart
+        itemLabel->setText(QString("<font color='red'>%1</font>").arg(
+                           itemLabel->text()));
+        if ( warningHasBeenDisplayed == false)
+        {
+            QMessageBox::warning(parent, tr("Configuration Change Warning"),
+                                 tr("DNP Master Station must be restarted\n"
+                              "before configuration changes take effect."));
+            warningHasBeenDisplayed = true;
+        }
     }
 }
 
@@ -369,9 +369,9 @@ ConfigurationFrame::ConfigurationFrame()
 
     for (int i=0; i<numItems; i++)
     {
-	// printf("Adding %d %s=%s\n", i, pair[i][0], pair[i][1]);
-	ConfigItem* item = new ConfigItem(this, pair[i][0], pair[i][1]);
-	layout->addWidget(item->itemLabel,     i, 0);
-	layout->addWidget(item->itemEdit,      i, 1);
+        // printf("Adding %d %s=%s\n", i, pair[i][0], pair[i][1]);
+        ConfigItem* item = new ConfigItem(this, pair[i][0], pair[i][1]);
+        layout->addWidget(item->itemLabel,     i, 0);
+        layout->addWidget(item->itemEdit,      i, 1);
     }
 }

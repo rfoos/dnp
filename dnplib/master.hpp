@@ -45,23 +45,23 @@ public:
 
     typedef struct
     {
-	DnpAddr_t        addr;
-	int              consecutiveTimeoutsForCommsFail;
-	int*             integrityPollInterval_p;
-	UserNumber_t     userNum;
-	int*             debugLevel_p;
+        DnpAddr_t        addr;
+        int              consecutiveTimeoutsForCommsFail;
+        int*             integrityPollInterval_p;
+        UserNumber_t     userNum;
+        int*             debugLevel_p;
     } MasterConfig;
 
     Master( MasterConfig&              masterConfig,
-	    Datalink::DatalinkConfig&  datalinkConfig,
-	    Station::StationConfig     outstationConfig[],
-	    int                        numOustations,
-	    EventInterface*            eventInterface_p,
-	    TimerInterface*            timerInterface_p );
+            Datalink::DatalinkConfig&  datalinkConfig,
+            Station::StationConfig     outstationConfig[],
+            int                        numOustations,
+            EventInterface*            eventInterface_p,
+            TimerInterface*            timerInterface_p );
 
     enum PollType  {  AUTO,
-		      INTEGRITY,
-		      EVENT };
+                      INTEGRITY,
+                      EVENT };
 
     // this class will decide what type of transaction to begin eg. event poll
     // under normal mode of operation this method should be called on a 
@@ -137,7 +137,7 @@ private:
     void transmit();
 
     void appendVariableSizedObject( const ObjectHeader& h,
-				    const DnpObject& o);
+                                    const DnpObject& o);
 };
 
 #endif

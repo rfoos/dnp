@@ -44,22 +44,22 @@
 // is 2048 bytes * 3 + 1 for NULL.
 #define MAX_STRING_LEN 6145
 
-char dnpStrBuf1[ MAX_STRING_LEN];	   
-char dnpStrBuf2[ MAX_STRING_LEN];	   
+char dnpStrBuf1[ MAX_STRING_LEN];          
+char dnpStrBuf2[ MAX_STRING_LEN];          
 
 #define VERIFY(expr, ...)                                        \
 {                                                                 \
     char buf[ MAX_STRING_LEN];                                    \
     sprintf(buf, ## __VA_ARGS__);                                 \
-    QVERIFY2(expr, buf);					  \
+    QVERIFY2(expr, buf);                                          \
 }
 
 #define lpduToArrayCmp(lpdu, ar)                                  \
 {                                                                 \
     Bytes ba(ar, ar + sizeof(ar) / sizeof(uint8_t));              \
     VERIFY(lpdu.ab == ba, "\n%s != \n%s",                        \
-            hex_repr(lpdu.ab, dnpStrBuf1, MAX_STRING_LEN),	  \
-	    hex_repr(ba, dnpStrBuf2, MAX_STRING_LEN));	          \
+            hex_repr(lpdu.ab, dnpStrBuf1, MAX_STRING_LEN),        \
+            hex_repr(ba, dnpStrBuf2, MAX_STRING_LEN));            \
 }
 
 #define TO_BYTES(a) (Bytes (a, a + sizeof(a) / sizeof(uint8_t)))
@@ -135,10 +135,10 @@ void TestLpdu::testBuildLpdu()
   uint8_t r20[] ={ 81, 48, 81, 48, 223, 36, 81, 4, 0, 5 };
 
   enum StatIndex { RX_START_OCTETS = 0,
-		   RX_LPDUS,
-		   LOST_BYTES,
-		   CRC_ERRORS,
-		   NUM_STATS };
+                   RX_LPDUS,
+                   LOST_BYTES,
+                   CRC_ERRORS,
+                   NUM_STATS };
 
   Stats::Element statElements[] =
   {

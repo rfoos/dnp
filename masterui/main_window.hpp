@@ -58,14 +58,14 @@ public:
 
     // implementation of EventInterface
     void changePoint(        DnpAddr_t addr, DnpIndex_t index,
-			     PointType_t    pointType,
-			     int value, DnpTime_t timestamp=0);
+                             PointType_t    pointType,
+                             int value, DnpTime_t timestamp=0);
 
     void registerName(       DnpAddr_t      addr,
-			     DnpIndex_t index,
-			     EventInterface::PointType_t    pointType,
-			     char*          name,
-			     int initialValue );
+                             DnpIndex_t index,
+                             EventInterface::PointType_t    pointType,
+                             char*          name,
+                             int initialValue );
 
 private slots:
 
@@ -113,7 +113,7 @@ private:
 
     QHash<QString, QString> pointNameHash;
     QString convertDnpIndexToName(DnpAddr_t id, DnpIndex_t dnpIndex,
-				  PointType_t  pointType);
+                                  PointType_t  pointType);
     static const QString shortPtNames[NUM_POINT_TYPES];
 
     // master stuff

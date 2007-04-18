@@ -39,9 +39,9 @@ TransportHeader::TransportHeader( bool fin, bool fir, uint8_t seqNum)
 {
     b = seqNum;
     if (fin)
-	b |= 0x80;
+        b |= 0x80;
     if (fir)
-	b |= 0x40;
+        b |= 0x40;
 }
 
 TransportHeader::TransportHeader( uint8_t th)
@@ -73,24 +73,24 @@ uint8_t TransportHeader::getSeqNum()
 char* TransportHeader::str(char* buf, int len)
 {
     snprintf( buf, len,
-	     "Th: FIN:%d,FIR=%d,Seq:%d",
-	     getFinal(), getFirst(), getSeqNum());
+             "Th: FIN:%d,FIR=%d,Seq:%d",
+             getFinal(), getFirst(), getSeqNum());
     return buf;
 }
 
 TransportFunction::TransportFunction( Datalink&               datalink,
-				      const StationInfoMap&   stationInfoMap)
+                                      const StationInfoMap&   stationInfoMap)
   : dl(datalink), stnInfoMap(stationInfoMap)
 {
     StationInfoMap::iterator iter;
     for(iter=stnInfoMap.begin(); iter != stnInfoMap.end(); iter++)
-	iter->second.session_p->inProgress = false;
+        iter->second.session_p->inProgress = false;
 }
 
 // returns the time that the first bit was sent
 Uptime_t TransportFunction::transmit( DnpAddr_t         txAddr,
-				      const Bytes&      fragment,
-				      Stats&            stats)
+                                      const Bytes&      fragment,
+                                      Stats&            stats)
 {
     Bytes            segment;
     bool             fir = true;
@@ -100,37 +100,37 @@ Uptime_t TransportFunction::transmit( DnpAddr_t         txAddr,
 
     while (i != fragment.end())
     {
-	segment.clear();
-	if (fragment.end() - i <= Lpdu::MAX_APP_DATA)
-	{
-	    // last segment in the sequence
-	    TransportHeader th(true, fir, seqNum);
-	    stats.logNormal("Tx %s",th.str(strbuf, sizeof(strbuf)));
-	    segment.push_back(th.b);
-	    segment.insert( segment.end(), i, fragment.end());
-	    i = fragment.end();
-	    stats.increment(TransportStats::TX_FRAGMENT);
-	    stats.increment(TransportStats::TX_SEGMENT);
-	    return dl.transmit( txAddr, segment);
-	}
-	else
-	{
-	    // not the last segment in the sequence
-	    TransportHeader th(false, fir, seqNum);
-	    stats.logNormal("Tx %s",th.str(strbuf, sizeof(strbuf)));
-	    segment.push_back(th.b);
-	    segment.insert( segment.end(), i, i+Lpdu::MAX_APP_DATA);
-	    i += Lpdu::MAX_APP_DATA;
-	    stats.increment(TransportStats::TX_SEGMENT);
-	    dl.transmit( txAddr, segment);
-	    fir = false; // all subsequent segments will not be the firstx
+        segment.clear();
+        if (fragment.end() - i <= Lpdu::MAX_APP_DATA)
+        {
+            // last segment in the sequence
+            TransportHeader th(true, fir, seqNum);
+            stats.logNormal("Tx %s",th.str(strbuf, sizeof(strbuf)));
+            segment.push_back(th.b);
+            segment.insert( segment.end(), i, fragment.end());
+            i = fragment.end();
+            stats.increment(TransportStats::TX_FRAGMENT);
+            stats.increment(TransportStats::TX_SEGMENT);
+            return dl.transmit( txAddr, segment);
+        }
+        else
+        {
+            // not the last segment in the sequence
+            TransportHeader th(false, fir, seqNum);
+            stats.logNormal("Tx %s",th.str(strbuf, sizeof(strbuf)));
+            segment.push_back(th.b);
+            segment.insert( segment.end(), i, i+Lpdu::MAX_APP_DATA);
+            i += Lpdu::MAX_APP_DATA;
+            stats.increment(TransportStats::TX_SEGMENT);
+            dl.transmit( txAddr, segment);
+            fir = false; // all subsequent segments will not be the firstx
 
-	    // Sequence numbers only have to be consistent with the segments
-	    // within a fragment. They do not have to be consistent between
-	    // fragments. This allows us not to keep track of sequence
-	    // numbers for each device we talk to.
-	    th.incrementSeqNum( seqNum);
-	}
+            // Sequence numbers only have to be consistent with the segments
+            // within a fragment. They do not have to be consistent between
+            // fragments. This allows us not to keep track of sequence
+            // numbers for each device we talk to.
+            th.incrementSeqNum( seqNum);
+        }
     }
 
     assert(0);
@@ -145,107 +145,107 @@ DnpAddr_t TransportFunction::rxSegment( const Lpdu::UserData& segment)
     // we only accept segments from configured outstations/masters
     if (stnInfoMap.count(segment.src) == 0)
     {
-	// we don't know who this is so just use the first one
-	// for stats purposes
-	info = stnInfoMap.begin()->second;  // pair of (addr, info)
+        // we don't know who this is so just use the first one
+        // for stats purposes
+        info = stnInfoMap.begin()->second;  // pair of (addr, info)
         info.stats_p->increment(TransportStats::RX_UNAUTH_SEG);
     }
     else
     {   
-	info = stnInfoMap[segment.src];
-	info.stats_p->increment(TransportStats::RX_SEGMENT);
+        info = stnInfoMap[segment.src];
+        info.stats_p->increment(TransportStats::RX_SEGMENT);
 
         // transport header is the first byte
         TransportHeader th(data[0]);
         bool fin = th.getFinal();
         bool fir = th.getFirst();
 
-	info.stats_p->logNormal("Rx %s", th.str(strbuf, sizeof(strbuf)));
+        info.stats_p->logNormal("Rx %s", th.str(strbuf, sizeof(strbuf)));
 
         if (fir)
-	{
-	    info.session_p->rxFragment.clear();
+        {
+            info.session_p->rxFragment.clear();
 
             // check no session exists
             if (info.session_p->inProgress)
-	    {
+            {
                 info.stats_p->increment(TransportStats::RX_ROUGE_SEG);
                 // discard existing erroneus session
                 info.session_p->inProgress = false;
-	    }
+            }
 
-	    // add the app part of the segment to our app fragment
-	    info.session_p->rxFragment.insert(info.session_p->rxFragment.end(),
-					      ++data.begin(), data.end());
+            // add the app part of the segment to our app fragment
+            info.session_p->rxFragment.insert(info.session_p->rxFragment.end(),
+                                              ++data.begin(), data.end());
 
-	    if (fin)
-		// this is the first and last segment in the transaction
-		// so it is a complete fragment
-		returnValue = info.addr;
-	    else
-	    {
-		// fin is 0
-		// create new session
-		// note this is the only place where we add new sessions
-		info.session_p->inProgress = true;
-		info.session_p->nextSeqNum = th.getSeqNum();
-		th.incrementSeqNum( info.session_p->nextSeqNum);
-	    }
-	}
+            if (fin)
+                // this is the first and last segment in the transaction
+                // so it is a complete fragment
+                returnValue = info.addr;
+            else
+            {
+                // fin is 0
+                // create new session
+                // note this is the only place where we add new sessions
+                info.session_p->inProgress = true;
+                info.session_p->nextSeqNum = th.getSeqNum();
+                th.incrementSeqNum( info.session_p->nextSeqNum);
+            }
+        }
         else
-	{
-	    // fir is 0
+        {
+            // fir is 0
             // check session exists
             if (!info.session_p->inProgress)
-	    {
+            {
                 info.stats_p->increment(TransportStats::RX_ROUGE_SEG);
-		info.stats_p->logAbnormal(0,"fir=0, fin=%d, session not found",
-					  fin);
+                info.stats_p->logAbnormal(0,"fir=0, fin=%d, session not found",
+                                          fin);
                 // discard existing erroneus session
                 info.session_p->inProgress = false;
-		info.session_p->rxFragment.clear();
-	    }
-	    else
-	    {
-		// check sequenceNumber
-		if (info.session_p->nextSeqNum == th.getSeqNum())
-		{
-		    // sequence number is good
-		    // add the app part of the segment to our app fragment
-		    info.session_p->rxFragment.insert(
-					      info.session_p->rxFragment.end(),
-					      ++data.begin(), data.end());
+                info.session_p->rxFragment.clear();
+            }
+            else
+            {
+                // check sequenceNumber
+                if (info.session_p->nextSeqNum == th.getSeqNum())
+                {
+                    // sequence number is good
+                    // add the app part of the segment to our app fragment
+                    info.session_p->rxFragment.insert(
+                                              info.session_p->rxFragment.end(),
+                                              ++data.begin(), data.end());
 
-		    if (fin)
-		    {
-			// fir = 0 and fin = 1
-			// close session, this is final segment of the fragment
-			info.session_p->inProgress = false;
-			returnValue = info.addr;
-		    }
-		    else
-		    {
-			// update expected seqNum
-			info.session_p->nextSeqNum = th.getSeqNum();
-			th.incrementSeqNum( info.session_p->nextSeqNum);
-		    }
-		}
-		else
-		{
-		    info.stats_p->increment(TransportStats::RX_BAD_TH_SEQ_NUM);
-		    info.stats_p->logAbnormal( 0,
-		      "fir=0, fin=%d, seqNum not right. Expexted %d, got: %d",
-		      fin, info.session_p->nextSeqNum, th.getSeqNum());
-		    // discard existing erroneus session
-		    info.session_p->inProgress = false;
-		    info.session_p->rxFragment.clear();
-		}
-	    }
-	}
+                    if (fin)
+                    {
+                        // fir = 0 and fin = 1
+                        // close session, this is final segment of the fragment
+                        info.session_p->inProgress = false;
+                        returnValue = info.addr;
+                    }
+                    else
+                    {
+                        // update expected seqNum
+                        info.session_p->nextSeqNum = th.getSeqNum();
+                        th.incrementSeqNum( info.session_p->nextSeqNum);
+                    }
+                }
+                else
+                {
+                    info.stats_p->increment(TransportStats::RX_BAD_TH_SEQ_NUM);
+                    info.stats_p->logAbnormal( 0,
+                      "fir=0, fin=%d, seqNum not right. Expexted %d, got: %d",
+                      fin, info.session_p->nextSeqNum, th.getSeqNum());
+                    // discard existing erroneus session
+                    info.session_p->inProgress = false;
+                    info.session_p->rxFragment.clear();
+                }
+            }
+        }
     }
 
     if ( returnValue != FRAGMENT_NOT_FOUND)
-	info.stats_p->increment(TransportStats::RX_FRAGMENT);
+        info.stats_p->increment(TransportStats::RX_FRAGMENT);
 
     return returnValue;
 }

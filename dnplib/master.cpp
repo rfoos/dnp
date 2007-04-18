@@ -31,14 +31,14 @@
 #include "security.hpp"
 
 Master::Master( MasterConfig&                 masterConfig,
-		Datalink::DatalinkConfig&     datalinkConfig,
-	        Station::StationConfig        stationConfig[],
-	        int                           numStations,
-		EventInterface*               eventInterface_p,
-		TimerInterface*               timerInterface_p)
+                Datalink::DatalinkConfig&     datalinkConfig,
+                Station::StationConfig        stationConfig[],
+                int                           numStations,
+                EventInterface*               eventInterface_p,
+                TimerInterface*               timerInterface_p)
   : Application( masterConfig.debugLevel_p, masterConfig.addr,
-		 masterConfig.userNum, datalinkConfig,
-		 eventInterface_p, timerInterface_p ),
+                 masterConfig.userNum, datalinkConfig,
+                 eventInterface_p, timerInterface_p ),
     maxConsecutive( masterConfig.consecutiveTimeoutsForCommsFail),
     integrityPollInterval_p( masterConfig.integrityPollInterval_p)
 {
@@ -48,16 +48,16 @@ Master::Master( MasterConfig&                 masterConfig,
     // create each outstation object and store it in a map 
     for (i=0; i<numStations; i++)
     {
-	Station *op;
-	stationConfig[i].master_p = this;
-	op = new Station(masterConfig.addr, stationConfig[i], db_p);
-	stationMap[op->addr] = op;
+        Station *op;
+        stationConfig[i].master_p = this;
+        op = new Station(masterConfig.addr, stationConfig[i], db_p);
+        stationMap[op->addr] = op;
 
-	// fill in the station info to be used by the transport function
-	info.session_p = &op->session;
-	info.stats_p = &op->stats;
-	info.addr = op->addr;
-	stationInfoMap[ op->addr] = info;;
+        // fill in the station info to be used by the transport function
+        info.session_p = &op->session;
+        info.stats_p = &op->stats;
+        info.addr = op->addr;
+        stationInfoMap[ op->addr] = info;;
     }
 
     currentStationPair = stationMap.begin();
@@ -73,7 +73,7 @@ void Master::enableSecureAuthentication(DnpAddr_t stationAddr, bool enable)
     assert (stationMap.count(stationAddr) > 0);
     if (enable)
     {
-	stationMap[ stationAddr]->secAuth.init();
+        stationMap[ stationAddr]->secAuth.init();
     }
     secureAuthenticationEnabled = enable;
 }
@@ -107,26 +107,26 @@ DnpStat_t Master::rxData(Bytes* buf, Uptime_t timeRxd)
 
     while (buf->size() > 0)
     {
-	Lpdu::UserData& segment = dl.rxData( *buf);
-	if (segment.data.size() > 0)
-	{
-	    // this data has completed a segment
-	    DnpAddr_t addr;
+        Lpdu::UserData& segment = dl.rxData( *buf);
+        if (segment.data.size() > 0)
+        {
+            // this data has completed a segment
+            DnpAddr_t addr;
 
-	    if (timer_p->isActive(TimerInterface::RESPONSE))
-		// reset the timer so that large multi segment responses
-		// will have a chance to get through
-		timer_p->activate(TimerInterface::RESPONSE);
+            if (timer_p->isActive(TimerInterface::RESPONSE))
+                // reset the timer so that large multi segment responses
+                // will have a chance to get through
+                timer_p->activate(TimerInterface::RESPONSE);
 
-	    addr = tf_p->rxSegment( segment);
-	    if (addr != TransportFunction::FRAGMENT_NOT_FOUND)
-	    {
-		// this data had completed a fragment
-		lastRxdAsdu = stn_p->session.rxFragment;
-		stn_p = stationMap[addr];
-		processRxdFragment();
-	    }
-	}
+            addr = tf_p->rxSegment( segment);
+            if (addr != TransportFunction::FRAGMENT_NOT_FOUND)
+            {
+                // this data had completed a fragment
+                lastRxdAsdu = stn_p->session.rxFragment;
+                stn_p = stationMap[addr];
+                processRxdFragment();
+            }
+        }
     }
 
     return stn_p->stats.get(Station::STATE);
@@ -137,54 +137,54 @@ DnpStat_t Master::timeout(TimerInterface::TimerId t)
 
     if (t == TimerInterface::RESPONSE)
     {
-	if (secureAuthenticationEnabled)
-	{
-	    DnpStat_t state;
-	    state = stn_p->secAuth.stats.get( SecureAuthentication::STATE);
-	    if ((state != SecureAuthentication::MASTER_IDLE) &&
-		(state != SecureAuthentication::INIT))
-	    {
-		// we must be waiting for something so the response
-		// timeout will apply to the secure auth object
-		stn_p->secAuth.responseTimeout();
-	    }
-	}
+        if (secureAuthenticationEnabled)
+        {
+            DnpStat_t state;
+            state = stn_p->secAuth.stats.get( SecureAuthentication::STATE);
+            if ((state != SecureAuthentication::MASTER_IDLE) &&
+                (state != SecureAuthentication::INIT))
+            {
+                // we must be waiting for something so the response
+                // timeout will apply to the secure auth object
+                stn_p->secAuth.responseTimeout();
+            }
+        }
 
-	// were we waiting for anything?
-	if (stn_p->stats.get(Station::STATE) != Station::IDLE)
-	{
-	    stn_p->stats.increment( Station::RESPONSE_TIMEOUT);
-	    stn_p->stats.increment( Station::CONSECUTIVE_TIMEOUT);
+        // were we waiting for anything?
+        if (stn_p->stats.get(Station::STATE) != Station::IDLE)
+        {
+            stn_p->stats.increment( Station::RESPONSE_TIMEOUT);
+            stn_p->stats.increment( Station::CONSECUTIVE_TIMEOUT);
 
-	    if (stn_p->stats.get(Station::CONSECUTIVE_TIMEOUT)>=maxConsecutive)
-	    {       
-		if (stn_p->stats.get(Station::COMMUNICATION) == 1)
-		{
-		    stn_p->stats.set(Station::COMMUNICATION, 0);
-		    // /* notify database */
-		    /* we should know attempt integrity polls */
-		    stn_p->sendIntegrityPoll = 1;
-		
-		    // 		    if (sendKeepAlives)
-		    // 			if endPoint.connectionIsUp()
-		}
-	    }
+            if (stn_p->stats.get(Station::CONSECUTIVE_TIMEOUT)>=maxConsecutive)
+            {       
+                if (stn_p->stats.get(Station::COMMUNICATION) == 1)
+                {
+                    stn_p->stats.set(Station::COMMUNICATION, 0);
+                    // /* notify database */
+                    /* we should know attempt integrity polls */
+                    stn_p->sendIntegrityPoll = 1;
+                
+                    //              if (sendKeepAlives)
+                    //                  if endPoint.connectionIsUp()
+                }
+            }
 
-	    // don't bother waiting any longer for a response
-	    completedTransaction();
-	}
+            // don't bother waiting any longer for a response
+            completedTransaction();
+        }
     }
     else if (t == TimerInterface::KEY_CHANGE)
     {
-	stn_p->secAuth.keyChangeTimeout();
+        stn_p->secAuth.keyChangeTimeout();
     }
     else if (t == TimerInterface::CHALLENGE)
     {
-	stn_p->secAuth.challengeTimeout();
+        stn_p->secAuth.challengeTimeout();
     }
     else
     {
-	assert(0);
+        assert(0);
     }
 
     return stn_p->stats.get(Station::STATE);
@@ -205,135 +205,135 @@ bool Master::checkAppHeader()
 
     if (fn == AppHeader::CONFIRM)
     {
-	// as a master we never request a confirm
-	stn_p->stats.increment(Station::RX_UNEXP_CONFIRM);
+        // as a master we never request a confirm
+        stn_p->stats.increment(Station::RX_UNEXP_CONFIRM);
     }
     else if (fn == AppHeader::UNSOLICITED_RESPONSE)
     {
         // if the fragment is unsolicited
         // they use a different set of seqeunce numbers
-	multiFragment = stn_p->rxingMultiFragmentUnsolicitedResponse;
+        multiFragment = stn_p->rxingMultiFragmentUnsolicitedResponse;
         seqNum = stn_p->nextRxUnsolicitedSeqNum;
-	if (seqNum == AppHeader::UNDEFINED_SEQ_NUM)
-	    // this must be our first unsolicted response from this
-	    // device - simply accept whatever seq num they give us
-	    seqNum = ah.getSeqNum(); // this will pass the check
-	
-	stn_p->stats.increment(Station::RX_UNSOLICITED);
+        if (seqNum == AppHeader::UNDEFINED_SEQ_NUM)
+            // this must be our first unsolicted response from this
+            // device - simply accept whatever seq num they give us
+            seqNum = ah.getSeqNum(); // this will pass the check
+        
+        stn_p->stats.increment(Station::RX_UNSOLICITED);
     }
     else if (fn == AppHeader::RESPONSE)
     {
-	DnpStat_t state = stn_p->stats.get(Station::STATE);
-	DnpStat_t secState = stn_p->secAuth.stats.get(MasterSecurity::STATE);
-	bool sec = false; // is security waiting for a response?
-	if (secureAuthenticationEnabled)
-	    if (secState !=  MasterSecurity::MASTER_IDLE &&
-		secState !=  MasterSecurity::INIT)
-		sec = true;
+        DnpStat_t state = stn_p->stats.get(Station::STATE);
+        DnpStat_t secState = stn_p->secAuth.stats.get(MasterSecurity::STATE);
+        bool sec = false; // is security waiting for a response?
+        if (secureAuthenticationEnabled)
+            if (secState !=  MasterSecurity::MASTER_IDLE &&
+                secState !=  MasterSecurity::INIT)
+                sec = true;
 
-	if ( (state == Station::IDLE) && ( sec == false) )
-	{
-	    // maybe this is a late response?
-	    stn_p->stats.increment(Station::RX_UNEXP_RESPONSE);
-	}
-	else
-	{
+        if ( (state == Station::IDLE) && ( sec == false) )
+        {
+            // maybe this is a late response?
+            stn_p->stats.increment(Station::RX_UNEXP_RESPONSE);
+        }
+        else
+        {
             multiFragment = stn_p->rxingMultiFragmentResponse;
 
             if (fir)
-		// if this is the first fragment of a response
-		// we will expect it to have the same seq num
+                // if this is the first fragment of a response
+                // we will expect it to have the same seq num
                 // as the request
                 seqNum = stn_p->lastTxSeqNum;
             else
                 seqNum = stn_p->nextRxSeqNum;
-	    returnValue = true;
-	    stn_p->stats.increment(Station::RX_RESPONSE);
-	}
+            returnValue = true;
+            stn_p->stats.increment(Station::RX_RESPONSE);
+        }
     }
     else if (fn == AppHeader::AUTHENTICATION_CHALLENGE)
     {
-	multiFragment = false;
-	seqNum = stn_p->lastTxSeqNum;
-	// need to add in some checks here
-	returnValue = true;
+        multiFragment = false;
+        seqNum = stn_p->lastTxSeqNum;
+        // need to add in some checks here
+        returnValue = true;
     }
     else
-	stn_p->stats.increment(Station::RX_UNSUPPORTED_FN);
+        stn_p->stats.increment(Station::RX_UNSUPPORTED_FN);
 
     if (returnValue == true)
     {
         // we should always check for seq #s
         if (ah.getSeqNum() != seqNum)
-	{
-	    AppSeqNum::decrement( seqNum);
+        {
+            AppSeqNum::decrement( seqNum);
             if (ah.getSeqNum() == seqNum)
                 // do byte by byte compare from the previously
                 // received fragment
                 if (lastRxdAsdu == stn_p->session.rxFragment)
-		    // this must be a retried attempt
-		    // do not reprocess this data 
-		    stn_p->stats.increment(Station::RX_RESEND);
-	            // don't bother sending a retry 
-		else
-		    stn_p->stats.increment(Station::RX_BAD_AH_SEQ_NUM);
-	    else
-		stn_p->stats.increment(Station::RX_BAD_AH_SEQ_NUM);
-	    returnValue = false;
-	}
+                    // this must be a retried attempt
+                    // do not reprocess this data 
+                    stn_p->stats.increment(Station::RX_RESEND);
+                    // don't bother sending a retry 
+                else
+                    stn_p->stats.increment(Station::RX_BAD_AH_SEQ_NUM);
+            else
+                stn_p->stats.increment(Station::RX_BAD_AH_SEQ_NUM);
+            returnValue = false;
+        }
     }
 
     if (returnValue == true)
     {
         if (fir)
-	{
-	    stn_p->nextRxSeqNum = stn_p->lastTxSeqNum;
+        {
+            stn_p->nextRxSeqNum = stn_p->lastTxSeqNum;
 
             if (multiFragment)
                 stn_p->stats.increment(Station::RX_MISSED_AH_FIN);
                 // not much we can do lets just assume this one is good
                 // and assume the previous one was bogus
-	    if (fin)
-	    {
-		rxingMultiFragmentResponse = false;
-	    }
-	    else
-		rxingMultiFragmentResponse = true;
+            if (fin)
+            {
+                rxingMultiFragmentResponse = false;
+            }
+            else
+                rxingMultiFragmentResponse = true;
 
-	}
-	else
-	{
-	    // check that session exists
-	    if (multiFragment == false)
-	    {
-		stn_p->stats.increment(Station::RX_MISSED_AH_FIR);
-		rxingMultiFragmentResponse = false;
-		returnValue = false;
-	    }
-	    else
-	    {
-		if (fin)
-		{
-		    rxingMultiFragmentResponse = false;
-		}
-		else
-		{
-		}
+        }
+        else
+        {
+            // check that session exists
+            if (multiFragment == false)
+            {
+                stn_p->stats.increment(Station::RX_MISSED_AH_FIR);
+                rxingMultiFragmentResponse = false;
+                returnValue = false;
+            }
+            else
+            {
+                if (fin)
+                {
+                    rxingMultiFragmentResponse = false;
+                }
+                else
+                {
+                }
 
-	    }
-	}
+            }
+        }
     }
                        
     // now update the variables regardless of whether we feel it was good
     if (fn == AppHeader::UNSOLICITED_RESPONSE)
     {
-	stn_p->rxingMultiFragmentUnsolicitedResponse = rxingMultiFragmentResponse;
-	AppSeqNum::increment(stn_p->nextRxUnsolicitedSeqNum);
+        stn_p->rxingMultiFragmentUnsolicitedResponse = rxingMultiFragmentResponse;
+        AppSeqNum::increment(stn_p->nextRxUnsolicitedSeqNum);
     }
     else
     {
-	stn_p->rxingMultiFragmentResponse = rxingMultiFragmentResponse;
-	AppSeqNum::increment(stn_p->nextRxSeqNum);
+        stn_p->rxingMultiFragmentResponse = rxingMultiFragmentResponse;
+        AppSeqNum::increment(stn_p->nextRxSeqNum);
     }
 
     return returnValue;
@@ -350,143 +350,143 @@ void Master::processRxdFragment()
 
     if (secureAuthenticationEnabled)
     {
-	okToProcess = stn_p->secAuth.rxAsdu(stn_p->session.rxFragment);
+        okToProcess = stn_p->secAuth.rxAsdu(stn_p->session.rxFragment);
     }
 
     if (okToProcess == false)
-	return;
+        return;
 
     ah.decode( stn_p->session.rxFragment);
     bool fin = ah.getFinal();
     
     if ( checkAppHeader() == 1)
     {
-	unsigned int ii;
-	unsigned int oldii;
-	unsigned int ch;  // changed ii bits
-	unsigned int fn;
+        unsigned int ii;
+        unsigned int oldii;
+        unsigned int ch;  // changed ii bits
+        unsigned int fn;
 
-	// check II bits and update stats if changed
-	ii = ah.getIIN();
-	oldii = stn_p->stats.get(Station::IIN);
-	if  (ii != oldii)
-	{
-	    stn_p->stats.set(Station::IIN, ii);
-	    // what are the bits that changed?
-	    ch = oldii^ii;  //XOR to find out
-	    // count only the 'on' transitions
-	    ch &= ii;
+        // check II bits and update stats if changed
+        ii = ah.getIIN();
+        oldii = stn_p->stats.get(Station::IIN);
+        if  (ii != oldii)
+        {
+            stn_p->stats.set(Station::IIN, ii);
+            // what are the bits that changed?
+            ch = oldii^ii;  //XOR to find out
+            // count only the 'on' transitions
+            ch &= ii;
 
-	    if (ch & InternalIndications::NEED_TIME)
-		stn_p->stats.increment(Station::RX_IIN_NEED_TIME);
+            if (ch & InternalIndications::NEED_TIME)
+                stn_p->stats.increment(Station::RX_IIN_NEED_TIME);
 
-	    if (ch & InternalIndications::DEVICE_TROUBLE)
-		stn_p->stats.increment(Station::RX_IIN_TROUBLE);
+            if (ch & InternalIndications::DEVICE_TROUBLE)
+                stn_p->stats.increment(Station::RX_IIN_TROUBLE);
 
-	    if (ch & InternalIndications::DEVICE_RESTART)
-	    {
-		stn_p->stats.increment(Station::RX_IIN_RESTART);
-		// we don't know what this will be
-		stn_p->nextRxUnsolicitedSeqNum = -1;
-		// outdate any previous delay measurement
-		if (stn_p->stats.get(Station::DELAY_MEASUREMENT) != 0)
-		    stn_p->stats.set(Station::DELAY_MEASUREMENT, 0);
-	    }
+            if (ch & InternalIndications::DEVICE_RESTART)
+            {
+                stn_p->stats.increment(Station::RX_IIN_RESTART);
+                // we don't know what this will be
+                stn_p->nextRxUnsolicitedSeqNum = -1;
+                // outdate any previous delay measurement
+                if (stn_p->stats.get(Station::DELAY_MEASUREMENT) != 0)
+                    stn_p->stats.set(Station::DELAY_MEASUREMENT, 0);
+            }
 
-	    if (ch & InternalIndications::FUNCTION_UNKNOWN)
-		stn_p->stats.increment(Station::RX_IIN_FUNCTION_UNKOWN);
+            if (ch & InternalIndications::FUNCTION_UNKNOWN)
+                stn_p->stats.increment(Station::RX_IIN_FUNCTION_UNKOWN);
 
-	    if (ch & InternalIndications::OBJECT_UNKNOWN)
-		stn_p->stats.increment(Station::RX_IIN_OBJECT_UNKNOWN);
+            if (ch & InternalIndications::OBJECT_UNKNOWN)
+                stn_p->stats.increment(Station::RX_IIN_OBJECT_UNKNOWN);
 
-	    if (ch & InternalIndications::PARAMETER_ERROR)
-		stn_p->stats.increment(Station::RX_IIN_PARAMETER_ERR);
+            if (ch & InternalIndications::PARAMETER_ERROR)
+                stn_p->stats.increment(Station::RX_IIN_PARAMETER_ERR);
 
-	    if (ch & InternalIndications::BUFFER_OVERFLOW)
-		stn_p->stats.increment(Station::RX_IIN_BUFFER_OVERFLOW);
+            if (ch & InternalIndications::BUFFER_OVERFLOW)
+                stn_p->stats.increment(Station::RX_IIN_BUFFER_OVERFLOW);
 
-	    if (ch & InternalIndications::BAD_CONFIG)
-		stn_p->stats.increment(Station::RX_IIN_BAD_CONFIG);
-	}
+            if (ch & InternalIndications::BAD_CONFIG)
+                stn_p->stats.increment(Station::RX_IIN_BAD_CONFIG);
+        }
 
-	fn = ah.getFn();
+        fn = ah.getFn();
 
-	// note that checkapp header would have returned 0 if it was a confirm
+        // note that checkapp header would have returned 0 if it was a confirm
 
-	if (fn == AppHeader::RESPONSE)
-	{
-	    DnpStat_t state = stn_p->stats.get(Station::STATE);
+        if (fn == AppHeader::RESPONSE)
+        {
+            DnpStat_t state = stn_p->stats.get(Station::STATE);
 
-	    // check control response before we parse (decode) the fragment
-	    // so that the fragment is left in tack
-	    if (state == Station::SELECT_RESP)
-	    {
-		if (verifyControlResp())
-		{
-		    operate();
+            // check control response before we parse (decode) the fragment
+            // so that the fragment is left in tack
+            if (state == Station::SELECT_RESP)
+            {
+                if (verifyControlResp())
+                {
+                    operate();
 
-		    return; // to avoid calling completedTransaction
-		}
-		else
-		    stn_p->stats.increment(Station::RX_BAD_SELECT_RESP);
+                    return; // to avoid calling completedTransaction
+                }
+                else
+                    stn_p->stats.increment(Station::RX_BAD_SELECT_RESP);
 
-	    }
-	    else if (state == Station::OPERATE_RESP)
-	    {
-		if (!verifyControlResp())
-		    stn_p->stats.increment(Station::RX_BAD_OPERATE_RESP);
-	    }
+            }
+            else if (state == Station::OPERATE_RESP)
+            {
+                if (!verifyControlResp())
+                    stn_p->stats.increment(Station::RX_BAD_OPERATE_RESP);
+            }
 
-	    // we even parse the control responses because
-	    // we would like to see the returned status
-	    parseOk = parseResponseObjects(stn_p->session.rxFragment);
-	    
-	    if ((parseOk) && (state == Station::POLL_RESP))
-	    {
-		stn_p->sendIntegrityPoll = 0;
-	    }
-	    else if (state == Station::CLEAR_RESTART_BIT_RESP)
-	    {
-		// make sure the appropriate bits have been
-		// cleared and that the object portion is null
-		if ((stn_p->session.rxFragment.size() != 0) ||
-		    ((stn_p->stats.get(Station::IIN) &
-		      InternalIndications::DEVICE_RESTART) != 0))
-		    stn_p->stats.increment(Station::RX_BAD_WRITE_RESP);
-	    }
-	}
-	else if (fn == AppHeader::AUTHENTICATION_CHALLENGE)
-	{
-	    // should realy only accept a challenge object here but for 
-	    // the prototype we won't do any checks
-	    parseOk = parseResponseObjects(stn_p->session.rxFragment);
-	}
-	else
-	{
-	    // must be unsolicited, if not asdu should have discarded
-	    assert (fn == AppHeader::UNSOLICITED_RESPONSE);
-	    // parseOk = parseResponseObjects();
-	}
+            // we even parse the control responses because
+            // we would like to see the returned status
+            parseOk = parseResponseObjects(stn_p->session.rxFragment);
+            
+            if ((parseOk) && (state == Station::POLL_RESP))
+            {
+                stn_p->sendIntegrityPoll = 0;
+            }
+            else if (state == Station::CLEAR_RESTART_BIT_RESP)
+            {
+                // make sure the appropriate bits have been
+                // cleared and that the object portion is null
+                if ((stn_p->session.rxFragment.size() != 0) ||
+                    ((stn_p->stats.get(Station::IIN) &
+                      InternalIndications::DEVICE_RESTART) != 0))
+                    stn_p->stats.increment(Station::RX_BAD_WRITE_RESP);
+            }
+        }
+        else if (fn == AppHeader::AUTHENTICATION_CHALLENGE)
+        {
+            // should realy only accept a challenge object here but for 
+            // the prototype we won't do any checks
+            parseOk = parseResponseObjects(stn_p->session.rxFragment);
+        }
+        else
+        {
+            // must be unsolicited, if not asdu should have discarded
+            assert (fn == AppHeader::UNSOLICITED_RESPONSE);
+            // parseOk = parseResponseObjects();
+        }
 
-	if (parseOk)
-	{
-	    if (stn_p->stats.get(Station::COMMUNICATION) != 1)
-	    {
-		stn_p->stats.set(Station::COMMUNICATION, 1);
+        if (parseOk)
+        {
+            if (stn_p->stats.get(Station::COMMUNICATION) != 1)
+            {
+                stn_p->stats.set(Station::COMMUNICATION, 1);
 
-		if (stn_p->stats.get(Station::CONSECUTIVE_TIMEOUT) != 0)
-		    stn_p->stats.set(Station::CONSECUTIVE_TIMEOUT, 0);
-	    }
+                if (stn_p->stats.get(Station::CONSECUTIVE_TIMEOUT) != 0)
+                    stn_p->stats.set(Station::CONSECUTIVE_TIMEOUT, 0);
+            }
 
-	    if (ah.getConfirm() == 1)  // send a confirm?
-		sendConfirm( ah.getSeqNum());
-	}
+            if (ah.getConfirm() == 1)  // send a confirm?
+                sendConfirm( ah.getSeqNum());
+        }
 
-	if ((fin) &&
-	    ((getSecAuthState() == SecureAuthentication::MASTER_IDLE) ||
-	     (getSecAuthState() == SecureAuthentication::INIT)) &&
-	    (fn != 131))
-	    completedTransaction();
+        if ((fin) &&
+            ((getSecAuthState() == SecureAuthentication::MASTER_IDLE) ||
+             (getSecAuthState() == SecureAuthentication::INIT)) &&
+            (fn != 131))
+            completedTransaction();
     }
 }
 
@@ -517,22 +517,22 @@ DnpStat_t Master::startNewTransaction()
     ii = stn_p->stats.get(Station::IIN);
     if ( ii & InternalIndications::DEVICE_RESTART)
     {
-	clearRestartBit();
+        clearRestartBit();
     }
 //     else if ( ii & InternalIndications::NEED_TIME)
 //     {
 //         if (stn_p->stats.get(Station::DELAY_MEASUREMENT) == 0)
-// 	{
-// 	    // delayMeasurement();
-// 	}
-// 	else
-// 	{
-// 	    //writeTimeAndDate();
-// 	}
+//      {
+//          // delayMeasurement();
+//      }
+//      else
+//      {
+//          //writeTimeAndDate();
+//      }
 //     }
     else
     {
-	poll(AUTO);
+        poll(AUTO);
     }
 
     return stn_p->stats.get(Station::STATE);
@@ -552,7 +552,7 @@ void Master::completedTransaction()
         
     currentStationPair++;
     if (currentStationPair == stationMap.end())
-	currentStationPair = stationMap.begin();
+        currentStationPair = stationMap.begin();
     stn_p = currentStationPair->second;
 
 }
@@ -589,28 +589,28 @@ DnpStat_t Master::poll( PollType pollType)
 
     if (pollType == AUTO)
     {
-	// check to see if this should be an event poll or integrity
-	if ((stn_p->stats.get(Station::TX_READ_REQUEST) %
-	     *integrityPollInterval_p) == 0)
-	{
-	    // note that for other reasons (startup) this may already be 1
-	    stn_p->sendIntegrityPoll = 1;
-	}
+        // check to see if this should be an event poll or integrity
+        if ((stn_p->stats.get(Station::TX_READ_REQUEST) %
+             *integrityPollInterval_p) == 0)
+        {
+            // note that for other reasons (startup) this may already be 1
+            stn_p->sendIntegrityPoll = 1;
+        }
     }
     else if (pollType == INTEGRITY)
-	stn_p->sendIntegrityPoll = 1;
+        stn_p->sendIntegrityPoll = 1;
     else // (pollType == EVENT)
-	stn_p->sendIntegrityPoll = 0;
+        stn_p->sendIntegrityPoll = 0;
         
     if (stn_p->sendIntegrityPoll == 1)
     {
-	appendIntegrityPoll();
-	stn_p->stats.increment(Station::TX_INTEGRITY_POLL);
+        appendIntegrityPoll();
+        stn_p->stats.increment(Station::TX_INTEGRITY_POLL);
     }
     else
     {
-	appendEventPoll();
-	stn_p->stats.increment(Station::TX_EVENT_POLL);
+        appendEventPoll();
+        stn_p->stats.increment(Station::TX_EVENT_POLL);
     }
     stn_p->stats.increment(Station::TX_READ_REQUEST);
     transmit();
@@ -625,9 +625,9 @@ void Master::initRequest(  AppHeader::FunctionCode fn)
     stn_p->txFragment.clear();
 
     if ((fn != AppHeader::CONFIRM) &&
-	( fn != AppHeader::AUTHENTICATION_REQUEST) &&
-	( fn != AppHeader::AUTHENTICATION_REPLY) )
-	AppSeqNum::increment( stn_p->lastTxSeqNum);
+        ( fn != AppHeader::AUTHENTICATION_REQUEST) &&
+        ( fn != AppHeader::AUTHENTICATION_REPLY) )
+        AppSeqNum::increment( stn_p->lastTxSeqNum);
 
     // master requests will always be a single fragment and
     // we will never ask for a confrim and it won't be
@@ -645,9 +645,9 @@ void Master::clearRestartBit()
     initRequest( AppHeader::WRITE);
 
     oh = ObjectHeader(80, 1, ObjectHeader::ONE_OCTET_START_STOP_INDEXES,
-		      0,    //   count is not used
-		      7,    //   start index (in bits)
-		      7 );  //   stop index (in bits)
+                      0,    //   count is not used
+                      7,    //   start index (in bits)
+                      7 );  //   stop index (in bits)
 
     oh.encode( stn_p->txFragment);
 
@@ -724,38 +724,38 @@ bool Master::parseResponseObjects(Bytes &data)
     // catch exceptions if object data is malformed
     while (data.size() > 0)
     {
-	try
-	{
-	    oh.decode( data, stn_p->stats );
-	    stn_p->stats.logNormal(oh.str(strbuf, sizeof(strbuf)));
-	    obj_p = of.decode(oh, data, stn_p->addr, stn_p->stats);
-	}
-	catch (int e)
-	{
-	    stn_p->stats.increment(Station::RX_UNPARSABLE_DATA);
-	    stn_p->stats.logAbnormal(0, "Caught exception line# %d", e);
-	    parseOk = false;
-	    break;
-	}
+        try
+        {
+            oh.decode( data, stn_p->stats );
+            stn_p->stats.logNormal(oh.str(strbuf, sizeof(strbuf)));
+            obj_p = of.decode(oh, data, stn_p->addr, stn_p->stats);
+        }
+        catch (int e)
+        {
+            stn_p->stats.increment(Station::RX_UNPARSABLE_DATA);
+            stn_p->stats.logAbnormal(0, "Caught exception line# %d", e);
+            parseOk = false;
+            break;
+        }
 
-	// handle special cases
-	// note we make the assume that all special case objects will
-	// come one at a time, eg. one object per object header
-	if (oh.grp == 51)
-	{ // CTO
-	    of.setCTO( obj_p->timestamp);
-	}
-	else if (oh.grp == 120)
-	{
-	    if (oh.var == 5)
-	    {
-		stn_p->secAuth.rxKeyStatus((SessionKeyStatus*) obj_p);
-	    }
-	    else if (oh.var == 1)
-	    {
-		stn_p->secAuth.rxChallenge((Challenge*) obj_p);
-	    }
-	}
+        // handle special cases
+        // note we make the assume that all special case objects will
+        // come one at a time, eg. one object per object header
+        if (oh.grp == 51)
+        { // CTO
+            of.setCTO( obj_p->timestamp);
+        }
+        else if (oh.grp == 120)
+        {
+            if (oh.var == 5)
+            {
+                stn_p->secAuth.rxKeyStatus((SessionKeyStatus*) obj_p);
+            }
+            else if (oh.var == 1)
+            {
+                stn_p->secAuth.rxChallenge((Challenge*) obj_p);
+            }
+        }
  
     }
 
@@ -767,7 +767,7 @@ bool Master::parseResponseObjects(Bytes &data)
 }
 
 void Master::appendVariableSizedObject( const ObjectHeader& h,
-					const DnpObject& o)
+                                        const DnpObject& o)
 {
     stn_p->stats.logNormal( h.str( strbuf, sizeof(strbuf)));
     h.encode(stn_p->txFragment);

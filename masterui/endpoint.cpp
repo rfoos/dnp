@@ -29,7 +29,7 @@
 #include "endpoint.hpp"
 
 Endpoint::Endpoint(const EndpointConfig& config,
-		   EventInterface* eventInterface_p)
+                   EventInterface* eventInterface_p)
   : QObject(), udpSocket(this), tcp(config.tcp),
     listenPort( config.listenPort), deviceMap( config.deviceMap)
 {
@@ -40,25 +40,25 @@ Endpoint::Endpoint(const EndpointConfig& config,
     // create a device map with IP as the key
     std::map<DnpAddr_t, RemoteDevice>::iterator iter;
     for (iter = deviceMap.begin(); iter != deviceMap.end(); iter++)
-	deviceIpMap[iter->second.ip.toIPv4Address()] = iter->second;
+        deviceIpMap[iter->second.ip.toIPv4Address()] = iter->second;
 
     char name[Stats::MAX_USER_NAME_LEN];
 
     // init stats object
     Stats::Element   temp[] =
     {
-	{ RX_UDP_MULTICAST,      "Rx UDP Multicast"     , Stats::NORMAL  ,0,0},
-	{ RX_UDP_PACKET,         "Rx UDP Packet"        , Stats::NORMAL  ,0,0},
-	{ TX_UDP_PACKET,         "Tx UDP Packet"        , Stats::NORMAL  ,0,0},
-	{ RX_UNKNOWN_IP,         "Rx Unknown IP"        , Stats::ABNORMAL,0,0},
+        { RX_UDP_MULTICAST,      "Rx UDP Multicast"     , Stats::NORMAL  ,0,0},
+        { RX_UDP_PACKET,         "Rx UDP Packet"        , Stats::NORMAL  ,0,0},
+        { TX_UDP_PACKET,         "Tx UDP Packet"        , Stats::NORMAL  ,0,0},
+        { RX_UNKNOWN_IP,         "Rx Unknown IP"        , Stats::ABNORMAL,0,0},
     };
     assert(sizeof(temp)/sizeof(Stats::Element) == NUM_STATS);
     memcpy(statElements, temp, sizeof(temp));
     snprintf(name, Stats::MAX_USER_NAME_LEN, "EP %6d ", config.ownerDnpAddr);
     stats = Stats( name, config.ownerDnpAddr,
-		   config.debugLevel_p, statElements, NUM_STATS,
-		   eventInterface_p,
-		   EventInterface::EP_AB_ST );
+                   config.debugLevel_p, statElements, NUM_STATS,
+                   eventInterface_p,
+                   EventInterface::EP_AB_ST );
 
     connect(&udpSocket, SIGNAL(readyRead()), this, SLOT(readDatagrams()));
 }
@@ -101,35 +101,35 @@ void Endpoint::readDatagrams()
 
     while(udpSocket.hasPendingDatagrams())
     {
-	QByteArray         datagram;
-	Uptime_t           timeRxd = 0;
-	int len = udpSocket.pendingDatagramSize();
-	datagram.resize( len);
+        QByteArray         datagram;
+        Uptime_t           timeRxd = 0;
+        int len = udpSocket.pendingDatagramSize();
+        datagram.resize( len);
 
-	udpSocket.readDatagram( datagram.data(), len, &ip, &port);
+        udpSocket.readDatagram( datagram.data(), len, &ip, &port);
 
-	if (deviceIpMap.count(ip.toIPv4Address()) > 0)
-	{
-	    device = deviceIpMap[ip.toIPv4Address()];
-	    device.portOfLastRequest = port;
+        if (deviceIpMap.count(ip.toIPv4Address()) > 0)
+        {
+            device = deviceIpMap[ip.toIPv4Address()];
+            device.portOfLastRequest = port;
 
-	    const char* data_p = datagram.data();
+            const char* data_p = datagram.data();
 
-	    // put the char data into a Bytes container
-	    Bytes bytes((unsigned char*) data_p, (unsigned char*)data_p+len);
-	    
-	    stats.logNormal( "Rx %s",hex_repr(bytes, strbuf,sizeof(strbuf)));
-	    
-	    stats.increment(RX_UDP_PACKET);
+            // put the char data into a Bytes container
+            Bytes bytes((unsigned char*) data_p, (unsigned char*)data_p+len);
+            
+            stats.logNormal( "Rx %s",hex_repr(bytes, strbuf,sizeof(strbuf)));
+            
+            stats.increment(RX_UDP_PACKET);
 
-	    emit data( &bytes, timeRxd);
-	}
-	else
-	{
-	    stats.logAbnormal( 0, "Rx UDP packet from unconfigured ip: %s",
-			       ip.toString().toLocal8Bit().data());
-	    stats.increment(RX_UNKNOWN_IP);
-	}
+            emit data( &bytes, timeRxd);
+        }
+        else
+        {
+            stats.logAbnormal( 0, "Rx UDP packet from unconfigured ip: %s",
+                               ip.toString().toLocal8Bit().data());
+            stats.increment(RX_UNKNOWN_IP);
+        }
 
     }
 }

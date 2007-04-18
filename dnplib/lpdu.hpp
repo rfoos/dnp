@@ -44,15 +44,15 @@ public:
     static const int MAX_APP_DATA              = 233;
 
     enum StatIndex { RX_START_OCTETS = 0,
-		     LOST_BYTES,
-		     CRC_ERRORS,
-		     NUM_STATS };
+                     LOST_BYTES,
+                     CRC_ERRORS,
+                     NUM_STATS };
 
     typedef struct
     {
-	Bytes          data;
-	DnpAddr_t      src;
-	DnpAddr_t      dest;
+        Bytes          data;
+        DnpAddr_t      src;
+        DnpAddr_t      dest;
     } UserData;
 
     Lpdu(Stats* datalinkStats_p = NULL);
@@ -87,16 +87,16 @@ public:
     // Master->Slave Direction Bit (DIR) = 1
     // From initiating station Primary (PRM) = 1
     void build( uint8_t dir, uint8_t prm,
-		uint8_t fcb, uint8_t fcvDfc,
-		uint8_t fc,
-		DnpAddr_t dest, DnpAddr_t src,
-		const Bytes& data);
+                uint8_t fcb, uint8_t fcvDfc,
+                uint8_t fc,
+                DnpAddr_t dest, DnpAddr_t src,
+                const Bytes& data);
 
     // for building header only frames
     void build( uint8_t dir, uint8_t prm,
-		uint8_t fcb, uint8_t fcvDfc,
-		uint8_t fc,
-		DnpAddr_t dest, DnpAddr_t src);
+                uint8_t fcb, uint8_t fcvDfc,
+                uint8_t fc,
+                DnpAddr_t dest, DnpAddr_t src);
 
     // exposed for unit testing but otherwise would be private
     void            reset();

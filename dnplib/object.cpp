@@ -31,10 +31,10 @@
 #include "object.hpp"
 
 DnpObject::DnpObject(int32_t                        val,
-		     uint8_t                        flags,
-		     DnpIndex_t                     indx, 
-		     EventInterface::PointType_t    pt,
-		     DnpTime_t                      time ) :
+                     uint8_t                        flags,
+                     DnpIndex_t                     indx, 
+                     EventInterface::PointType_t    pt,
+                     DnpTime_t                      time ) :
   value(val), flag(flags), index(indx), pointType(pt), timestamp(time)
 {
 }
@@ -87,7 +87,7 @@ void BinaryInputWithStatus::decode(Bytes& data) throw(int)
 }
 
 BinaryInputEvent::BinaryInputEvent(uint8_t flag, DnpIndex_t index,
-				   DnpTime_t time) :
+                                   DnpTime_t time) :
   DnpObject( ((flag & 0x80) >> 7), flag, index, EventInterface::BI, time)
 {
 }
@@ -106,8 +106,8 @@ void BinaryInputEvent::decode(Bytes& data) throw(int)
 }
 
 BinaryInputEventRelativeTime::BinaryInputEventRelativeTime(uint8_t flag,
-							   DnpIndex_t index,
-							   DnpTime_t time) :
+                                                           DnpIndex_t index,
+                                                           DnpTime_t time) :
   DnpObject( ((flag & 0x80) >> 7), flag, index, EventInterface::BI, time)
 {
 }
@@ -136,10 +136,10 @@ BinaryOutputStatus::BinaryOutputStatus(uint8_t flag, DnpIndex_t index) :
 }
 
 ControlOutputRelayBlock::ControlOutputRelayBlock(Code       code,
-						 DnpIndex_t index,
-						 uint32_t   on,
-						 uint32_t   off,
-						 Status     st) :
+                                                 DnpIndex_t index,
+                                                 uint32_t   on,
+                                                 uint32_t   off,
+                                                 Status     st) :
   DnpObject( 0, 0, index, EventInterface::BO),
   outputCode( code),
   count(1),
@@ -240,14 +240,14 @@ void Bit16AnalogInputNoFlag::decode(Bytes& data) throw(int)
 // Counter Inputs //////////////////////////////////////////////
 
 Bit32BinaryCounter::Bit32BinaryCounter(uint32_t v,
-				       uint8_t flag, DnpIndex_t index) :
+                                       uint8_t flag, DnpIndex_t index) :
   Bit32AnalogInput( (int32_t)v, flag, index)
 {
     pointType = EventInterface::CI;
 }
 
 Bit16BinaryCounter::Bit16BinaryCounter(uint16_t v,
-				       uint8_t flag, DnpIndex_t index) :
+                                       uint8_t flag, DnpIndex_t index) :
   Bit16AnalogInput( (int16_t)v, flag, index)
 {
     pointType = EventInterface::CI;
@@ -269,8 +269,8 @@ Bit16BinaryCounterNoFlag::Bit16BinaryCounterNoFlag(uint16_t v,DnpIndex_t index)
 
 
 Bit16AnalogOutput::Bit16AnalogOutput(uint16_t requestedValue,
-				     DnpIndex_t index,
-				     Status st) :
+                                     DnpIndex_t index,
+                                     Status st) :
   DnpObject( 0, 0, index, EventInterface::AO),
   request( requestedValue),
   status(st)
@@ -326,7 +326,7 @@ void TimeDelayCoarse::decode(Bytes& data) throw(int)
 
 
 Challenge::Challenge(uint32_t challengeSeqNum, UserNumber_t num, 
-		     HMACAlgorithm algorithm, ChallengeReason reason) :
+                     HMACAlgorithm algorithm, ChallengeReason reason) :
   seqNum(challengeSeqNum), userNum(num), hmacAlgorithm(algorithm), 
   challengeReason(reason)
 {
@@ -398,9 +398,9 @@ void SessionKeyStatusReq::encode(Bytes& data) const
 }
 
 SessionKeyStatus::SessionKeyStatus( uint32_t seqNum, UserNumber_t num, 
-				    KeyWrapAlgorithm algorithm,
-				    KeyStatus status,
-				    Bytes& data) :
+                                    KeyWrapAlgorithm algorithm,
+                                    KeyStatus status,
+                                    Bytes& data) :
   keyChangeSeqNum(seqNum), userNum(num), keyWrapAlgorithm(algorithm),
   keyStatus(status), challengeData(data)
 {
@@ -428,13 +428,13 @@ void SessionKeyStatus::encode(Bytes& data) const
 bool SessionKeyStatus::operator==(const SessionKeyStatus &other) const
 {
     if ((keyChangeSeqNum    == other.keyChangeSeqNum)    &&
-	(userNum            == other.userNum)            &&
-	(keyWrapAlgorithm   == other.keyWrapAlgorithm)   &&
-	(keyStatus          == other.keyStatus)          &&
-	(challengeData      == other.challengeData))
-	return true;
+        (userNum            == other.userNum)            &&
+        (keyWrapAlgorithm   == other.keyWrapAlgorithm)   &&
+        (keyStatus          == other.keyStatus)          &&
+        (challengeData      == other.challengeData))
+        return true;
     else
-	return false;
+        return false;
 }
 
 bool SessionKeyStatus::operator!=(const SessionKeyStatus &other) const
@@ -448,7 +448,7 @@ unsigned int SessionKeyStatus::size() const
 }
 
 SessionKeyChange::SessionKeyChange(uint32_t seqNum, UserNumber_t num,
-				   Bytes& keyData) :
+                                   Bytes& keyData) :
     keyChangeSeqNum(seqNum),
     userNum(num),
     wrappedKeyData(keyData)
@@ -475,9 +475,9 @@ unsigned int SessionKeyChange::size() const
 }
 
 AuthenticationError::AuthenticationError(uint32_t sequenceNum, 
-					 UserNumber_t num,
-					 ErrorReason errReason,
-					 Bytes& text) :
+                                         UserNumber_t num,
+                                         ErrorReason errReason,
+                                         Bytes& text) :
   seqNum(sequenceNum), userNum(num), errorReason(errReason), errorText(text)
 {
 }

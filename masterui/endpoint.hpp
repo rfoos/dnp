@@ -57,12 +57,12 @@ public:
 
     typedef struct
     {
-	DnpAddr_t                             ownerDnpAddr;
-	bool                                  tcp;
-	bool                                  initiating;
-	unsigned short                        listenPort;
-	std::map<DnpAddr_t, RemoteDevice>     deviceMap;
-	int*                                  debugLevel_p;
+        DnpAddr_t                             ownerDnpAddr;
+        bool                                  tcp;
+        bool                                  initiating;
+        unsigned short                        listenPort;
+        std::map<DnpAddr_t, RemoteDevice>     deviceMap;
+        int*                                  debugLevel_p;
 
     } EndpointConfig;
 
@@ -82,10 +82,10 @@ private slots:
 private:
 
     enum statIndex {       RX_UDP_MULTICAST,
-			   RX_UDP_PACKET,
-			   TX_UDP_PACKET,
-			   RX_UNKNOWN_IP,
-			   NUM_STATS       };
+                           RX_UDP_PACKET,
+                           TX_UDP_PACKET,
+                           RX_UNKNOWN_IP,
+                           NUM_STATS       };
 
     QUdpSocket         udpSocket;
     bool               tcp;

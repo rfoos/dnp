@@ -51,11 +51,11 @@ public:
     enum OutputLevel { ABNORMAL = 0, NORMAL = 1 };
 
     typedef struct {
-	char           index;
-	char           name[MAX_STAT_NAME_LEN+1];
-	OutputLevel    normal;
-	DnpStat_t      initialValue;
-	DnpStat_t      value;
+        char           index;
+        char           name[MAX_STAT_NAME_LEN+1];
+        OutputLevel    normal;
+        DnpStat_t      initialValue;
+        DnpStat_t      value;
     } Element;
 
 
@@ -65,11 +65,11 @@ public:
     // -1 is only used for unit tests where abnormalities are
     // forces and we do not want to clutter the output
     Stats( char userName[MAX_USER_NAME_LEN]=NULL,
-	   DnpAddr_t dnpAddr=0,
-	   int* debugLevel_p=NULL,
-	   Element* elements=NULL, int num_elements=0,
-	   EventInterface* eventInterface_p=NULL,
-	   EventInterface::PointType_t pType=EventInterface::ST);
+           DnpAddr_t dnpAddr=0,
+           int* debugLevel_p=NULL,
+           Element* elements=NULL, int num_elements=0,
+           EventInterface* eventInterface_p=NULL,
+           EventInterface::PointType_t pType=EventInterface::ST);
 
     void reset(int index=-1);
     void increment(int index);

@@ -27,11 +27,11 @@
 #include "app.hpp"
 
 Application::Application(int*                       debugLevel_p,
-			 DnpAddr_t                  dnpAddr,
-			 UserNumber_t               num,
-			 Datalink::DatalinkConfig&  datalinkConfig,
-			 EventInterface*            eventInterface_p,
-			 TimerInterface*            timerInterface_p) :
+                         DnpAddr_t                  dnpAddr,
+                         UserNumber_t               num,
+                         Datalink::DatalinkConfig&  datalinkConfig,
+                         EventInterface*            eventInterface_p,
+                         TimerInterface*            timerInterface_p) :
   timer_p( timerInterface_p),
   debug_p(debugLevel_p),
   addr( dnpAddr),

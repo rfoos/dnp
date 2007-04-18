@@ -38,20 +38,20 @@ DummyDb::DummyDb() :
 
 
 void DummyDb::changePoint(   DnpAddr_t      addr,
-			     DnpIndex_t     index,
-		             PointType_t    pointType,
-			     int            value,
-			     DnpTime_t      timestamp)
+                             DnpIndex_t     index,
+                             PointType_t    pointType,
+                             int            value,
+                             DnpTime_t      timestamp)
 {
     assert(addr != 0);
     numChanges++;
 }
 
 void  DummyDb::registerName( DnpAddr_t      addr,
-			     DnpIndex_t     index,
-			     PointType_t    pointType,
-			     char*          name,
-			     int            initialValue )
+                             DnpIndex_t     index,
+                             PointType_t    pointType,
+                             char*          name,
+                             int            initialValue )
 {
 
 }
@@ -72,7 +72,7 @@ Uptime_t DummyTx::transmit( const Lpdu& lpdu)
     assert(lpdu.ab.size() >= 10);
     lastTxBytes = lpdu.ab;
     if (*debug_p > 0)
-	printf( "%s Tx %s\n", n, hex_repr( lpdu.ab, buf,sizeof(buf)));
+        printf( "%s Tx %s\n", n, hex_repr( lpdu.ab, buf,sizeof(buf)));
     numTxs++;
     return 0;
 }

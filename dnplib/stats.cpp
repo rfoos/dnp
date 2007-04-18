@@ -36,16 +36,16 @@
 #include "stats.hpp"
 
   Stats::Stats( char userName[MAX_USER_NAME_LEN], DnpAddr_t dnpAddr,
-		int* debugLevel_p,
-		Element *elements, int num_elements,
-		EventInterface* eventInterface_p,
-		EventInterface::PointType_t pType) :
+                int* debugLevel_p,
+                Element *elements, int num_elements,
+                EventInterface* eventInterface_p,
+                EventInterface::PointType_t pType) :
     db_p( eventInterface_p), addr( dnpAddr), pointType(pType)
 {
     if (userName != NULL)
     {
-	strncpy(name, userName, MAX_USER_NAME_LEN);
-	snprintf(buf, sizeof(buf), "%s", name );
+        strncpy(name, userName, MAX_USER_NAME_LEN);
+        snprintf(buf, sizeof(buf), "%s", name );
     }
     nameLen = strlen(buf);
     outputLevel_p = debugLevel_p;
@@ -53,10 +53,10 @@
     x             = elements;
     for (int i=0; i<num; i++)
     {
-	assert (x[i].index == i);
-	db_p->registerName( addr, i,
-	     (EventInterface::PointType_t) ((int) pointType + x[i].normal),
-			    x[i].name, x[i].initialValue);
+        assert (x[i].index == i);
+        db_p->registerName( addr, i,
+             (EventInterface::PointType_t) ((int) pointType + x[i].normal),
+                            x[i].name, x[i].initialValue);
     }
     reset();
 }
@@ -67,15 +67,15 @@ void Stats::reset( int index)
     int i;
     if (index==-1)
     {
-	// reset them all
-	for(i=0; i<num; i++)
-	{
-	    x[i].value = x[i].initialValue;
-	}
+        // reset them all
+        for(i=0; i<num; i++)
+        {
+            x[i].value = x[i].initialValue;
+        }
     }
     else
     {
-	x[index].value = x[index].initialValue;
+        x[index].value = x[index].initialValue;
     }
 }
 
@@ -106,15 +106,15 @@ void Stats::increment( int index)
 void Stats::logChangeInStatValue(int index)
 {
     if (db_p != NULL)
- 	db_p->changePoint(addr, index,
-	 (EventInterface::PointType_t) ((int)pointType+ x[index].normal),
-			  x[index].value);
+        db_p->changePoint(addr, index,
+         (EventInterface::PointType_t) ((int)pointType+ x[index].normal),
+                          x[index].value);
 
     // always log secure authentication mesages for prototype
     if ((x[index].normal) && (pointType != EventInterface::SA_AB_ST))
-	logNormal     ("%s = %d", x[index].name, x[index].value);
+        logNormal     ("%s = %d", x[index].name, x[index].value);
     else
-	logAbnormal(0, "%s = %d", x[index].name, x[index].value);
+        logAbnormal(0, "%s = %d", x[index].name, x[index].value);
 }
 
 void Stats::logNormal(const char *format, ...)
@@ -124,20 +124,20 @@ void Stats::logNormal(const char *format, ...)
 
     if (*outputLevel_p >= 1)
     {
-	n = nameLen;
-	snprintf(buf+n, sizeof(buf)-n, " Info: ");
-	n += 7;
+        n = nameLen;
+        snprintf(buf+n, sizeof(buf)-n, " Info: ");
+        n += 7;
         va_start(ap,format);
 #ifdef HAVE_VSNPRINTF
         vsnprintf(buf+n, sizeof(buf)-n, format, ap);
 #else
-	vsprintf(buf+n, format, ap);
+        vsprintf(buf+n, format, ap);
 #endif
-	va_end(ap);
-	
-	strcat(buf,"\n");
+        va_end(ap);
+        
+        strcat(buf,"\n");
 
-	log(buf);
+        log(buf);
     }
 }
 
@@ -149,24 +149,24 @@ void Stats::logAbnormal(int use_errno, const char *format, ...)
 
     if (*outputLevel_p >= 0)
     {
-	n = nameLen;
-	snprintf(buf+n, sizeof(buf)-n, " Warn: ");
-	n += 7;
-	va_start(ap,format);
+        n = nameLen;
+        snprintf(buf+n, sizeof(buf)-n, " Warn: ");
+        n += 7;
+        va_start(ap,format);
 #ifdef HAVE_VSNPRINTF
-	vsnprintf(buf+n, sizeof(buf)-n, format, ap);
+        vsnprintf(buf+n, sizeof(buf)-n, format, ap);
 #else
-	vsprintf(buf+n, format, ap);
+        vsprintf(buf+n, format, ap);
 #endif
-	va_end(ap);
+        va_end(ap);
 
-	n = strlen(buf);
-	if(use_errno)
-	    snprintf(buf+n, sizeof(buf)-n, ": %s", strerror(old_errno));
-	
-	strcat(buf,"\n");
+        n = strlen(buf);
+        if(use_errno)
+            snprintf(buf+n, sizeof(buf)-n, ": %s", strerror(old_errno));
+        
+        strcat(buf,"\n");
 
-	log(buf);
+        log(buf);
     }
 }
 
@@ -177,7 +177,7 @@ void Stats::log( const char* buf, int logToSysLog)
     strftime( s, 20, "%F %H:%M:%S", localtime( &t));
     fprintf(stderr, "%s  %s", s, buf);
 //     if (logToSysLog)
-// 	syslog(LOG_INFO, buf);
+//      syslog(LOG_INFO, buf);
 }
 void Stats::log( int logToSysLog, int use_errno, const char *format, ...)
 {
@@ -198,11 +198,11 @@ void Stats::log( int logToSysLog, int use_errno, const char *format, ...)
     va_end(ap);
 
     if(use_errno)
-	snprintf(buf, sizeof(buf), "%s", strerror(old_errno));
-	
+        snprintf(buf, sizeof(buf), "%s", strerror(old_errno));
+        
     strcat(buf,"\n");
 
     fprintf(stderr, "%s  %s", s, buf);
 //     if (logToSysLog)
-// 	syslog(LOG_INFO, buf);
+//      syslog(LOG_INFO, buf);
 }

@@ -41,11 +41,11 @@ public:
 
     typedef struct
     {
-	DnpAddr_t               addr;
-	bool                    isMaster;
-	int                     keepAliveInterval_ms;
-	int*                    debugLevel_p;
-	TransmitInterface*      tx_p;
+        DnpAddr_t               addr;
+        bool                    isMaster;
+        int                     keepAliveInterval_ms;
+        int*                    debugLevel_p;
+        TransmitInterface*      tx_p;
     } DatalinkConfig;
 
     Datalink(DatalinkConfig& config, EventInterface* eventInterface_p);
@@ -63,35 +63,35 @@ public:
 private:
 
     enum statIndex {       RX_FRAMES = Lpdu::NUM_STATS,
-			   RX_ACKS,
-			   RX_LINK_STATUS,
-			   RX_RESET_LINK,
-			   RX_TEST_LINK,
-			   RX_USER_DATA_CONFIRM,
-			   RX_USER_DATA_NO_CONFIRM,  
-			   RX_REQUEST_LINK_STATUS,
-			   TX_FRAMES,
-			   TX_ACKS,
-			   TX_LINK_STATUS,
-			   TX_RESET_LINK,
-			   TX_TEST_LINK,
-			   TX_USER_DATA_CONFIRM,  
-			   TX_USER_DATA_NO_CONFIRM,  
-			   TX_REQUEST_LINK_STATUS,
-			   // Abnormal
-			   TIMEOUTS_ACK, 
-			   TIMEOUTS_lINK_STATUS,            
-			   RX_NACKS,
-			   RX_NOT_SUPPORTED,
-			   RX_FN_CODE_ERROR,
-			   RX_UNEXPECTED_ACKS,
-			   RX_UNEXPECTED_LINK_STATUS,
-			   RX_FCB_INCORRECT,
-			   RX_FCV_INCORRECT,
-			   RX_OTHER_ADDRESSES,
-			   TX_NACKS,
-			   TX_NOT_SUPPORTED,
-			   NUM_STATS       };
+                           RX_ACKS,
+                           RX_LINK_STATUS,
+                           RX_RESET_LINK,
+                           RX_TEST_LINK,
+                           RX_USER_DATA_CONFIRM,
+                           RX_USER_DATA_NO_CONFIRM,  
+                           RX_REQUEST_LINK_STATUS,
+                           TX_FRAMES,
+                           TX_ACKS,
+                           TX_LINK_STATUS,
+                           TX_RESET_LINK,
+                           TX_TEST_LINK,
+                           TX_USER_DATA_CONFIRM,  
+                           TX_USER_DATA_NO_CONFIRM,  
+                           TX_REQUEST_LINK_STATUS,
+                           // Abnormal
+                           TIMEOUTS_ACK, 
+                           TIMEOUTS_lINK_STATUS,            
+                           RX_NACKS,
+                           RX_NOT_SUPPORTED,
+                           RX_FN_CODE_ERROR,
+                           RX_UNEXPECTED_ACKS,
+                           RX_UNEXPECTED_LINK_STATUS,
+                           RX_FCB_INCORRECT,
+                           RX_FCV_INCORRECT,
+                           RX_OTHER_ADDRESSES,
+                           TX_NACKS,
+                           TX_NOT_SUPPORTED,
+                           NUM_STATS       };
 
     // these function codes are valid only for PRM = 1
     static const unsigned short RESET_LINK    = 0x00;
@@ -108,9 +108,9 @@ private:
 
     //internal states
     enum State{   IDLE,
-		  WAITING_FOR_ACK,
-		  WAITING_FOR_LINK_STATUS,
-		  WAITING_FOR_ACK_TO_LINK_RESET };
+                  WAITING_FOR_ACK,
+                  WAITING_FOR_LINK_STATUS,
+                  WAITING_FOR_ACK_TO_LINK_RESET };
 
     void             processRxdLpdu();
 

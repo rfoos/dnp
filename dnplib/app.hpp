@@ -49,11 +49,11 @@ class Application
     friend class OutstationSecurity;
 
     Application(int*                       debugLevel_p,
-		DnpAddr_t                  dnpAddr,
-		UserNumber_t               num,
-		Datalink::DatalinkConfig&  datalinkConfig,
-		EventInterface*            eventInterface_p,
-		TimerInterface*            timerInterface_p );
+                DnpAddr_t                  dnpAddr,
+                UserNumber_t               num,
+                Datalink::DatalinkConfig&  datalinkConfig,
+                EventInterface*            eventInterface_p,
+                TimerInterface*            timerInterface_p );
 
     int*                   debug_p;
     DnpAddr_t              addr;
@@ -74,7 +74,7 @@ class Application
     virtual void transmit()=0;
 
     virtual void appendVariableSizedObject(const ObjectHeader& h,
-					   const DnpObject& o)=0;
+                                           const DnpObject& o)=0;
 };
 
 #endif

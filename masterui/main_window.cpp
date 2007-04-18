@@ -110,17 +110,17 @@ MainWindow::MainWindow() :
 
 
     connect( settingsTab, SIGNAL(masterStateChange()),
-	     this, SLOT(updateStateLabel()));
+             this, SLOT(updateStateLabel()));
 
     connect( settingsTab->verbose, SIGNAL(stateChanged(int)),
-	     this, SLOT(setDebugLevel(int)));
+             this, SLOT(setDebugLevel(int)));
 
     connect( ti.responseTimer, SIGNAL(timeout( TimerInterface::TimerId)),
-	     this,SLOT( timeoutSlot( TimerInterface::TimerId)));
+             this,SLOT( timeoutSlot( TimerInterface::TimerId)));
     connect( ti.challengeTimer, SIGNAL(timeout( TimerInterface::TimerId)),
-	     this,SLOT( timeoutSlot( TimerInterface::TimerId)));
+             this,SLOT( timeoutSlot( TimerInterface::TimerId)));
     connect( ti.keyChangeTimer, SIGNAL(timeout( TimerInterface::TimerId)),
-	     this,SLOT( timeoutSlot( TimerInterface::TimerId)));
+             this,SLOT( timeoutSlot( TimerInterface::TimerId)));
 
     updateStateLabel();
 }
@@ -186,7 +186,7 @@ void MainWindow::createMenus()
 void MainWindow::startOutstation()
 {
     if (outstationThread.isRunning())
-	return;
+        return;
 
     QSettings qsettings;
 
@@ -220,8 +220,8 @@ void MainWindow::startOutstation()
     dlConfig.isMaster              = false;
 
     outstationThread.mainWindow = new OutstationWindow( outstationConfig,
-							epConfig,
-							dlConfig);
+                                                        epConfig,
+                                                        dlConfig);
     outstationThread.run();
 }
 
@@ -235,21 +235,21 @@ void MainWindow::about()
     QString aboutText(tr(
             "<h3>DNP Master Station</h3>"
             "%1"
-	    "<p>"
-	    "<b>Copyright (C) 2007 Turner Technologies Inc.</b> "
-	    "<a href=\"http://www.turner.ca\">www.turner.ca</a>"
-	    "</p>"
-	    "<p>"
-	    "This program implements the master portion of the DNP protocol. "
-	    "For more information on DNP see "
-	    "<a href=\"http://www.dnp.org\">www.dnp.org</a>"
-	    "</p>"
+            "<p>"
+            "<b>Copyright (C) 2007 Turner Technologies Inc.</b> "
+            "<a href=\"http://www.turner.ca\">www.turner.ca</a>"
+            "</p>"
+            "<p>"
+            "This program implements the master portion of the DNP protocol. "
+            "For more information on DNP see "
+            "<a href=\"http://www.dnp.org\">www.dnp.org</a>"
+            "</p>"
 
-	    "<p>"
+            "<p>"
 "Turner Technologies developed this software using standard C++. Portions of the GUI code use the Qt4 open source cross platform toolkit, "
  "<a href=\"http://www.trolltech.com/qt\">www.trolltech.com/qt</a>"
-	    "</p>"
-	    ).arg(version()));
+            "</p>"
+            ).arg(version()));
 
 
     mb.setText(aboutText);
@@ -291,47 +291,47 @@ void MainWindow::createDnpMaster()
 
 
     connect( ep_p, SIGNAL(data( Bytes*, unsigned long)),
-  	     this, SLOT(rxData( Bytes*, unsigned long)));
+             this, SLOT(rxData( Bytes*, unsigned long)));
 
 
     // datalink required pointer to the transmit interface
     datalinkConfig.tx_p                  = ep_p;
 
     m_p = new Master (masterConfig, datalinkConfig, &stationConfig,
-		      1,      // one station
-		      this,   // event interface
-		      &ti);   // timer interface
+                      1,      // one station
+                      this,   // event interface
+                      &ti);   // timer interface
 }
 
 QString MainWindow::convertDnpIndexToName( DnpAddr_t addr, DnpIndex_t index,
-					   PointType_t    pointType )
+                                           PointType_t    pointType )
 {
 return QString("Stn%1_%2%3").arg(addr).arg(shortPtNames[pointType]).arg(index);
 }
 
 // implementation of EventInterface
 void MainWindow::changePoint(        DnpAddr_t addr, DnpIndex_t index,
-				     PointType_t    pointType,
-				     int value, DnpTime_t timestamp)
+                                     PointType_t    pointType,
+                                     int value, DnpTime_t timestamp)
 {
     QString key = convertDnpIndexToName(addr, index, pointType);
     QString name = pointNameHash.value( key, key);
 
     if (pointType >= ST)
-	statDisplay->updateData( name, pointType, value);
+        statDisplay->updateData( name, pointType, value);
     else
     {
-	bool cos = pointDisplay->updateData( name, pointType, value);
-	if (cos)
-	    cosDisplay->updateData( name, pointType, value, timestamp);
+        bool cos = pointDisplay->updateData( name, pointType, value);
+        if (cos)
+            cosDisplay->updateData( name, pointType, value, timestamp);
     }
 }
 
 void  MainWindow::registerName(       DnpAddr_t      addr,
-				      DnpIndex_t     index,
-				      PointType_t    pointType,
-				      char*          name,
-				      int            initialValue )
+                                      DnpIndex_t     index,
+                                      PointType_t    pointType,
+                                      char*          name,
+                                      int            initialValue )
 {
     assert( pointType < NUM_POINT_TYPES);
     QString key = convertDnpIndexToName(addr, index, pointType);
@@ -401,7 +401,7 @@ void MainWindow::rxData( Bytes* buf, unsigned long timeRxd)
     DnpStat_t state = m_p->rxData(buf, timeRxd);
     if ( state == Station::IDLE)
     {
-	settingsTab->allowRequests();
+        settingsTab->allowRequests();
     }
     updateStateLabel();
 }
@@ -411,7 +411,7 @@ void MainWindow::timeoutSlot(TimerInterface::TimerId id)
     DnpStat_t state = m_p->timeout( id);
     if (state == Station::IDLE)
     {
-	settingsTab->allowRequests();
+        settingsTab->allowRequests();
     }
     updateStateLabel();
 }
@@ -424,21 +424,21 @@ void MainWindow::updateStateLabel()
 
     if (settingsTab->secAuth->isChecked())
     {
-	s.append(" | Secure Authentication State: <b>");
-	s.append(SecureAuthentication::stateStrings[ m_p->getSecAuthState()]);
-	s.append("</b>");
+        s.append(" | Secure Authentication State: <b>");
+        s.append(SecureAuthentication::stateStrings[ m_p->getSecAuthState()]);
+        s.append("</b>");
     }
 
     stateLabel->setText(s);
 
     commsLabel->setText(commsStrings[m_p->getStat(stationConfig.addr,
-						  Station::COMMUNICATION)]);
+                                                  Station::COMMUNICATION)]);
 }
 
 void MainWindow::setDebugLevel(int state)
 {
     if (state == Qt::Checked)
-	debugLevel = 1;
+        debugLevel = 1;
     else
-	debugLevel = 0;
+        debugLevel = 0;
 }

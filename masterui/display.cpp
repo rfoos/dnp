@@ -74,13 +74,13 @@ DataDisplay::DataDisplay()
 }
 
 void DataDisplay::addRow( QString name, EventInterface::PointType_t pointType,
-			  int value, DnpTime_t timestamp)
+                          int value, DnpTime_t timestamp)
 {
     QModelIndexList r;
     QModelIndex p; // for parent
 
     r = dataModel->match( dataModel->index(0, 0), Qt::DisplayRole,
-			  ptNames[pointType]);
+                          ptNames[pointType]);
     p = r.first();
 
     dataModel->insertRow(0, p);
@@ -105,8 +105,8 @@ void DataDisplay::addParent(  EventInterface::PointType_t pointType )
 }
 
 bool DataDisplay::updateData( QString name,
-			      EventInterface::PointType_t pointType,
-			      int value, DnpTime_t timestamp)
+                              EventInterface::PointType_t pointType,
+                              int value, DnpTime_t timestamp)
 {
     bool cos = false;
     QModelIndexList r;
@@ -114,30 +114,30 @@ bool DataDisplay::updateData( QString name,
 
     // find the parent using the point type name
     r = dataModel->match( dataModel->index(0, 0), Qt::DisplayRole,
-			  ptNames[pointType]);
+                          ptNames[pointType]);
     if (r.isEmpty())
     {
-	addParent( pointType);
-	r = dataModel->match( dataModel->index(0, 0), Qt::DisplayRole,
-			      ptNames[pointType]);
-	assert(!r.isEmpty());
+        addParent( pointType);
+        r = dataModel->match( dataModel->index(0, 0), Qt::DisplayRole,
+                              ptNames[pointType]);
+        assert(!r.isEmpty());
     }
     p = r.first();
     // find the row using the id
     r = dataModel->match(dataModel->index(0, 0, p), Qt::DisplayRole, name);
     if (r.isEmpty())
     {
-	addRow( name, pointType, value, timestamp);
-	cos = true;
+        addRow( name, pointType, value, timestamp);
+        cos = true;
     }
     else
     {
-	QModelIndex di = dataModel->index(r.first().row(), 1, p);
-	if (dataModel->data(di) != value)
-	{
-	    dataModel->setData(di, value, Qt::DisplayRole);
-	    cos = true;
-	}
+        QModelIndex di = dataModel->index(r.first().row(), 1, p);
+        if (dataModel->data(di) != value)
+        {
+            dataModel->setData(di, value, Qt::DisplayRole);
+            cos = true;
+        }
     }
     return cos;
 }
@@ -156,16 +156,16 @@ CosDisplay::CosDisplay()
 }
 
 bool CosDisplay::updateData( QString name,
-			     EventInterface::PointType_t pointType,
-			     int value,
-			     DnpTime_t timestamp)
+                             EventInterface::PointType_t pointType,
+                             int value,
+                             DnpTime_t timestamp)
 {
     addRow( name, pointType, value, timestamp);
     return true;
 }
 
 void CosDisplay::addRow( QString name, EventInterface::PointType_t pointType,
-			  int value, DnpTime_t timestamp)
+                          int value, DnpTime_t timestamp)
 {
 
     QModelIndexList r;
@@ -175,12 +175,12 @@ void CosDisplay::addRow( QString name, EventInterface::PointType_t pointType,
     dataModel->setData(dataModel->index(0, 0), name, Qt::DisplayRole );
     dataModel->setData(dataModel->index(0, 1), value, Qt::DisplayRole );
     if (timestamp == 0)
-	dateTime = QDateTime::currentDateTime();
+        dateTime = QDateTime::currentDateTime();
     else
-	dateTime.setTime_t( (unsigned int) ( timestamp/1000));
+        dateTime.setTime_t( (unsigned int) ( timestamp/1000));
     dataModel->setData(dataModel->index(0, 2),
-		       dateTime.toString("ddd MMM dd yyyy  hh:mm:ss:zzz"),
-		       Qt::DisplayRole );
+                       dateTime.toString("ddd MMM dd yyyy  hh:mm:ss:zzz"),
+                       Qt::DisplayRole );
 
     dataView->resizeColumnToContents(0);
 }

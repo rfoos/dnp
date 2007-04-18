@@ -72,7 +72,7 @@ void TestSecurity::testMaster()
     datalinkConfig.debugLevel_p          = &debugLevel;
 
     m_p = new Master (masterConfig, datalinkConfig, &stationConfig, 1,
-		      &db, &masterTimer);
+                      &db, &masterTimer);
 
     Outstation::OutstationConfig outstationConfig;
     outstationConfig.addr           = stationConfig.addr;
@@ -85,51 +85,51 @@ void TestSecurity::testMaster()
     datalinkConfig.tx_p             = &outstationTx;
 
     o_p = new Outstation( outstationConfig, datalinkConfig, &db,
-			  &outstationTimer);
+                          &outstationTimer);
 
     // check initial states
     QCOMPARE(m_p->getSecAuthStat(2, SecureAuthentication::STATE), 
-	     (DnpStat_t)  SecureAuthentication::INIT);
+             (DnpStat_t)  SecureAuthentication::INIT);
     QCOMPARE(m_p->getSecAuthStat(2,MasterSecurity::TX_KEY_STATUS_REQUEST),
-	     (DnpStat_t)  0);
+             (DnpStat_t)  0);
 
     QCOMPARE(o_p->getSecAuthStat( SecureAuthentication::STATE), 
-	     (DnpStat_t)  OutstationSecurity::WAIT_FOR_KEY_CHANGE);    
+             (DnpStat_t)  OutstationSecurity::WAIT_FOR_KEY_CHANGE);    
     o_p->enableSecureAuthentication();
 
     // init master
     m_p->enableSecureAuthentication(2);
     QCOMPARE(m_p->getSecAuthStat(2,SecureAuthentication::STATE),
-	     (DnpStat_t)  MasterSecurity::WAIT_FOR_KEY_STATUS);
+             (DnpStat_t)  MasterSecurity::WAIT_FOR_KEY_STATUS);
     QCOMPARE(m_p->getSecAuthStat(2,MasterSecurity::TX_KEY_STATUS_REQUEST),
-	     (DnpStat_t) 1);
+             (DnpStat_t) 1);
     QVERIFY(masterTimer.isActive(TimerInterface::RESPONSE));
 
     o_p->rxData(&masterTx.lastTxBytes);
     QCOMPARE(o_p->getSecAuthStat( OutstationSecurity::TX_KEY_STATUS),
-	     (DnpStat_t) 1);    
+             (DnpStat_t) 1);    
     QCOMPARE(o_p->getSecAuthStat( SecureAuthentication::STATE), 
-	     (DnpStat_t)  OutstationSecurity::WAIT_FOR_KEY_CHANGE);    
+             (DnpStat_t)  OutstationSecurity::WAIT_FOR_KEY_CHANGE);    
 
     m_p->rxData(&outstationTx.lastTxBytes);
     QCOMPARE(m_p->getSecAuthStat(2, MasterSecurity::RX_KEY_STATUS_NOT_OK),
-	     (DnpStat_t) 1);    
+             (DnpStat_t) 1);    
     QCOMPARE(m_p->getSecAuthStat(2, MasterSecurity::TX_KEY_CHANGE_MSG),
-	     (DnpStat_t) 1);    
+             (DnpStat_t) 1);    
     QCOMPARE(m_p->getSecAuthStat(2,SecureAuthentication::STATE),
-	     (DnpStat_t)  MasterSecurity::WAIT_FOR_KEY_CONFIRMATION);
+             (DnpStat_t)  MasterSecurity::WAIT_FOR_KEY_CONFIRMATION);
 
     o_p->rxData(&masterTx.lastTxBytes);
     QCOMPARE(o_p->getSecAuthStat( OutstationSecurity::RX_VALID_KEY_CHANGE),
-	     (DnpStat_t) 1);
+             (DnpStat_t) 1);
     QCOMPARE(o_p->getSecAuthStat( SecureAuthentication::STATE), 
-	     (DnpStat_t)  SecureAuthentication::OUTSTATION_IDLE);
+             (DnpStat_t)  SecureAuthentication::OUTSTATION_IDLE);
 
     m_p->rxData(&outstationTx.lastTxBytes);
     QCOMPARE(m_p->getSecAuthStat( 2, MasterSecurity::RX_KEY_STATUS_OK),
-	     (DnpStat_t) 1);
+             (DnpStat_t) 1);
     QCOMPARE(m_p->getSecAuthStat( 2, SecureAuthentication::STATE), 
-	     (DnpStat_t)  SecureAuthentication::MASTER_IDLE);
+             (DnpStat_t)  SecureAuthentication::MASTER_IDLE);
     QVERIFY(masterTimer.isActive(TimerInterface::KEY_CHANGE));
 
     // do a normal non-critical poll ( which will be interpetted as critical
@@ -139,11 +139,11 @@ void TestSecurity::testMaster()
     o_p->rxData(&masterTx.lastTxBytes);
     m_p->rxData(&outstationTx.lastTxBytes);
     QCOMPARE (m_p->getStat(2, Station::RX_RESPONSE),
-	      (DnpStat_t) numRepsonses);
+              (DnpStat_t) numRepsonses);
     QCOMPARE(m_p->getSecAuthStat(2,SecureAuthentication::RX_CHALLENGE_MSG),
-	     (DnpStat_t)1);
+             (DnpStat_t)1);
     QCOMPARE(m_p->getSecAuthStat(2,SecureAuthentication::TX_AUTH_RESPONSE),
-	     (DnpStat_t)1);
+             (DnpStat_t)1);
     o_p->rxData(&masterTx.lastTxBytes);
     m_p->rxData(&outstationTx.lastTxBytes);
 
@@ -152,7 +152,7 @@ void TestSecurity::testMaster()
 //     o_p->rxData(&masterTx.lastTxBytes);
 //     m_p->rxData(&outstationTx.lastTxBytes);
 //     QCOMPARE(m_p->getSecAuthStat(2,SecureAuthentication::RX_CHALLENGE_MSG),
-// 	     (DnpStat_t)1);
+//           (DnpStat_t)1);
 
 
 }

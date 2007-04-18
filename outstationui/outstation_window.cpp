@@ -48,8 +48,8 @@ const QString OutstationWindow::shortPtNames[EventInterface::NUM_POINT_TYPES] =
    "EP_St" };
 
 OutstationWindow::OutstationWindow( Outstation::OutstationConfig&  oConfig,
-				    Endpoint::EndpointConfig&      epConfig,
-				    Datalink::DatalinkConfig&      dlConfig ) :
+                                    Endpoint::EndpointConfig&      epConfig,
+                                    Datalink::DatalinkConfig&      dlConfig ) :
   ti(false), // not master
   debugLevel(1),
   outstationConfig( oConfig),
@@ -81,17 +81,17 @@ OutstationWindow::OutstationWindow( Outstation::OutstationConfig&  oConfig,
     createStatDisplay();
 
     connect( settings, SIGNAL(outstationStateChange()),
-	     this, SLOT(updateStateLabel()));
+             this, SLOT(updateStateLabel()));
 
     connect( settings->verbose, SIGNAL(stateChanged(int)),
-	     this, SLOT(setDebugLevel(int)));
+             this, SLOT(setDebugLevel(int)));
 
     connect( ti.responseTimer, SIGNAL(timeout( TimerInterface::TimerId)),
-	     this,SLOT( timeoutSlot( TimerInterface::TimerId)));
+             this,SLOT( timeoutSlot( TimerInterface::TimerId)));
     connect( ti.challengeTimer, SIGNAL(timeout( TimerInterface::TimerId)),
-	     this,SLOT( timeoutSlot( TimerInterface::TimerId)));
+             this,SLOT( timeoutSlot( TimerInterface::TimerId)));
     connect( ti.sessionKeyTimer, SIGNAL(timeout( TimerInterface::TimerId)),
-	     this,SLOT( timeoutSlot( TimerInterface::TimerId)));
+             this,SLOT( timeoutSlot( TimerInterface::TimerId)));
 
     updateStateLabel();
 }
@@ -140,21 +140,21 @@ void OutstationWindow::about()
     QString aboutText(tr(
             "<h3>DNP Outstation</h3>"
             "%1"
-	    "<p>"
-	    "<b>Copyright (C) 2007 Turner Technologies Inc.</b> "
-	    "<a href=\"http://www.turner.ca\">www.turner.ca</a>"
-	    "</p>"
-	    "<p>"
-	    "This program implements the outstation portion of the DNP protocol. "
-	    "For more information on DNP see "
-	    "<a href=\"http://www.dnp.org\">www.dnp.org</a>"
-	    "</p>"
+            "<p>"
+            "<b>Copyright (C) 2007 Turner Technologies Inc.</b> "
+            "<a href=\"http://www.turner.ca\">www.turner.ca</a>"
+            "</p>"
+            "<p>"
+            "This program implements the outstation portion of the DNP protocol. "
+            "For more information on DNP see "
+            "<a href=\"http://www.dnp.org\">www.dnp.org</a>"
+            "</p>"
 
-	    "<p>"
+            "<p>"
 "Turner Technologies developed this software using standard C++. Portions of the GUI code use the Qt4 open source cross platform toolkit, "
  "<a href=\"http://www.trolltech.com/qt\">www.trolltech.com/qt</a>"
-	    "</p>"
-	    ).arg(tr(version())));
+            "</p>"
+            ).arg(tr(version())));
 
 
     mb.setText(aboutText);
@@ -193,40 +193,40 @@ void OutstationWindow::createDnpOutstation()
     ep_p = new Endpoint(endpointConfig, this);
 
     connect( ep_p, SIGNAL(data( Bytes*, unsigned long)),
-   	     this, SLOT(rxData( Bytes*, unsigned long)));
+             this, SLOT(rxData( Bytes*, unsigned long)));
 
     // datalink required pointer to the transmit interface
     datalinkConfig.tx_p  = ep_p;
 
     o_p = new Outstation ( outstationConfig, datalinkConfig,
-			   this,   // event interface
-			   &ti);   // timer interface
+                           this,   // event interface
+                           &ti);   // timer interface
 }
 
 QString OutstationWindow::convertDnpIndexToName(DnpAddr_t   addr,
-						DnpIndex_t  index,
-						PointType_t pointType )
+                                                DnpIndex_t  index,
+                                                PointType_t pointType )
 {
 return QString("Stn%1_%2%3").arg(addr).arg(shortPtNames[pointType]).arg(index);
 }
 
 // implementation of EventInterface
 void OutstationWindow::changePoint(  DnpAddr_t addr, DnpIndex_t index,
-				     PointType_t    pointType,
-				     int value, DnpTime_t timestamp)
+                                     PointType_t    pointType,
+                                     int value, DnpTime_t timestamp)
 {
     QString key = convertDnpIndexToName(addr, index, pointType);
     QString name = pointNameHash.value( key, key);
 
     if (pointType >= ST)
-	statDisplay->updateData( name, pointType, value);
+        statDisplay->updateData( name, pointType, value);
 }
 
 void  OutstationWindow::registerName(       DnpAddr_t      addr,
-				      DnpIndex_t     index,
-				      PointType_t    pointType,
-				      char*          name,
-				      int            initialValue )
+                                      DnpIndex_t     index,
+                                      PointType_t    pointType,
+                                      char*          name,
+                                      int            initialValue )
 {
     assert( pointType < NUM_POINT_TYPES);
     QString key = convertDnpIndexToName(addr, index, pointType);
@@ -275,9 +275,9 @@ void OutstationWindow::updateStateLabel()
 
     if (settings->secAuth->isChecked())
     {
-	s.append(" | Secure Authentication State: <b>");
-	s.append(SecureAuthentication::stateStrings[ o_p->getSecAuthState()]);
-	s.append("</b>");
+        s.append(" | Secure Authentication State: <b>");
+        s.append(SecureAuthentication::stateStrings[ o_p->getSecAuthState()]);
+        s.append("</b>");
     }
 
     stateLabel->setText(s);
@@ -286,7 +286,7 @@ void OutstationWindow::updateStateLabel()
 void OutstationWindow::setDebugLevel(int state)
 {
     if (state == Qt::Checked)
-	debugLevel = 1;
+        debugLevel = 1;
     else
-	debugLevel = 0;
+        debugLevel = 0;
 }

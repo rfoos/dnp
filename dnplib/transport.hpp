@@ -53,13 +53,13 @@ class TransportStats
 {
 public:
     enum StatIndex { TX_FRAGMENT = 0,
-		     TX_SEGMENT,
-		     RX_FRAGMENT,
-		     RX_SEGMENT,
-		     RX_UNAUTH_SEG,
-		     RX_ROUGE_SEG,
-		     RX_BAD_TH_SEQ_NUM,
-		     NUM_STATS };
+                     TX_SEGMENT,
+                     RX_FRAGMENT,
+                     RX_SEGMENT,
+                     RX_UNAUTH_SEG,
+                     RX_ROUGE_SEG,
+                     RX_BAD_TH_SEQ_NUM,
+                     NUM_STATS };
 };
 
 
@@ -68,11 +68,11 @@ class TransportFunction
 
 public:
     TransportFunction( Datalink&               datalink,
-		       const StationInfoMap&   stationInfoMap);
+                       const StationInfoMap&   stationInfoMap);
 
     Uptime_t transmit( DnpAddr_t         txAddr,
-		       const Bytes&      fragment,
-		       Stats&            stats);
+                       const Bytes&      fragment,
+                       Stats&            stats);
 
     // this is a reserved DNP address that we will use internally
     // if the DNP protocol is ammended to use this address for something

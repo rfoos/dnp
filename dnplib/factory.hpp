@@ -60,11 +60,11 @@ public:
 
     // the object header size is dependent on the qualifier field
     ObjectHeader(uint8_t  group=0,
-		 uint8_t  variation=0,
-		 uint8_t  qualifier=0,
+                 uint8_t  variation=0,
+                 uint8_t  qualifier=0,
                  uint32_t count=0,
-		 uint32_t startIndex=0,
-		 uint32_t stopIndex=0);
+                 uint32_t startIndex=0,
+                 uint32_t stopIndex=0);
 
     // text representation of the object
     // must pass in buffer and length of buffer
@@ -99,8 +99,8 @@ public:
     // in most cases this method will perform the action required
     // for the destramed object and then overwrite it with the next
     DnpObject* decode(const ObjectHeader& oh, Bytes& data,
-			DnpAddr_t addr,
-			Stats& stats) throw(int);
+                        DnpAddr_t addr,
+                        Stats& stats) throw(int);
 
     void setCTO( DnpTime_t newCTO);
 
@@ -113,10 +113,10 @@ private:
     static DnpObjectMap objectMap;
 
     void createObjects(uint8_t grp, uint8_t var, Bytes& data,
-		       uint32_t startIndex, uint32_t stopIndex,
-		       DnpAddr_t addr,
-		       Stats& stats,
-		       uint32_t objectSize=0) throw(int);
+                       uint32_t startIndex, uint32_t stopIndex,
+                       DnpAddr_t addr,
+                       Stats& stats,
+                       uint32_t objectSize=0) throw(int);
    
     EventInterface*   db_p;
     DnpObject*        lastObjectParsed;

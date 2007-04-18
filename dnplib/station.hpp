@@ -43,79 +43,79 @@ public:
 
     typedef struct
     {
-	DnpAddr_t      addr;
-	//    DnpControlBlock_t   controlBlock;
+        DnpAddr_t      addr;
+        //    DnpControlBlock_t   controlBlock;
     } ControlRequest;
 
     typedef struct
     {
-	DnpAddr_t      addr;
-	int*           debugLevel_p;
-	Master*        master_p;
+        DnpAddr_t      addr;
+        int*           debugLevel_p;
+        Master*        master_p;
     } StationConfig;
 
 
     Station( DnpAddr_t masterAddr, StationConfig& config,
-	     EventInterface* eventInterface_p);
+             EventInterface* eventInterface_p);
 
     // state can either be waiting for a response or not
     enum State         {  IDLE = 0,
-			  POLL_RESP,
-			  CLEAR_RESTART_BIT_RESP,
-			  SELECT_RESP,
-			  OPERATE_RESP,
-			  WRITE_TIME_AND_DATE_RESP,
-			  DELAY_MEASUREMENT_RESP,
-			  NUM_STATES   };
+                          POLL_RESP,
+                          CLEAR_RESTART_BIT_RESP,
+                          SELECT_RESP,
+                          OPERATE_RESP,
+                          WRITE_TIME_AND_DATE_RESP,
+                          DELAY_MEASUREMENT_RESP,
+                          NUM_STATES   };
 
     void changeState(State state);
 
     static const char* stateStrings[ NUM_STATES];
 
     enum StatIndex     {  RESPONSE_TIMEOUT  = TransportStats::NUM_STATS,
-			  STATE,
-			  CONSECUTIVE_TIMEOUT,
-			  DELAY_MEASUREMENT,
-			  IIN,
-			  RX_IIN_LOCAL,
-			  RX_IIN_NEED_TIME,
-			  RX_UNSOLICITED,
-			  RX_RESPONSE,
-			  TX_INTEGRITY_POLL,
-			  TX_EVENT_POLL,
-			  TX_READ_REQUEST,
-			  TX_WRITE_REQUEST,
-			  TX_DELAY_MEASUREMENT,
-			  TX_TIME_AND_DATE,
-			  TX_SELECT,
-			  TX_OPERATE,
-			  TX_CONFIRM,
-			  // Abnormal
-			  COMMUNICATION,
-			  // TX_RESEND, master does not support retries
-			  RX_IIN_RESTART,
-			  RX_IIN_TROUBLE,
-			  RX_IIN_BAD_CONFIG,
-			  RX_IIN_BUFFER_OVERFLOW,
-			  RX_IIN_PARAMETER_ERR,
-			  RX_IIN_OBJECT_UNKNOWN,
-			  RX_IIN_FUNCTION_UNKOWN,
-			  RX_RESEND,
-			  RX_UNPARSABLE_DATA,
-			  RX_ROUGE_FRAGMENT,
-			  RX_UNEXP_RESPONSE,
-			  RX_UNSUPPORTED_FN,
-			  RX_CORRUPT_DATA,
-			  RX_CONFIRM,
-			  RX_UNEXP_CONFIRM,
-			  RX_BAD_AH_SEQ_NUM,
-			  RX_BAD_WRITE_RESP,
-			  RX_BAD_SELECT_RESP,
-			  RX_BAD_OPERATE_RESP,
-			  RX_BAD_DELAY_MEASUREMENT,
-			  RX_MISSED_AH_FIN,
-			  RX_MISSED_AH_FIR,
-			  NUM_STATS };
+                          STATE,
+                          CONSECUTIVE_TIMEOUT,
+                          DELAY_MEASUREMENT,
+                          IIN,
+                          RX_IIN_LOCAL,
+                          RX_IIN_NEED_TIME,
+                          RX_UNSOLICITED,
+                          RX_RESPONSE,
+                          TX_INTEGRITY_POLL,
+                          TX_EVENT_POLL,
+                          TX_READ_REQUEST,
+                          TX_WRITE_REQUEST,
+                          TX_DELAY_MEASUREMENT,
+                          TX_TIME_AND_DATE,
+                          TX_SELECT,
+                          TX_OPERATE,
+                          TX_CONFIRM,
+                          // Abnormal
+                          COMMUNICATION,
+                          // TX_RESEND, master does not support retries
+                          RX_IIN_RESTART,
+                          RX_IIN_TROUBLE,
+                          RX_IIN_BAD_CONFIG,
+                          RX_IIN_BUFFER_OVERFLOW,
+                          RX_IIN_PARAMETER_ERR,
+                          RX_IIN_OBJECT_UNKNOWN,
+                          RX_IIN_FUNCTION_UNKOWN,
+                          RX_RESEND,
+                          RX_UNPARSABLE_DATA,
+                          RX_ROUGE_FRAGMENT,
+                          RX_UNEXP_RESPONSE,
+                          RX_UNSUPPORTED_FN,
+                          RX_CORRUPT_DATA,
+                          RX_CONFIRM,
+                          RX_UNEXP_CONFIRM,
+                          RX_BAD_AH_SEQ_NUM,
+                          RX_BAD_WRITE_RESP,
+                          RX_BAD_SELECT_RESP,
+                          RX_BAD_OPERATE_RESP,
+                          RX_BAD_DELAY_MEASUREMENT,
+                          RX_MISSED_AH_FIN,
+                          RX_MISSED_AH_FIR,
+                          NUM_STATS };
 
     DnpAddr_t           addr;
     Stats               stats;
