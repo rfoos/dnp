@@ -60,7 +60,7 @@ void Key::initKey(Key_t& key, const unsigned char* data, int len)
     assert (len >= Key::MIN_KEY_SIZE);
     
     for(int i=0; i<len; i++)
-	key.push_back(data[i]);
+        key.push_back(data[i]);
 }
 
 
@@ -80,8 +80,8 @@ void SeqNum24::increment()
 }
 
 SecureAuthenicationState::SecureAuthenicationState( SecureAuthentication*
-						    secureAuth_p,
-						    DnpStat_t state) :
+                                                    secureAuth_p,
+                                                    DnpStat_t state) :
   sa_p( secureAuth_p),
   id(state)
 {
@@ -214,14 +214,14 @@ void Idle::maxInvalidRespOrLinkFail()
 {
     if (id == SecureAuthentication::MASTER_IDLE)
     {
-	((MasterSecurity*) sa_p)->txKeyStatusReq();
-	sa_p->changeState( &((MasterSecurity*) sa_p)->waitForKeyStatus);
+        ((MasterSecurity*) sa_p)->txKeyStatusReq();
+        sa_p->changeState( &((MasterSecurity*) sa_p)->waitForKeyStatus);
     }
     else
     {
-	sa_p->changeState( &((OutstationSecurity*) sa_p)->waitForKeyChange);
-	((OutstationSecurity*)sa_p)->stats.set(OutstationSecurity::KEY_STATUS,
-					       SessionKeyStatus::LINK_FAIL);
+        sa_p->changeState( &((OutstationSecurity*) sa_p)->waitForKeyChange);
+        ((OutstationSecurity*)sa_p)->stats.set(OutstationSecurity::KEY_STATUS,
+                                               SessionKeyStatus::LINK_FAIL);
     }
 }
 
@@ -246,7 +246,7 @@ void  Idle::rxKeyStatusReq()
 
 WaitForResponse::WaitForResponse(SecureAuthentication* secureAuth_p) :
   SecureAuthenicationState(secureAuth_p,
-			   SecureAuthentication::MASTER_WAIT_FOR_RESPONSE)
+                           SecureAuthentication::MASTER_WAIT_FOR_RESPONSE)
 {
     // The id defaults to MASTER_WAIT_FOR_RESPONSE.
     // If this object is to be used for an 
@@ -284,24 +284,24 @@ bool WaitForResponse::rxResponse()
 
     if ( sa_p->checkResponse())
     {
-	sa_p->stats.increment( SecureAuthentication::RX_VALID_AUTH_RESP);
-	sa_p->stats.reset( SecureAuthentication::SESSION_ERROR);
-	sa_p->nextRxdAsduCritical = false;
-	returnValue= true;
+        sa_p->stats.increment( SecureAuthentication::RX_VALID_AUTH_RESP);
+        sa_p->stats.reset( SecureAuthentication::SESSION_ERROR);
+        sa_p->nextRxdAsduCritical = false;
+        returnValue= true;
     }
     else
     {
-	sa_p->stats.increment( SecureAuthentication::RX_INVALID_AUTH_RESP);
-	sa_p->txError( AuthenticationError::AUTHENTICATION_FAILED);
+        sa_p->stats.increment( SecureAuthentication::RX_INVALID_AUTH_RESP);
+        sa_p->txError( AuthenticationError::AUTHENTICATION_FAILED);
     }
 
     if ( sa_p->stats.get( SecureAuthentication::SESSION_ERROR) > 
-	 sa_p->maxErrCount)
+         sa_p->maxErrCount)
     {
-	maxInvalidRespOrLinkFail();
+        maxInvalidRespOrLinkFail();
     }
     else
-	sa_p->changeState( &sa_p->idle);
+        sa_p->changeState( &sa_p->idle);
 
     return returnValue;
 }
@@ -311,26 +311,26 @@ void WaitForResponse::responseTimeout()
     sa_p->txError( AuthenticationError::NO_RESPONSE);
 
     if ( sa_p->stats.get( SecureAuthentication::SESSION_ERROR) >
-	 sa_p->maxErrCount)
+         sa_p->maxErrCount)
     {
-	maxInvalidRespOrLinkFail();
+        maxInvalidRespOrLinkFail();
     }
     else
-	sa_p->changeState( &sa_p->idle);
+        sa_p->changeState( &sa_p->idle);
 }
 
 void WaitForResponse::maxInvalidRespOrLinkFail()
 {
     if (id == SecureAuthentication::MASTER_WAIT_FOR_RESPONSE)
     {
-	((MasterSecurity*) sa_p)->txKeyStatusReq();
-	sa_p->changeState( &((MasterSecurity*) sa_p)->waitForKeyStatus);
+        ((MasterSecurity*) sa_p)->txKeyStatusReq();
+        sa_p->changeState( &((MasterSecurity*) sa_p)->waitForKeyStatus);
     }
     else
     {
-	sa_p->changeState( &((OutstationSecurity*) sa_p)->waitForKeyChange);
-	((OutstationSecurity*)sa_p)->stats.set(OutstationSecurity::KEY_STATUS,
-					       SessionKeyStatus::LINK_FAIL);
+        sa_p->changeState( &((OutstationSecurity*) sa_p)->waitForKeyChange);
+        ((OutstationSecurity*)sa_p)->stats.set(OutstationSecurity::KEY_STATUS,
+                                               SessionKeyStatus::LINK_FAIL);
     }
 }
 
@@ -385,7 +385,7 @@ void  WaitForKeyStatus::rxChallengeMsg()
 
 WaitForKeyConfirmation::WaitForKeyConfirmation( MasterSecurity* secureAuth_p)
   : SecureAuthenicationState( secureAuth_p,
-			      MasterSecurity::WAIT_FOR_KEY_CONFIRMATION)
+                              MasterSecurity::WAIT_FOR_KEY_CONFIRMATION)
 {
 }
 
@@ -428,7 +428,7 @@ void  WaitForKeyConfirmation::rxChallengeMsg()
 
 WaitForKeyChange::WaitForKeyChange( OutstationSecurity* secureAuth_p)
   : SecureAuthenicationState( secureAuth_p,
-			      OutstationSecurity::WAIT_FOR_KEY_CHANGE)
+                              OutstationSecurity::WAIT_FOR_KEY_CHANGE)
 {
 }
 
@@ -447,37 +447,37 @@ void  WaitForKeyChange::rxKeyChange()
     Bytes             keyStatusEncoded;
 
     p->aes128KeyUnwrap( p->lastSessionKeyChange.wrappedKeyData,
-			controlKey,
-			monitorKey,
-			keyStatusEncoded);
+                        controlKey,
+                        monitorKey,
+                        keyStatusEncoded);
 
     SessionKeyStatus rxdKeyStatus;
     rxdKeyStatus.decode( keyStatusEncoded, keyStatusEncoded.size());
 
     if (p->sessionKeyStatus == rxdKeyStatus)
     {
-	p->stats.increment( OutstationSecurity::RX_VALID_KEY_CHANGE);
- 	p->monitoringDirectionKey = controlKey;
- 	p->controlDirectionKey = monitorKey;
+        p->stats.increment( OutstationSecurity::RX_VALID_KEY_CHANGE);
+        p->monitoringDirectionKey = controlKey;
+        p->controlDirectionKey = monitorKey;
 
-	if (p->stats.get( OutstationSecurity::KEY_STATUS) !=
-	    SessionKeyStatus::OK)
-	    p->stats.set( OutstationSecurity::KEY_STATUS,
-			  SessionKeyStatus::OK);
- 	p->nextRxdAsduCritical = 1;
-	p->changeState( &p->idle);
+        if (p->stats.get( OutstationSecurity::KEY_STATUS) !=
+            SessionKeyStatus::OK)
+            p->stats.set( OutstationSecurity::KEY_STATUS,
+                          SessionKeyStatus::OK);
+        p->nextRxdAsduCritical = 1;
+        p->changeState( &p->idle);
 
-	sa_p->app_p->timer_p->activate(TimerInterface::CHALLENGE);
-	sa_p->app_p->timer_p->activate(TimerInterface::SESSION_KEY);
+        sa_p->app_p->timer_p->activate(TimerInterface::CHALLENGE);
+        sa_p->app_p->timer_p->activate(TimerInterface::SESSION_KEY);
 
     }
     else
     {
-	p->stats.increment( OutstationSecurity::RX_INVALID_KEY_CHANGE);
-	if (p->stats.get(OutstationSecurity::KEY_STATUS) !=
-	    SessionKeyStatus::AUTH_FAIL)
-	    p->stats.set(OutstationSecurity::KEY_STATUS,
-			 SessionKeyStatus::AUTH_FAIL);
+        p->stats.increment( OutstationSecurity::RX_INVALID_KEY_CHANGE);
+        if (p->stats.get(OutstationSecurity::KEY_STATUS) !=
+            SessionKeyStatus::AUTH_FAIL)
+            p->stats.set(OutstationSecurity::KEY_STATUS,
+                         SessionKeyStatus::AUTH_FAIL);
     }
 
     p->incrementKeyChangeSeqNum();
@@ -492,7 +492,7 @@ void  WaitForKeyChange::rxChallengeMsg()
 void  WaitForKeyChange::sessionKeyTimeout()
 {
     ((OutstationSecurity*) sa_p)->stats.set(OutstationSecurity::KEY_STATUS,
-					    SessionKeyStatus::NOT_INIT);
+                                            SessionKeyStatus::NOT_INIT);
 }
 
 
@@ -502,8 +502,8 @@ void  WaitForKeyChange::sessionKeyTimeout()
 
 
 SecureAuthentication::SecureAuthentication(Application* parent_p, 
-					   bool aggressiveMode,
-					   DnpStat_t maxErrorCount) :
+                                           bool aggressiveMode,
+                                           DnpStat_t maxErrorCount) :
   idle(this),
   waitForResponse(this),
   state_p(NULL),
@@ -517,13 +517,13 @@ SecureAuthentication::SecureAuthentication(Application* parent_p,
 
     // hard-coded pre-shared update key for prototype: 0,1,2,3,4,5,...
     Key::initKey( updateKey,
-		  (unsigned char*) DEFAULT_UPDATE_KEY,
-		  sizeof(DEFAULT_UPDATE_KEY));
+                  (unsigned char*) DEFAULT_UPDATE_KEY,
+                  sizeof(DEFAULT_UPDATE_KEY));
 
     assert( aggressive == false); // not supported yet
 
     for (i=0; i<=AppHeader::MAX_FUNCTION_CODE_INDEX; i++)
-	critical[i] = false;
+        critical[i] = false;
 
     critical[ AppHeader::WRITE]                       = true;
     critical[ AppHeader::SELECT]                      = true;
@@ -552,17 +552,17 @@ void  SecureAuthentication::init()
 void SecureAuthentication::changeState( SecureAuthenicationState* newState_p)
 {
     if (state_p != NULL)
-	stats.logNormal("Sec Auth state change: %s -> %s",
-			stateStrings[ state_p->id],
-			stateStrings[ newState_p->id]);
+        stats.logNormal("Sec Auth state change: %s -> %s",
+                        stateStrings[ state_p->id],
+                        stateStrings[ newState_p->id]);
     state_p = newState_p;
     if (stats.get( STATE) != state_p->id)
-	stats.set( STATE, state_p->id);
+        stats.set( STATE, state_p->id);
     stats.reset( SESSION_ERROR);
     if ((state_p->id == MASTER_IDLE) && (keyChangeTimedOut == true))
     {
-	state_p->keyChangeTimeout();
-	keyChangeTimedOut = false;
+        state_p->keyChangeTimeout();
+        keyChangeTimedOut = false;
     }
 }
 
@@ -572,34 +572,34 @@ bool SecureAuthentication::checkResponse()
 
     if (lastRxdResponse.seqNum != lastTxdChallenge.seqNum)
     {
-	auth = false;
-	stats.logAbnormal(0, "Challenge=%d Response=%d seq nums don't match",
-			  lastTxdChallenge.seqNum, lastRxdResponse.seqNum);
+        auth = false;
+        stats.logAbnormal(0, "Challenge=%d Response=%d seq nums don't match",
+                          lastTxdChallenge.seqNum, lastRxdResponse.seqNum);
     }
     else if (lastRxdResponse.userNum != lastTxdChallenge.userNum)
     {
-	auth = false;
-	stats.logAbnormal(0, "Challenge=%d Response=%d user nums don't match",
-			  lastTxdChallenge.userNum, lastRxdResponse.userNum );
+        auth = false;
+        stats.logAbnormal(0, "Challenge=%d Response=%d user nums don't match",
+                          lastTxdChallenge.userNum, lastRxdResponse.userNum );
     }
     else
     {
-	Bytes hmac;
-	if ( lastTxdChallenge.challengeReason == Challenge::CRITICAL)
-	    calculateHmac( hmac, lastTxdChallengeAsdu, queuedAsdu);
-	else
-	    calculateHmac( hmac, lastTxdChallengeAsdu);
-	if (lastRxdResponse.hmacValue != hmac)
-	{
-	    auth = false;
-	    stats.logAbnormal(0,"hmacs don't match:");
-	    stats.logAbnormal(0,"Last: %s", hex_repr(lastRxdResponse.hmacValue,
-						     app_p->strbuf,
-						     sizeof(app_p->strbuf)));
-	    stats.logAbnormal(0,"This: %s", hex_repr(hmac,
-						     app_p->strbuf,
-						     sizeof(app_p->strbuf)));
-	}
+        Bytes hmac;
+        if ( lastTxdChallenge.challengeReason == Challenge::CRITICAL)
+            calculateHmac( hmac, lastTxdChallengeAsdu, queuedAsdu);
+        else
+            calculateHmac( hmac, lastTxdChallengeAsdu);
+        if (lastRxdResponse.hmacValue != hmac)
+        {
+            auth = false;
+            stats.logAbnormal(0,"hmacs don't match:");
+            stats.logAbnormal(0,"Last: %s", hex_repr(lastRxdResponse.hmacValue,
+                                                     app_p->strbuf,
+                                                     sizeof(app_p->strbuf)));
+            stats.logAbnormal(0,"This: %s", hex_repr(hmac,
+                                                     app_p->strbuf,
+                                                     sizeof(app_p->strbuf)));
+        }
     }
 
     return auth;
@@ -613,126 +613,126 @@ bool SecureAuthentication::rxAsdu( Bytes& asdu)
     if ( (fn == AppHeader::AUTHENTICATION_REPLY) ||
     ((fn == AppHeader::RESPONSE) && (state_p->id == MASTER_WAIT_FOR_RESPONSE)))
     {
-	bool parseOk = true;
-	DnpObject* obj_p = NULL;
+        bool parseOk = true;
+        DnpObject* obj_p = NULL;
 
-	// strip off header
-	app_p->ah.decode( asdu);
+        // strip off header
+        app_p->ah.decode( asdu);
 
-	try
-	{
-	    app_p->oh.decode( asdu, stats );
-	    stats.logNormal(app_p->oh.str(app_p->strbuf,
-					  sizeof(app_p->strbuf)));
-	    obj_p = app_p->of.decode(app_p->oh, asdu, app_p->addr, stats);
-	}
-	catch (int e)
-	{
-	    stats.logAbnormal(0, "Caught exception line# %d", e);
-	    parseOk = false;
-	}
+        try
+        {
+            app_p->oh.decode( asdu, stats );
+            stats.logNormal(app_p->oh.str(app_p->strbuf,
+                                          sizeof(app_p->strbuf)));
+            obj_p = app_p->of.decode(app_p->oh, asdu, app_p->addr, stats);
+        }
+        catch (int e)
+        {
+            stats.logAbnormal(0, "Caught exception line# %d", e);
+            parseOk = false;
+        }
 
-	// must be
-	if ((app_p->oh.grp == 120) && (app_p->oh.var == 2))
-	{
-	    if (asdu.size() > 0)
-	    {
-		// only the one object should be present
-		stats.logAbnormal(0, "Format not expected");
-		parseOk = false;
-	    }
-	}
-	else
-	{
-	    stats.logAbnormal(0, "Reply object not found");
-	    parseOk = false;
-	}
+        // must be
+        if ((app_p->oh.grp == 120) && (app_p->oh.var == 2))
+        {
+            if (asdu.size() > 0)
+            {
+                // only the one object should be present
+                stats.logAbnormal(0, "Format not expected");
+                parseOk = false;
+            }
+        }
+        else
+        {
+            stats.logAbnormal(0, "Reply object not found");
+            parseOk = false;
+        }
 
-	if (parseOk)
-	{
-	    lastRxdResponse = *((Reply*)obj_p);
-	}
-	else
-	{
-	    lastRxdResponse = Reply();
-	}
+        if (parseOk)
+        {
+            lastRxdResponse = *((Reply*)obj_p);
+        }
+        else
+        {
+            lastRxdResponse = Reply();
+        }
 
-	if (state_p->rxResponse())
-	{
-	    // replace the challenge response asdu with the queued on
-	    asdu = queuedAsdu;
-	    return true;
-	}
-	else
-	{
-	    return false;
-	}
+        if (state_p->rxResponse())
+        {
+            // replace the challenge response asdu with the queued on
+            asdu = queuedAsdu;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
 
     }
     else if (fn == AppHeader::AUTHENTICATION_ERROR_NO_ACK)
     {
-	// log the object
-	state_p->errorMsg();
-	return false;
+        // log the object
+        state_p->errorMsg();
+        return false;
     }
     else if (fn == AppHeader::AUTHENTICATION_REQUEST)
     {
-	// normal app layer knows nothing of this function code
-	bool parseOk = true;
-	DnpObject* obj_p = NULL;
+        // normal app layer knows nothing of this function code
+        bool parseOk = true;
+        DnpObject* obj_p = NULL;
 
-	// strip off header
-	app_p->ah.decode( asdu);
+        // strip off header
+        app_p->ah.decode( asdu);
 
-	try
-	{
-	    app_p->oh.decode( asdu, stats );
-	    stats.logNormal(app_p->oh.str(app_p->strbuf,
-					  sizeof(app_p->strbuf)));
-	    obj_p = app_p->of.decode(app_p->oh, asdu, app_p->addr, stats);
-	}
-	catch (int e)
-	{
-	    stats.logAbnormal(0, "Caught exception line# %d", e);
-	    parseOk = false;
-	}
+        try
+        {
+            app_p->oh.decode( asdu, stats );
+            stats.logNormal(app_p->oh.str(app_p->strbuf,
+                                          sizeof(app_p->strbuf)));
+            obj_p = app_p->of.decode(app_p->oh, asdu, app_p->addr, stats);
+        }
+        catch (int e)
+        {
+            stats.logAbnormal(0, "Caught exception line# %d", e);
+            parseOk = false;
+        }
 
-	// must be
-	if ((app_p->oh.grp == 120) && (app_p->oh.var == 1))
-	{
-	    // only the one object should be present
-	    if (asdu.size() > 0)
-	    {
-		stats.logAbnormal(0, "Format not expected");
-		parseOk = false;
-	    }
-	}
-	else
-	{
-	    stats.logAbnormal(0, "Challenge object not found");
-	    parseOk = false;
-	}
+        // must be
+        if ((app_p->oh.grp == 120) && (app_p->oh.var == 1))
+        {
+            // only the one object should be present
+            if (asdu.size() > 0)
+            {
+                stats.logAbnormal(0, "Format not expected");
+                parseOk = false;
+            }
+        }
+        else
+        {
+            stats.logAbnormal(0, "Challenge object not found");
+            parseOk = false;
+        }
 
-	if (parseOk)
-	{
-	    rxChallenge((Challenge*) obj_p);
-	}
-	return false;
+        if (parseOk)
+        {
+            rxChallenge((Challenge*) obj_p);
+        }
+        return false;
     }
     else if ((fn == AppHeader::AUTHENTICATION_CHALLENGE) ||
-	     (fn == AppHeader::UNSOLICITED_AUTHENTICATION_CHALLENGE))
-    {	
-	// the challenge object may be embedded with regular objects
-	return true;
+             (fn == AppHeader::UNSOLICITED_AUTHENTICATION_CHALLENGE))
+    {   
+        // the challenge object may be embedded with regular objects
+        return true;
     }
     else if (( critical[fn]) || nextRxdAsduCritical)
     {
-	stats.increment( RX_CRITICAL_ASDU);
-	queuedAsdu = asdu;
-	return state_p->rxCriticalAsdu();
+        stats.increment( RX_CRITICAL_ASDU);
+        queuedAsdu = asdu;
+        return state_p->rxCriticalAsdu();
     }
     else
-	return state_p->rxNonCriticalAsdu();
+        return state_p->rxNonCriticalAsdu();
 }
 
 void  SecureAuthentication::challengeTimeout()
@@ -786,37 +786,37 @@ void SecureAuthentication::txError( AuthenticationError::ErrorReason reason)
     stats.increment( SESSION_ERROR);
     if (stats.get( SESSION_ERROR) <= maxErrCount)
     {
-	// consists of one single object
-	*oh_p = ObjectHeader(120, 7, ObjectHeader::ONE_OCTET_COUNT_OF_OBJECTS,
-			     1);
-	stats.logNormal( oh_p->str( app_p->strbuf,
-				    sizeof(app_p->strbuf)));
-	// oh_p->encode(app_p->stn_p->txFragment);
+        // consists of one single object
+        *oh_p = ObjectHeader(120, 7, ObjectHeader::ONE_OCTET_COUNT_OF_OBJECTS,
+                             1);
+        stats.logNormal( oh_p->str( app_p->strbuf,
+                                    sizeof(app_p->strbuf)));
+        // oh_p->encode(app_p->stn_p->txFragment);
 
-	stats.increment( ERRORS_TXD);
-	app_p->transmit();
+        stats.increment( ERRORS_TXD);
+        app_p->transmit();
     }
 }
 
 
 void SecureAuthentication::calculateHmac(Bytes& hmac,
-					 const Bytes& challengeAsdu,
-					 const Bytes& challengedAsdu )
+                                         const Bytes& challengeAsdu,
+                                         const Bytes& challengedAsdu )
 {
     unsigned char key[updateKey.size()];
     unsigned char input[challengeAsdu.size() + challengedAsdu.size()];
     unsigned char output[20];
 
 //     printf( "Ch: %s\n", hex_repr( challengeAsdu, app_p->strbuf,
-// 				   sizeof(app_p->strbuf)));
+//                                 sizeof(app_p->strbuf)));
 //     printf( "Cd: %s\n", hex_repr( challengedAsdu, app_p->strbuf,
-// 				sizeof(app_p->strbuf)));
+//                              sizeof(app_p->strbuf)));
 
 
     copy( updateKey.begin(), updateKey.end(), key);
     copy( challengeAsdu.begin(), challengeAsdu.end(), input);
     copy( challengedAsdu.begin(), challengedAsdu.end(),
-	  &input[challengeAsdu.size()]);
+          &input[challengeAsdu.size()]);
 
     sha1_hmac( key, sizeof(key), input, sizeof(input), output);
 
@@ -825,7 +825,7 @@ void SecureAuthentication::calculateHmac(Bytes& hmac,
 }
 
 void SecureAuthentication::calculateHmac(Bytes& hmac,
-					 const Bytes& challengeAsdu )
+                                         const Bytes& challengeAsdu )
 {
     unsigned char key[updateKey.size()];
     unsigned char input[challengeAsdu.size()];
@@ -853,25 +853,25 @@ MasterSecurity::MasterSecurity(Master* app_p, bool aggressiveMode) :
     char name[Stats::MAX_USER_NAME_LEN];
     Stats::Element temp[] =
     {
-	// Error Reasons
-	{ AuthenticationError::NOT_USED,                         
-	  "Not Used", Stats::ABNORMAL,  0, 0 },
-	{ AuthenticationError::AUTHENTICATION_FAILED,
-	  "Auth Failed", Stats::ABNORMAL,  0, 0 },
-	{ AuthenticationError::UNEXPECTED_RESPONSE,
-	  "Unexpected Response", Stats::ABNORMAL,  0, 0 },
-	{ AuthenticationError::NO_RESPONSE, 
-	  "No Response", Stats::ABNORMAL,  0, 0 },
-	{ AuthenticationError::AGGRESSIVE_MODE_NOT_PERMITTED,
-	  "Aggressive No Permit", Stats::ABNORMAL,  0, 0 },
-	{ AuthenticationError::HMAC_ALGORITHM_NOT_PERMITTED,
-	  "HMAC Alg No Permit", Stats::ABNORMAL,  0, 0 },
-	{ AuthenticationError::KEY_WRAP_ALGORITHM_NOT_PERMITTED,
-	  "Key Wrap Alg No Permit", Stats::ABNORMAL,  0, 0 },
+        // Error Reasons
+        { AuthenticationError::NOT_USED,                         
+          "Not Used", Stats::ABNORMAL,  0, 0 },
+        { AuthenticationError::AUTHENTICATION_FAILED,
+          "Auth Failed", Stats::ABNORMAL,  0, 0 },
+        { AuthenticationError::UNEXPECTED_RESPONSE,
+          "Unexpected Response", Stats::ABNORMAL,  0, 0 },
+        { AuthenticationError::NO_RESPONSE, 
+          "No Response", Stats::ABNORMAL,  0, 0 },
+        { AuthenticationError::AGGRESSIVE_MODE_NOT_PERMITTED,
+          "Aggressive No Permit", Stats::ABNORMAL,  0, 0 },
+        { AuthenticationError::HMAC_ALGORITHM_NOT_PERMITTED,
+          "HMAC Alg No Permit", Stats::ABNORMAL,  0, 0 },
+        { AuthenticationError::KEY_WRAP_ALGORITHM_NOT_PERMITTED,
+          "Key Wrap Alg No Permit", Stats::ABNORMAL,  0, 0 },
 
-	// Normal base stats
+        // Normal base stats
         { STATE,                "State",                 Stats::NORMAL,
-	  INIT, INIT },
+          INIT, INIT },
         { RX_CRITICAL_ASDU,     "Rx Critical ASDU",     Stats::NORMAL, 0, 0 },
         { RESPONSE_TIMEOUT,     "Response Timeout",     Stats::NORMAL, 0, 0 },
         { CHALLENGE_TIMEOUT,    "Challenge Timeout",    Stats::NORMAL, 0, 0 },
@@ -881,17 +881,17 @@ MasterSecurity::MasterSecurity(Master* app_p, bool aggressiveMode) :
         { RX_VALID_AUTH_RESP,"Rx Valid Auth Resp",     Stats::NORMAL, 0, 0 },
         { RX_INVALID_AUTH_RESP,"Rx Invalid Auth Resp",  Stats::NORMAL, 0, 0 },
 
-	// Abnormal base stats
+        // Abnormal base stats
         { ERRORS_TXD,           "Tx Errors",            Stats::ABNORMAL,0, 0 },
         { KEYS_INVALID,         "Keys Valid",           Stats::ABNORMAL,0, 0 },
         { SESSION_ERROR,        "Session Error",        Stats::ABNORMAL,0, 0 },
 
-	// Master stats
+        // Master stats
         { TX_KEY_STATUS_REQUEST,"Tx Key Status Requests",Stats::NORMAL, 0, 0 },
-	{ TX_KEY_CHANGE_MSG,    "Tx Key Change Msgs",   Stats::NORMAL,  0, 0 },
-	{ RX_KEY_STATUS_OK,     "Rx Key Status Ok",   Stats::NORMAL,  0, 0 },
-	{ RX_KEY_STATUS_NOT_OK, "Rx Key Status Not Ok",Stats::ABNORMAL, 0, 0 },
-	{ KEY_CHANGE_TIMEOUT,   "Tx Key Change Timeout",Stats::NORMAL,  0, 0 },
+        { TX_KEY_CHANGE_MSG,    "Tx Key Change Msgs",   Stats::NORMAL,  0, 0 },
+        { RX_KEY_STATUS_OK,     "Rx Key Status Ok",   Stats::NORMAL,  0, 0 },
+        { RX_KEY_STATUS_NOT_OK, "Rx Key Status Not Ok",Stats::ABNORMAL, 0, 0 },
+        { KEY_CHANGE_TIMEOUT,   "Tx Key Change Timeout",Stats::NORMAL,  0, 0 },
         { KEY_CHANGE_COUNTER,   "Key Change Counter",   Stats::NORMAL, 0, 0 },
 
     };
@@ -900,7 +900,7 @@ MasterSecurity::MasterSecurity(Master* app_p, bool aggressiveMode) :
     // MA - Master Authentication
     snprintf(name, sizeof(name), "MA %6d ", app_p->addr);
     stats = Stats( name, app_p->addr, app_p->debug_p, statElements, NUM_STATS,
-		   app_p->db_p, EventInterface::SA_AB_ST);
+                   app_p->db_p, EventInterface::SA_AB_ST);
 }
 
 void MasterSecurity::init()
@@ -916,7 +916,7 @@ void  MasterSecurity::txKeyStatusReq()
  
     *oh_p = ObjectHeader(120, 4, 0x07, 1);
     stats.logNormal( oh_p->str( app_p->strbuf,
-			        sizeof(app_p->strbuf)));
+                                sizeof(app_p->strbuf)));
     oh_p->encode(((Master*)app_p)->stn_p->txFragment);
     ((Master*)app_p)->stn_p->txFragment.push_back( app_p->userNum);
 
@@ -944,11 +944,11 @@ void MasterSecurity::txKeyChangeReq()
     lastKeyStatus.encode(lastKeyStatusEncoded);
 
     aes128KeyWrap( wrappedKeyData, controlDirectionKey, 
-		   monitoringDirectionKey, lastKeyStatusEncoded);
+                   monitoringDirectionKey, lastKeyStatusEncoded);
 
     SessionKeyChange obj( lastKeyStatus.keyChangeSeqNum, 
-			  lastKeyStatus.userNum,
-			  wrappedKeyData);
+                          lastKeyStatus.userNum,
+                          wrappedKeyData);
 
     Bytes objEncode;
     obj.encode(objEncode);
@@ -967,7 +967,7 @@ void MasterSecurity::txChallengeMsg( Challenge::ChallengeReason reason)
     Master* m_p = (Master*) app_p;
     Bytes& frag = ((Master*)app_p)->stn_p->txFragment;
     Challenge     obj( challengeSeqNum.get(), app_p->userNum, Challenge::SHA_1,
-		       reason);
+                       reason);
 
     m_p->initRequest( AppHeader::AUTHENTICATION_REQUEST);
 
@@ -988,7 +988,7 @@ void MasterSecurity::txChallengeMsg( Challenge::ChallengeReason reason)
     app_p->transmit();
 
     if (reason == Challenge::PERIODIC)
-	app_p->timer_p->activate(TimerInterface::CHALLENGE);
+        app_p->timer_p->activate(TimerInterface::CHALLENGE);
 
     app_p->timer_p->activate(TimerInterface::RESPONSE);
 }
@@ -999,14 +999,14 @@ void MasterSecurity::txResponseMsg()
     Bytes hmac;
 
     if ( lastRxdChallenge.challengeReason == Challenge::CRITICAL)
-	calculateHmac( hmac, lastRxdChallengeAsdu, m_p->stn_p->txFragment);
+        calculateHmac( hmac, lastRxdChallengeAsdu, m_p->stn_p->txFragment);
     else
-	calculateHmac( hmac, lastRxdChallengeAsdu);	
+        calculateHmac( hmac, lastRxdChallengeAsdu);     
 
     ObjectHeader oh(  120, 2, 0x5b, 1);
     Reply        obj( lastRxdChallenge.seqNum,
-		      lastRxdChallenge.userNum,
-		      hmac);
+                      lastRxdChallenge.userNum,
+                      hmac);
 
     m_p->initRequest( AppHeader::AUTHENTICATION_REPLY);
 
@@ -1027,20 +1027,20 @@ void MasterSecurity::rxKeyStatus(const SessionKeyStatus* p)
     if (p->keyStatus == SessionKeyStatus::OK)
     {
         stats.increment( MasterSecurity::RX_KEY_STATUS_OK);
-	state_p->rxKeyStatusOk();
+        state_p->rxKeyStatusOk();
     }
     else
     {
-	stats.increment( MasterSecurity::RX_KEY_STATUS_NOT_OK);
-	state_p->rxKeyStatusNotOk();
+        stats.increment( MasterSecurity::RX_KEY_STATUS_NOT_OK);
+        state_p->rxKeyStatusNotOk();
     }
 }
 
 
 void MasterSecurity::aes128KeyWrap( Bytes&       wrappedKeyData,
-				    const Bytes& controlKey,
-				    const Bytes& monitorKey,
-				    const Bytes& keyStatus)
+                                    const Bytes& controlKey,
+                                    const Bytes& monitorKey,
+                                    const Bytes& keyStatus)
 {
     unsigned char input[AES_MAX_PLAIN_LEN];
     unsigned char output[AES_MAX_WRAPPED_LEN];
@@ -1054,17 +1054,17 @@ void MasterSecurity::aes128KeyWrap( Bytes&       wrappedKeyData,
     copy( controlKey.begin(), controlKey.end(), input);
     copy( monitorKey.begin(), monitorKey.end(), &input[controlKey.size()]);
     copy( keyStatus.begin(),  keyStatus.end(),
-	  &input[controlKey.size()+monitorKey.size()]);
+          &input[controlKey.size()+monitorKey.size()]);
 
     // convert len from bytes to number of 64 bit blocks
     if (len % 8 == 0)
     {
-	len /= 8;
+        len /= 8;
     }
     else
     {
-	len /= 8;
-	len++;
+        len /= 8;
+        len++;
     }
 
     aes_wrap( key, len, input, output);
@@ -1085,25 +1085,25 @@ OutstationSecurity::OutstationSecurity(Outstation* app_p, bool aggressiveMode):
     char name[Stats::MAX_USER_NAME_LEN];
     Stats::Element temp[] =
     {
-	// Error Reasons
-	{ AuthenticationError::NOT_USED,                         
-	  "Not Used", Stats::ABNORMAL,  0, 0 },
-	{ AuthenticationError::AUTHENTICATION_FAILED,
-	  "Auth Failed", Stats::ABNORMAL,  0, 0 },
-	{ AuthenticationError::UNEXPECTED_RESPONSE,
-	  "Unexpected Response", Stats::ABNORMAL,  0, 0 },
-	{ AuthenticationError::NO_RESPONSE, 
-	  "No Response", Stats::ABNORMAL,  0, 0 },
-	{ AuthenticationError::AGGRESSIVE_MODE_NOT_PERMITTED,
-	  "Aggressive No Permit", Stats::ABNORMAL,  0, 0 },
-	{ AuthenticationError::HMAC_ALGORITHM_NOT_PERMITTED,
-	  "HMAC Alg No Permit", Stats::ABNORMAL,  0, 0 },
-	{ AuthenticationError::KEY_WRAP_ALGORITHM_NOT_PERMITTED,
-	  "Key Wrap Alg No Permit", Stats::ABNORMAL,  0, 0 },
+        // Error Reasons
+        { AuthenticationError::NOT_USED,                         
+          "Not Used", Stats::ABNORMAL,  0, 0 },
+        { AuthenticationError::AUTHENTICATION_FAILED,
+          "Auth Failed", Stats::ABNORMAL,  0, 0 },
+        { AuthenticationError::UNEXPECTED_RESPONSE,
+          "Unexpected Response", Stats::ABNORMAL,  0, 0 },
+        { AuthenticationError::NO_RESPONSE, 
+          "No Response", Stats::ABNORMAL,  0, 0 },
+        { AuthenticationError::AGGRESSIVE_MODE_NOT_PERMITTED,
+          "Aggressive No Permit", Stats::ABNORMAL,  0, 0 },
+        { AuthenticationError::HMAC_ALGORITHM_NOT_PERMITTED,
+          "HMAC Alg No Permit", Stats::ABNORMAL,  0, 0 },
+        { AuthenticationError::KEY_WRAP_ALGORITHM_NOT_PERMITTED,
+          "Key Wrap Alg No Permit", Stats::ABNORMAL,  0, 0 },
 
-	// Normal base stats
+        // Normal base stats
         { STATE,                "State",                 Stats::NORMAL,
-	  WAIT_FOR_KEY_CHANGE, WAIT_FOR_KEY_CHANGE },
+          WAIT_FOR_KEY_CHANGE, WAIT_FOR_KEY_CHANGE },
         { RX_CRITICAL_ASDU,     "Rx Critical ASDU",     Stats::NORMAL, 0, 0 },
         { RESPONSE_TIMEOUT,     "Response Timeout",     Stats::NORMAL, 0, 0 },
         { CHALLENGE_TIMEOUT,    "Challenge Timeout",    Stats::NORMAL, 0, 0 },
@@ -1113,19 +1113,19 @@ OutstationSecurity::OutstationSecurity(Outstation* app_p, bool aggressiveMode):
         { RX_VALID_AUTH_RESP,"Rx Valid Auth Resp",     Stats::NORMAL, 0, 0 },
         { RX_INVALID_AUTH_RESP,"Rx Invalid Auth Resp",  Stats::NORMAL, 0, 0 },
 
-	// Abnormal base stats
+        // Abnormal base stats
         { ERRORS_TXD,           "Tx Errors",            Stats::ABNORMAL,0, 0 },
         { KEYS_INVALID,         "Keys Valid",           Stats::ABNORMAL,0, 0 },
         { SESSION_ERROR,        "Session Error",        Stats::ABNORMAL,0, 0 },
 
-	// outstation stats
+        // outstation stats
         { TX_KEY_STATUS,        "Tx Key Status",        Stats::NORMAL, 0, 0 },
         { RX_KEY_STATUS_REQ,    "Rx Key Status Req",    Stats::NORMAL, 0, 0 },
         { RX_VALID_KEY_CHANGE,  "Rx Valid Key Change",  Stats::NORMAL, 0, 0 },
         { RX_INVALID_KEY_CHANGE,"Rx Invalid Key Change",Stats::NORMAL, 0, 0 },
         { SESSION_KEY_TIMEOUT,  "Session Key Timeouts", Stats::NORMAL, 0, 0 },
         { KEY_STATUS,    "Key Status", Stats::ABNORMAL,
-	  SessionKeyStatus::NOT_INIT, SessionKeyStatus::NOT_INIT },
+          SessionKeyStatus::NOT_INIT, SessionKeyStatus::NOT_INIT },
         { KEY_CHANGE_SEQ_NUM,   "Key Change Seq Num",   Stats::NORMAL, 0, 0 },
 
     };
@@ -1134,7 +1134,7 @@ OutstationSecurity::OutstationSecurity(Outstation* app_p, bool aggressiveMode):
     // OA - Outstation Authentication
     snprintf(name, sizeof(name), "OA %6d ", app_p->addr);
     stats = Stats( name, app_p->addr, app_p->debug_p, statElements, NUM_STATS,
-		   app_p->db_p, EventInterface::SA_AB_ST);
+                   app_p->db_p, EventInterface::SA_AB_ST);
 
     // changing state will use the stats so it must be called after stat init
     changeState( &waitForKeyChange);
@@ -1157,10 +1157,10 @@ void OutstationSecurity::txKeyStatus()
     ObjectHeader oh(120, 5, 0x5b, 1);
 
     sessionKeyStatus = SessionKeyStatus( stats.get(KEY_CHANGE_SEQ_NUM),
-					 app_p->userNum,
-					 SessionKeyStatus::AES_128,
-	   (SessionKeyStatus::KeyStatus) stats.get(KEY_STATUS),
-					 pseudoRandomChallengeData);
+                                         app_p->userNum,
+                                         SessionKeyStatus::AES_128,
+           (SessionKeyStatus::KeyStatus) stats.get(KEY_STATUS),
+                                         pseudoRandomChallengeData);
 
 
     stats.logNormal( oh.str( app_p->strbuf, sizeof(app_p->strbuf)));
@@ -1180,7 +1180,7 @@ void OutstationSecurity::txChallengeMsg( Challenge::ChallengeReason reason)
     Outstation* o_p = (Outstation*) app_p;
     ObjectHeader oh = ObjectHeader(120, 1, 0x5b, 1);
     Challenge    obj( challengeSeqNum.get(), app_p->userNum, Challenge::SHA_1,
-		      reason);
+                      reason);
 
 
     o_p->initResponse( 1,1,0,0,0, AppHeader::AUTHENTICATION_CHALLENGE);
@@ -1202,14 +1202,14 @@ void OutstationSecurity::txResponseMsg()
     Bytes hmac;
 
     if ( lastRxdChallenge.challengeReason == Challenge::CRITICAL)
-	calculateHmac( hmac, lastRxdChallengeAsdu, o_p->txFragment);
+        calculateHmac( hmac, lastRxdChallengeAsdu, o_p->txFragment);
     else
-	calculateHmac( hmac, lastRxdChallengeAsdu);
+        calculateHmac( hmac, lastRxdChallengeAsdu);
 
     ObjectHeader oh(  120, 2, 0x5b, 1);
     Reply        obj( lastRxdChallenge.seqNum,
-		      lastRxdChallenge.userNum,
-		      hmac);
+                      lastRxdChallenge.userNum,
+                      hmac);
 
     o_p->initResponse( 1,1,0,0,0, AppHeader::RESPONSE);
 
@@ -1234,13 +1234,13 @@ void OutstationSecurity::incrementKeyChangeSeqNum()
 {
     stats.increment( KEY_CHANGE_SEQ_NUM);
     if (stats.get(KEY_CHANGE_SEQ_NUM) > 0xffffff)
-	stats.reset(KEY_CHANGE_SEQ_NUM);
+        stats.reset(KEY_CHANGE_SEQ_NUM);
 }
 
 void OutstationSecurity::aes128KeyUnwrap( const Bytes&       wrappedKeyData,
-					  Bytes&             controlKey,
-					  Bytes&             monitorKey,
-					  Bytes&             keyStatusEncoded)
+                                          Bytes&             controlKey,
+                                          Bytes&             monitorKey,
+                                          Bytes&             keyStatusEncoded)
 {
     unsigned char input[AES_MAX_WRAPPED_LEN];
     unsigned char output[AES_MAX_PLAIN_LEN];
@@ -1255,7 +1255,7 @@ void OutstationSecurity::aes128KeyUnwrap( const Bytes&       wrappedKeyData,
 
     if (len % 8 != 0)
     {
-	assert(0); // wrapped data is always in 64 bit blocks
+        assert(0); // wrapped data is always in 64 bit blocks
     }
 
     // convert len from bytes to number of 64 bit blocks

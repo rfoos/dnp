@@ -76,7 +76,7 @@ class SecureAuthenicationState
 {
   public:
     SecureAuthenicationState( SecureAuthentication* secureAuth_p,
-			      DnpStat_t state=0);
+                              DnpStat_t state=0);
     virtual void challengeTimeout();
     virtual void responseTimeout();
     virtual void keyChangeTimeout();
@@ -180,36 +180,36 @@ class SecureAuthentication
 {
   public:
     enum BaseStatIndex  {   STATE  = AuthenticationError::NUM_ERROR_REASONS,
-			    RX_CRITICAL_ASDU,
-			    RESPONSE_TIMEOUT,
-			    CHALLENGE_TIMEOUT,
-			    TX_CHALLENGE_MSG,
-			    RX_CHALLENGE_MSG,
-			    TX_AUTH_RESPONSE,
-			    RX_VALID_AUTH_RESP,
-			    RX_INVALID_AUTH_RESP,
+                            RX_CRITICAL_ASDU,
+                            RESPONSE_TIMEOUT,
+                            CHALLENGE_TIMEOUT,
+                            TX_CHALLENGE_MSG,
+                            RX_CHALLENGE_MSG,
+                            TX_AUTH_RESPONSE,
+                            RX_VALID_AUTH_RESP,
+                            RX_INVALID_AUTH_RESP,
 
-			    //abnormal
-			    ERRORS_TXD,
-			    KEYS_INVALID,
-			    SESSION_ERROR,
-  			    BASE_NUM_STATS };
+                            //abnormal
+                            ERRORS_TXD,
+                            KEYS_INVALID,
+                            SESSION_ERROR,
+                            BASE_NUM_STATS };
 
     // to be used for the state statistic
     enum States         {   INIT                           = 0,
-		            MASTER_IDLE                    = 1,
-		            OUTSTATION_IDLE                = 2,
-			    MASTER_WAIT_FOR_RESPONSE       = 3,
-			    OUTSTATION_WAIT_FOR_RESPONSE   = 4,
-			    WAIT_FOR_KEY_STATUS            = 5, // master
-			    WAIT_FOR_KEY_CONFIRMATION      = 6, // master
+                            MASTER_IDLE                    = 1,
+                            OUTSTATION_IDLE                = 2,
+                            MASTER_WAIT_FOR_RESPONSE       = 3,
+                            OUTSTATION_WAIT_FOR_RESPONSE   = 4,
+                            WAIT_FOR_KEY_STATUS            = 5, // master
+                            WAIT_FOR_KEY_CONFIRMATION      = 6, // master
                             WAIT_FOR_KEY_CHANGE            = 7, // outstation
-			    NUM_STATES};
+                            NUM_STATES};
 
     static const char* stateStrings[ NUM_STATES];
 
     SecureAuthentication( Application* parent_p, bool aggressiveMode = false,
-			  DnpStat_t maxErrorCount=2);
+                          DnpStat_t maxErrorCount=2);
 
     // only used by the Master class
     virtual void init();
@@ -253,11 +253,11 @@ class SecureAuthentication
     virtual void txError( AuthenticationError::ErrorReason)=0;
 
     void calculateHmac(Bytes& hmac,
-		       const Bytes& challengeAsdu,
-		       const Bytes& challengedAsdu );
+                       const Bytes& challengeAsdu,
+                       const Bytes& challengedAsdu );
 
     void calculateHmac(Bytes& hmac,
-		       const Bytes& challengeAsdu );
+                       const Bytes& challengeAsdu );
 
     SecureAuthenicationState* state_p;
 
@@ -287,12 +287,12 @@ class MasterSecurity : public SecureAuthentication
   public:
 
     enum StatIndex     { TX_KEY_STATUS_REQUEST = BASE_NUM_STATS,
-			 TX_KEY_CHANGE_MSG,
-			 RX_KEY_STATUS_OK,
-			 RX_KEY_STATUS_NOT_OK,
-			 KEY_CHANGE_TIMEOUT,
-			 KEY_CHANGE_COUNTER,
-		         NUM_STATS };
+                         TX_KEY_CHANGE_MSG,
+                         RX_KEY_STATUS_OK,
+                         RX_KEY_STATUS_NOT_OK,
+                         KEY_CHANGE_TIMEOUT,
+                         KEY_CHANGE_COUNTER,
+                         NUM_STATS };
 
     MasterSecurity( Master* app_p, bool aggressiveMode = false);
     void init();
@@ -306,9 +306,9 @@ class MasterSecurity : public SecureAuthentication
     void rxKeyStatus(const SessionKeyStatus* p);
 
     void aes128KeyWrap( Bytes&       wrappedKeyData,
-			const Bytes& controlKey,
-			const Bytes& monitorKey,
-			const Bytes& keyStatus);
+                        const Bytes& controlKey,
+                        const Bytes& monitorKey,
+                        const Bytes& keyStatus);
 
     WaitForKeyStatus         waitForKeyStatus;
     WaitForKeyConfirmation   waitForKeyConfirmation;
@@ -325,13 +325,13 @@ class OutstationSecurity : public SecureAuthentication
   public:
 
     enum StatIndex        { TX_KEY_STATUS = BASE_NUM_STATS,
-			    RX_KEY_STATUS_REQ,
-			    RX_VALID_KEY_CHANGE,
-			    RX_INVALID_KEY_CHANGE,
-			    SESSION_KEY_TIMEOUT,
-			    KEY_STATUS,
-			    KEY_CHANGE_SEQ_NUM,
-  		            NUM_STATS };
+                            RX_KEY_STATUS_REQ,
+                            RX_VALID_KEY_CHANGE,
+                            RX_INVALID_KEY_CHANGE,
+                            SESSION_KEY_TIMEOUT,
+                            KEY_STATUS,
+                            KEY_CHANGE_SEQ_NUM,
+                            NUM_STATS };
 
     OutstationSecurity( Outstation* app_p, bool aggressiveMode = false);
 
@@ -346,9 +346,9 @@ class OutstationSecurity : public SecureAuthentication
     void rxKeyChange(const SessionKeyChange* p);
 
     void aes128KeyUnwrap( const Bytes&       wrappedKeyData,
-			  Bytes&             controlKey,
-			  Bytes&             monitorKey,
-			  Bytes&             keyStatus);
+                          Bytes&             controlKey,
+                          Bytes&             monitorKey,
+                          Bytes&             keyStatus);
 
     WaitForKeyChange             waitForKeyChange;
 
