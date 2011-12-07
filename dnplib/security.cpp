@@ -25,8 +25,9 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 
 
-#include<algorithm>
+#include <algorithm>
 #include <assert.h>
+#include <cstdio>
 #include "common.hpp"
 #include "app.hpp"
 #include "master.hpp"

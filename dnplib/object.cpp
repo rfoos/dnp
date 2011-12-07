@@ -25,7 +25,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 
 #include <assert.h>
-#include "stdio.h"
+#include "cstdio"
 #include "common.hpp"
 #include "stats.hpp"
 #include "object.hpp"

@@ -30,6 +30,7 @@
 //
 
 #include <assert.h>
+#include <cstdio>
 #include "object.hpp"
 #include "security.hpp"
 #include "outstation.hpp"

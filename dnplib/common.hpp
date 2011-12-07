@@ -34,6 +34,10 @@
 // bytes from the beginning
 typedef std::deque<unsigned char> Bytes;
 
+/** uint types not until C99, and not C++ at all. */
+#include <stdint.h>
+#include <string.h>
+
 // timing releated internal to the protocol.
 // it is better to use because the OS time can be changed
 // due to time sync etc.

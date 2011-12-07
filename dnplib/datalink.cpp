@@ -26,7 +26,7 @@
 
 #include <assert.h>
 #include <string.h>  // for memcpy
-#include <stdio.h>
+#include <cstdio>
 #include "datalink.hpp"
 
 Datalink::Datalink( DatalinkConfig& config,

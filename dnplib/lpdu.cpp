@@ -26,7 +26,7 @@
 
 #include <assert.h>
 #include <string.h>
-#include <stdio.h>
+#include <cstdio>
 #include "common.hpp"
 #include "lpdu.hpp"
 #include <deque>

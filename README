@@ -1,0 +1,6 @@
+The sourceforge DNP3 was abandoned in 2007. Licensed under FreeBSD.
+
+First concern is to make this build portable to Ubuntu, CentOS, Fedora, 
+current versions.
+
+

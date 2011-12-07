@@ -25,7 +25,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 
 #include <time.h>
-#include <stdio.h>
+#include <cstdio>
 #include <string.h>  // for memcpy
 #include <assert.h>
 #include "station.hpp"

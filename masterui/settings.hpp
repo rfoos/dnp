@@ -105,7 +105,7 @@ class ConfigItem : public QObject
     Q_OBJECT
 
   public:
-    ConfigItem(ConfigurationFrame* cf, QString name, QString name);
+    ConfigItem(ConfigurationFrame* cf, QString name, QString defaultValue);
     QLineEdit* itemEdit;
     QLabel*    itemLabel;
   private slots:
