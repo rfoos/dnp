@@ -149,7 +149,7 @@ void TestLpdu::testBuildLpdu()
   };
 
   Stats stats;
-  char name[7];
+  char name[Stats::MAX_USER_NAME_LEN];
   int debugLevel = -1;
   DummyDb db;
 
